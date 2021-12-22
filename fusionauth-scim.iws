@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="03233d92-9c55-4fc6-a0a1-ca12d3c8bf0d" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/.idea/.gitignore" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/compiler.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/fusionauth-scim.iml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/build.savant" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/fusionauth-scim.iml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/fusionauth-scim.ipr" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/fusionauth-scim.iws" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/license-Commercial.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/io.fusionauth.scim/domain/api/BaseSCIMResource.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/io.fusionauth.scim/domain/api/ResourceTypeConfig.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/io.fusionauth.scim/domain/api/SCIMEnterpriseUser.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/io.fusionauth.scim/domain/api/SCIMGroup.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/io.fusionauth.scim/domain/api/SCIMGroupConverter.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/io.fusionauth.scim/domain/api/SCIMListResponse.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/io.fusionauth.scim/domain/api/SCIMMember.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/io.fusionauth.scim/domain/api/SCIMMeta.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/io.fusionauth.scim/domain/api/SCIMResourceResponse.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/io.fusionauth.scim/domain/api/SCIMResourceType.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/io.fusionauth.scim/domain/api/SCIMSchemasResponse.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/io.fusionauth.scim/domain/api/SCIMServiceProviderConfigResponse.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/io.fusionauth.scim/domain/api/SCIMTarget.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/io.fusionauth.scim/domain/api/SCIMUser.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/io.fusionauth.scim/domain/api/SCIMUserAddress.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/io.fusionauth.scim/domain/api/SCIMUserConverter.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/io.fusionauth.scim/domain/api/SCIMUserEmail.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/io.fusionauth.scim/domain/api/SCIMUserIMS.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/io.fusionauth.scim/domain/api/SCIMUserName.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/io.fusionauth.scim/domain/api/SCIMUserPhoneNumber.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/io.fusionauth.scim/domain/api/SCIMUserPhoto.java" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="MarkdownSettingsMigration">
+    <option name="stateVersion" value="1" />
+  </component>
+  <component name="ProjectId" id="22ZDOQAsQe1M2bkAJY1dAwep1GC" />
+  <component name="ProjectViewState">
+    <option name="autoscrollFromSource" value="true" />
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">
+    <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
+    <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
+    <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/src/main/java/io.fusionauth.scim/domain/api" />
+  </component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/src/main/java/io.fusionauth.scim/domain/api" />
+    </key>
+    <key name="MoveClassesOrPackagesDialog.RECENTS_KEY">
+      <recent name="io" />
+    </key>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="03233d92-9c55-4fc6-a0a1-ca12d3c8bf0d" name="Changes" comment="" />
+      <created>1640036186869</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1640036186869</updated>
+      <workItem from="1640036188771" duration="1879000" />
+      <workItem from="1640039393486" duration="576000" />
+      <workItem from="1640094486930" duration="1197000" />
+      <workItem from="1640180678790" duration="597000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+</project>
