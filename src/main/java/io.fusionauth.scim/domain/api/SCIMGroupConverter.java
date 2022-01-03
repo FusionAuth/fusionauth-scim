@@ -22,7 +22,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import io.fusionauth.domain.Group;
-import io.fusionauth.domain.GroupMemberListItem;
+import io.fusionauth.domain.GroupMemberData;
 
 public class SCIMGroupConverter {
 
@@ -52,7 +52,7 @@ public class SCIMGroupConverter {
     return target;
   }
 
-  public static SCIMGroup toSCIMGroup(Group source, List<GroupMemberListItem> members) {
+  public static SCIMGroup toSCIMGroup(Group source, List<GroupMemberData> members) {
     SCIMGroup target = toSCIMGroup(source);
     if(members != null && !members.isEmpty()) {
       target.members = members.stream().map(SCIMGroupConverter::convertToSCIMMember).collect(Collectors.toList());
@@ -60,11 +60,11 @@ public class SCIMGroupConverter {
     return target;
   }
 
-  private static SCIMMember convertToSCIMMember(GroupMemberListItem member) {
+  private static SCIMMember convertToSCIMMember(GroupMemberData member) {
     SCIMMember scimMember = new SCIMMember();
-    scimMember.display = member.fullName;
-    scimMember.value = member.userId.toString();
-    scimMember.ref = "https://fusionauth.io/api/scim/resource/v2/Users/" + member.userId;
+    scimMember.display = member.user.fullName;
+    scimMember.value = member.user.id.toString();
+    scimMember.ref = "https://fusionauth.io/api/scim/resource/v2/Users/" + member.user.id;
     return scimMember;
   }
 }

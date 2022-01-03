@@ -1,40 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="03233d92-9c55-4fc6-a0a1-ca12d3c8bf0d" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/.gitignore" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/compiler.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/fusionauth-scim.iml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/build.savant" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/fusionauth-scim.iml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/fusionauth-scim.ipr" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/fusionauth-scim.iws" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/license-Commercial.txt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/io.fusionauth.scim/domain/api/BaseSCIMResource.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/io.fusionauth.scim/domain/api/ResourceTypeConfig.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/io.fusionauth.scim/domain/api/SCIMEnterpriseUser.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/io.fusionauth.scim/domain/api/SCIMGroup.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/io.fusionauth.scim/domain/api/SCIMGroupConverter.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/io.fusionauth.scim/domain/api/SCIMListResponse.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/io.fusionauth.scim/domain/api/SCIMMember.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/io.fusionauth.scim/domain/api/SCIMMeta.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/io.fusionauth.scim/domain/api/SCIMResourceResponse.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/io.fusionauth.scim/domain/api/SCIMResourceType.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/io.fusionauth.scim/domain/api/SCIMSchemasResponse.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/io.fusionauth.scim/domain/api/SCIMServiceProviderConfigResponse.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/io.fusionauth.scim/domain/api/SCIMTarget.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/io.fusionauth.scim/domain/api/SCIMUser.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/io.fusionauth.scim/domain/api/SCIMUserAddress.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/io.fusionauth.scim/domain/api/SCIMUserConverter.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/io.fusionauth.scim/domain/api/SCIMUserEmail.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/io.fusionauth.scim/domain/api/SCIMUserIMS.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/io.fusionauth.scim/domain/api/SCIMUserName.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/io.fusionauth.scim/domain/api/SCIMUserPhoneNumber.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/io.fusionauth.scim/domain/api/SCIMUserPhoto.java" afterDir="false" />
+    <list default="true" id="03233d92-9c55-4fc6-a0a1-ca12d3c8bf0d" name="Changes" comment="initial commit">
+      <change beforePath="$PROJECT_DIR$/fusionauth-scim.ipr" beforeDir="false" afterPath="$PROJECT_DIR$/fusionauth-scim.ipr" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/fusionauth-scim.iws" beforeDir="false" afterPath="$PROJECT_DIR$/fusionauth-scim.iws" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/io.fusionauth.scim/domain/api/SCIMGroupConverter.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/io.fusionauth.scim/domain/api/SCIMGroupConverter.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -78,8 +48,17 @@
       <workItem from="1640036188771" duration="1879000" />
       <workItem from="1640039393486" duration="576000" />
       <workItem from="1640094486930" duration="1197000" />
-      <workItem from="1640180678790" duration="597000" />
+      <workItem from="1640180678790" duration="3824000" />
+      <workItem from="1641222431649" duration="1573000" />
     </task>
+    <task id="LOCAL-00001" summary="initial commit">
+      <created>1640188577589</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1640188577590</updated>
+    </task>
+    <option name="localTasksCounter" value="2" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -95,5 +74,9 @@
         </entry>
       </map>
     </option>
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="initial commit" />
+    <option name="LAST_COMMIT_MESSAGE" value="initial commit" />
   </component>
 </project>
