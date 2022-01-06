@@ -44,7 +44,7 @@ public class SCIMGroupConverter {
     meta.resourceType = "Group";
     meta.created = source.insertInstant.format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"));
     meta.lastModified =  source.lastUpdateInstant.format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"));
-    meta.location = "https://fusionauth.io/api/scim/resource/v2/Groups/" + source.id;
+    meta.location = "https://fusionauth.io/api/scim/resource/v2/groups/" + source.id;
     meta.version = "";
     target.meta = meta;
     target.displayName = source.name;
@@ -64,7 +64,7 @@ public class SCIMGroupConverter {
     SCIMMember scimMember = new SCIMMember();
     scimMember.display = member.user.fullName;
     scimMember.value = member.user.id.toString();
-    scimMember.ref = "https://fusionauth.io/api/scim/resource/v2/Users/" + member.user.id;
+    scimMember.ref = "https://fusionauth.io/api/scim/resource/v2/users/" + member.user.id;
     return scimMember;
   }
 }
