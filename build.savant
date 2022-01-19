@@ -61,15 +61,6 @@ java = loadPlugin(id: "org.savantbuild.plugin:java:1.2.0")
 idea = loadPlugin(id: "org.savantbuild.plugin:idea:1.0.1")
 release = loadPlugin(id: "org.savantbuild.plugin:release-git:${savantVersion}")
 
-/*
- * Plugin Settings
- */
-
-idea.settings.moduleMap = [
-    "io.fusionauth:fusionauth-java-client:${fusionauthVersion}": "fusionauth-java-client",
-    "io.fusionauth:fusionauth-plugin-api:${fusionauthVersion}" : "fusionauth-plugin-api"
-]
-
 // Until we get rid of the usages of sun.* - we need this
 java.settings.javaVersion = "17"
 java.settings.compilerArguments = "-XDignore.symbol.file --add-exports java.base/sun.security.util=ALL-UNNAMED --add-exports=java.base/sun.security.x509=ALL-UNNAMED"

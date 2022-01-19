@@ -18,6 +18,8 @@ package io.fusionauth.scim.domain.api;
 import java.net.URI;
 import java.security.cert.X509Certificate;
 import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
@@ -88,6 +90,43 @@ public class SCIMUser extends BaseSCIMResource {
     createMeta(id, "User", user.insertInstant, user.lastUpdateInstant);
     // Not sure where this is supposed to be defined or what exactly it's doing so commenting it out for now because it's giving me compile errors.
     // extractData(user);
+  }
+
+  public SCIMUser(User user) {
+    // Build a valid ScimUser using the FusionAuth User data.
+    active = user.active;
+    id = user.id;
+    externalId = user.username;
+    userName = user.username;
+    schemas = new ArrayList<>();
+    schemas.add("urn:ietf:params:scim:schemas:core:2.0:User");
+    SCIMMeta scimMeta = new SCIMMeta();
+    scimMeta.resourceType = "User";
+    scimMeta.created = user.insertInstant.format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"));
+    scimMeta.lastModified =  user.lastUpdateInstant.format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"));
+    scimMeta.location = "https://fusionauth.io/api/scim/resource/v2/Users/" + user.id;
+    scimMeta.version = "";
+    meta = scimMeta;
+    SCIMUserName scimName = new SCIMUserName();
+    scimName.formatted = user.fullName;
+    scimName.familyName = user.lastName;
+    scimName.givenName = user.firstName;
+    scimName.middleName = user.middleName;
+    scimName.honorificPrefix = "";
+    scimName.honorificSuffix = "";
+    name = scimName;
+    SCIMUserPhoneNumber phoneNumber = new SCIMUserPhoneNumber();
+    phoneNumber.primary = true;
+    phoneNumber.value = user.mobilePhone;
+    phoneNumber.type = "mobile";
+    phoneNumbers = new ArrayList<>();
+    phoneNumbers.add(phoneNumber);
+    SCIMUserEmail email = new SCIMUserEmail();
+    email.value = user.email;
+    email.type ="work";
+    email.primary = true;
+    emails = new ArrayList<>();
+    emails.add(email);
   }
 
   @Override

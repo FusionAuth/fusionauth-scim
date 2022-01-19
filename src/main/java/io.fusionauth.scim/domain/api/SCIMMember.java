@@ -23,10 +23,10 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * @author Brett Pontarelli
  */
 public class SCIMMember {
-  public String display;
+  public String displayName = "";
 
   @JsonProperty("$ref")
-  public String ref;
+  public String ref = "";
 
-  public String value;
+  public String value = "";
 }

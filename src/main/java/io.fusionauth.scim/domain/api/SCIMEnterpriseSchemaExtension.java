@@ -18,25 +18,28 @@ package io.fusionauth.scim.domain.api;
 import java.util.Objects;
 
 import com.inversoft.json.JacksonConstructor;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import io.fusionauth.domain.User;
 
 /**
- * Container for SCIM Enterprise User information.
+ * Container for SCIM Enterprise User schema.
  *
- * @author Brett Pontarelli
+ * @author Rob Davis
  */
-public class SCIMEnterpriseUser extends SCIMUser {
+public class SCIMEnterpriseSchemaExtension {
 
-  @JsonProperty("urn:ietf:params:scim:schemas:extension:enterprise:2.0:User")
-  public SCIMEnterpriseSchemaExtension extension;
+  public String costCenter = "";
+
+  public String department = "";
+
+  public String division = "";
+
+  public String employeeNumber = "";
+
+  public SCIMMember manager;
+
+  public String organization = "";
 
   @JacksonConstructor
-  public SCIMEnterpriseUser() {
-  }
-
-  public SCIMEnterpriseUser(User user) {
-    super(user);
+  public SCIMEnterpriseSchemaExtension() {
   }
 
   @Override
@@ -47,12 +50,12 @@ public class SCIMEnterpriseUser extends SCIMUser {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    SCIMEnterpriseUser that = (SCIMEnterpriseUser) o;
-    return Objects.equals(extension, that.extension);
+    SCIMEnterpriseSchemaExtension that = (SCIMEnterpriseSchemaExtension) o;
+    return Objects.equals(costCenter, that.costCenter) && Objects.equals(department, that.department) && Objects.equals(division, that.division) && Objects.equals(employeeNumber, that.employeeNumber) && Objects.equals(manager, that.manager) && Objects.equals(organization, that.organization);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(extension);
+    return Objects.hash(costCenter, department, division, employeeNumber, manager, organization);
   }
 }

@@ -62,7 +62,7 @@ public class SCIMGroupConverter {
 
   private static SCIMMember convertToSCIMMember(GroupMemberData member) {
     SCIMMember scimMember = new SCIMMember();
-    scimMember.display = member.user.fullName;
+    scimMember.displayName = member.user.fullName;
     scimMember.value = member.user.id.toString();
     scimMember.ref = "https://fusionauth.io/api/scim/resource/v2/users/" + member.user.id;
     return scimMember;

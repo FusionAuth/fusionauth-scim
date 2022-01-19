@@ -28,6 +28,7 @@ public class SCIMUserConverter {
     target.active = source.active;
     target.id = source.id;
     target.username = source.userName;
+    target.password = source.password;
     target.fullName = source.name.formatted;
     target.lastName = source.name.familyName;
     target.firstName = source.name.givenName;
@@ -50,41 +51,6 @@ public class SCIMUserConverter {
   }
 
   public static SCIMUser toSCIMUser(User source) {
-    SCIMUser target = new SCIMUser();
-      // Build a valid ScimUser using the FusionAuth User data.
-      target.active = source.active;
-      target.id = source.id;
-      target.externalId = source.username;
-      target.userName = source.username;
-      target.schemas = new ArrayList<>();
-      target.schemas.add("urn:ietf:params:scim:schemas:core:2.0:User");
-      SCIMMeta meta = new SCIMMeta();
-      meta.resourceType = "User";
-      meta.created = source.insertInstant.format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"));
-      meta.lastModified =  source.lastUpdateInstant.format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"));
-      meta.location = "https://fusionauth.io/api/scim/resource/v2/Users/" + source.id;
-      meta.version = "";
-      target.meta = meta;
-      SCIMUserName name = new SCIMUserName();
-      name.formatted = source.fullName;
-      name.familyName = source.lastName;
-      name.givenName = source.firstName;
-      name.middleName = source.middleName;
-      name.honorificPrefix = "";
-      name.honorificSuffix = "";
-      target.name = name;
-      SCIMUserPhoneNumber phoneNumber = new SCIMUserPhoneNumber();
-      phoneNumber.primary = true;
-      phoneNumber.value = source.mobilePhone;
-      phoneNumber.type = "mobile";
-      target.phoneNumbers = new ArrayList<>();
-      target.phoneNumbers.add(phoneNumber);
-      SCIMUserEmail email = new SCIMUserEmail();
-      email.value = source.email;
-      email.type ="work";
-      email.primary = true;
-      target.emails = new ArrayList<>();
-      target.emails.add(email);
-      return target;
+    return new SCIMUser(source);
   }
 }
