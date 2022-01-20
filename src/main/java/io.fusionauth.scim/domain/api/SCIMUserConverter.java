@@ -15,9 +15,6 @@
  */
 package io.fusionauth.scim.domain.api;
 
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-
 import io.fusionauth.domain.User;
 
 public class SCIMUserConverter {

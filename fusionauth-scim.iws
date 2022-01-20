@@ -1,24 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="03233d92-9c55-4fc6-a0a1-ca12d3c8bf0d" name="Changes" comment="Add EnterpriseUser support">
-      <change afterPath="$PROJECT_DIR$/src/main/java/io.fusionauth.scim/domain/api/SCIMEnterpriseSchemaExtension.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/io.fusionauth.scim/domain/api/SCIMEnterpriseUserConverter.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/.gitignore" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/compiler.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/fusionauth-scim.iml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build.savant" beforeDir="false" afterPath="$PROJECT_DIR$/build.savant" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/fusionauth-scim.iml" beforeDir="false" afterPath="$PROJECT_DIR$/fusionauth-scim.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/fusionauth-scim.ipr" beforeDir="false" afterPath="$PROJECT_DIR$/fusionauth-scim.ipr" afterDir="false" />
+    <list default="true" id="03233d92-9c55-4fc6-a0a1-ca12d3c8bf0d" name="Changes" comment="Little refactoring of SCIMUser and SCIMEnterpriseUser to get a little better code reuse.">
       <change beforePath="$PROJECT_DIR$/fusionauth-scim.iws" beforeDir="false" afterPath="$PROJECT_DIR$/fusionauth-scim.iws" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/io.fusionauth.scim/domain/api/SCIMEnterpriseUser.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/io.fusionauth.scim/domain/api/SCIMEnterpriseUser.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/io.fusionauth.scim/domain/api/SCIMGroupConverter.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/io.fusionauth.scim/domain/api/SCIMGroupConverter.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/io.fusionauth.scim/domain/api/SCIMMember.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/io.fusionauth.scim/domain/api/SCIMMember.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/io.fusionauth.scim/domain/api/SCIMUser.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/io.fusionauth.scim/domain/api/SCIMUser.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/io.fusionauth.scim/domain/api/SCIMEnterpriseUserConverter.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/io.fusionauth.scim/domain/api/SCIMEnterpriseUserConverter.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/io.fusionauth.scim/domain/api/SCIMUserConverter.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/io.fusionauth.scim/domain/api/SCIMUserConverter.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -96,7 +81,8 @@
       <workItem from="1642601992014" duration="153000" />
       <workItem from="1642602151840" duration="662000" />
       <workItem from="1642602835279" duration="123000" />
-      <workItem from="1642602979709" duration="6602000" />
+      <workItem from="1642602979709" duration="7941000" />
+      <workItem from="1642690533930" duration="805000" />
     </task>
     <task id="LOCAL-00001" summary="initial commit">
       <created>1640188577589</created>
@@ -119,7 +105,14 @@
       <option name="project" value="LOCAL" />
       <updated>1641479156995</updated>
     </task>
-    <option name="localTasksCounter" value="4" />
+    <task id="LOCAL-00004" summary="Little refactoring of SCIMUser and SCIMEnterpriseUser to get a little better code reuse.">
+      <created>1642612793010</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1642612793010</updated>
+    </task>
+    <option name="localTasksCounter" value="5" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -145,6 +138,7 @@
   <component name="VcsManagerConfiguration">
     <MESSAGE value="initial commit" />
     <MESSAGE value="Add EnterpriseUser support" />
-    <option name="LAST_COMMIT_MESSAGE" value="Add EnterpriseUser support" />
+    <MESSAGE value="Little refactoring of SCIMUser and SCIMEnterpriseUser to get a little better code reuse." />
+    <option name="LAST_COMMIT_MESSAGE" value="Little refactoring of SCIMUser and SCIMEnterpriseUser to get a little better code reuse." />
   </component>
 </project>
