@@ -17,17 +17,14 @@ package io.fusionauth.scim.domain.api;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import com.inversoft.json.JacksonConstructor;
 
-public class SCIMServiceProviderConfigResponse {
-  public UUID id;
-  public List<String> schemas;
-  public String externalId;
-  public HashMap<String, String> meta;
+public class SCIMServiceProviderConfigResponse extends BaseSCIMResource {
   public String documentationUri;
-  public HashMap<String, Object> patch;
+  public Map<String, Object> patch;
   public HashMap<String, Object> bulk;
   public HashMap<String, Object> filter;
   public HashMap<String, Object> changePassword;
