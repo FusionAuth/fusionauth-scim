@@ -2,9 +2,10 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="03233d92-9c55-4fc6-a0a1-ca12d3c8bf0d" name="Changes" comment="Little refactoring of SCIMUser and SCIMEnterpriseUser to get a little better code reuse.">
-      <change afterPath="$PROJECT_DIR$/src/main/java/io.fusionauth.scim/domain/api/SCIMServiceProviderConfig.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/io.fusionauth.scim/domain/api/SCIMResourceSchema.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/io.fusionauth.scim/domain/api/SCIMResourceSchemaAttribute.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/fusionauth-scim.iws" beforeDir="false" afterPath="$PROJECT_DIR$/fusionauth-scim.iws" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/io.fusionauth.scim/domain/api/SCIMServiceProviderConfigResponse.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/io.fusionauth.scim/domain/api/SCIMServiceProviderConfigResponse.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/io.fusionauth.scim/domain/api/SCIMServiceProviderConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/io.fusionauth.scim/domain/api/SCIMServiceProviderConfig.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -58,6 +59,9 @@
     <key name="MoveClassesOrPackagesDialog.RECENTS_KEY">
       <recent name="io" />
     </key>
+    <key name="CopyClassDialog.RECENTS_KEY">
+      <recent name="io.fusionauth.scim.domain.api" />
+    </key>
   </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
@@ -89,7 +93,8 @@
       <workItem from="1642602151840" duration="662000" />
       <workItem from="1642602835279" duration="123000" />
       <workItem from="1642602979709" duration="7941000" />
-      <workItem from="1642690533930" duration="5158000" />
+      <workItem from="1642690533930" duration="13943000" />
+      <workItem from="1643034143131" duration="1409000" />
     </task>
     <task id="LOCAL-00001" summary="initial commit">
       <created>1640188577589</created>
@@ -126,7 +131,21 @@
       <option name="project" value="LOCAL" />
       <updated>1642703722878</updated>
     </task>
-    <option name="localTasksCounter" value="6" />
+    <task id="LOCAL-00006" summary="Little refactoring of SCIMUser and SCIMEnterpriseUser to get a little better code reuse.">
+      <created>1642708591994</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1642708591994</updated>
+    </task>
+    <task id="LOCAL-00007" summary="Little refactoring of SCIMUser and SCIMEnterpriseUser to get a little better code reuse.">
+      <created>1642708613582</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1642708613582</updated>
+    </task>
+    <option name="localTasksCounter" value="8" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
