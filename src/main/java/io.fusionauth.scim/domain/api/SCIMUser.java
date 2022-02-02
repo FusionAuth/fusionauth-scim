@@ -26,9 +26,6 @@ import java.util.Objects;
 
 import com.inversoft.json.JacksonConstructor;
 import com.inversoft.json.ToString;
-import io.fusionauth.domain.User;
-import io.fusionauth.domain.event.BaseEvent;
-import io.fusionauth.domain.event.UserCreateCompleteEvent;
 
 /**
  * Container for SCIM User information.
@@ -83,52 +80,6 @@ public class SCIMUser extends BaseSCIMResource {
   public SCIMUser() {
   }
 
-  public SCIMUser(BaseEvent event) {
-    User user = ((UserCreateCompleteEvent) event).user;
-    schemas = Collections.singletonList("urn:ietf:params:scim:schemas:core:2.0:User");
-    id = user.id;
-    createMeta(id, "User", user.insertInstant, user.lastUpdateInstant);
-    // Not sure where this is supposed to be defined or what exactly it's doing so commenting it out for now because it's giving me compile errors.
-    // extractData(user);
-  }
-
-  public SCIMUser(User user) {
-    // Build a valid ScimUser using the FusionAuth User data.
-    active = user.active;
-    id = user.id;
-    externalId = user.username;
-    userName = user.username;
-    schemas = new ArrayList<>();
-    schemas.add("urn:ietf:params:scim:schemas:core:2.0:User");
-    SCIMMeta scimMeta = new SCIMMeta();
-    scimMeta.resourceType = "User";
-    scimMeta.created = user.insertInstant.format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"));
-    scimMeta.lastModified =  user.lastUpdateInstant.format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"));
-    scimMeta.location = "https://fusionauth.io/api/scim/resource/v2/Users/" + user.id;
-    scimMeta.version = "";
-    meta = scimMeta;
-    SCIMUserName scimName = new SCIMUserName();
-    scimName.formatted = user.fullName;
-    scimName.familyName = user.lastName;
-    scimName.givenName = user.firstName;
-    scimName.middleName = user.middleName;
-    scimName.honorificPrefix = "";
-    scimName.honorificSuffix = "";
-    name = scimName;
-    SCIMUserPhoneNumber phoneNumber = new SCIMUserPhoneNumber();
-    phoneNumber.primary = true;
-    phoneNumber.value = user.mobilePhone;
-    phoneNumber.type = "mobile";
-    phoneNumbers = new ArrayList<>();
-    phoneNumbers.add(phoneNumber);
-    SCIMUserEmail email = new SCIMUserEmail();
-    email.value = user.email;
-    email.type ="work";
-    email.primary = true;
-    emails = new ArrayList<>();
-    emails.add(email);
-  }
-
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -152,13 +103,4 @@ public class SCIMUser extends BaseSCIMResource {
   public String toString() {
     return ToString.toString(this);
   }
-
-  // [brettp]Note: These were are all the same (moved out to separate files), should they instead be SCIMEntry or something like that?
-  //   When they get baked into a fusionauth-lang-client library we want the user to have flexiblity
-  //   around extending SCIMUser and all of it's parts, implementations, etc.
-  //   !!! DELETE SUBCLASSES WHEN RESOLVED !!!
-  // public static class SCIMUserEmail {}
-  // public static class SCIMUserIMS {}
-  // public static class SCIMUserPhoneNumber {}
-  // public static class SCIMUserPhoto {}
 }

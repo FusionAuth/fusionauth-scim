@@ -19,7 +19,6 @@ import java.util.Objects;
 
 import com.inversoft.json.JacksonConstructor;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import io.fusionauth.domain.User;
 
 /**
  * Container for SCIM Enterprise User information.
@@ -33,10 +32,6 @@ public class SCIMEnterpriseUser extends SCIMUser {
 
   @JacksonConstructor
   public SCIMEnterpriseUser() {
-  }
-
-  public SCIMEnterpriseUser(User user) {
-    super(user);
   }
 
   @Override

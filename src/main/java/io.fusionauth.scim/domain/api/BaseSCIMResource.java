@@ -15,11 +15,12 @@
  */
 package io.fusionauth.scim.domain.api;
 
-import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
+import com.fasterxml.jackson.annotation.JsonSetter;
+import com.fasterxml.jackson.annotation.Nulls;
 import com.inversoft.json.JacksonConstructor;
 
 /**
@@ -33,6 +34,7 @@ public abstract class BaseSCIMResource {
 
   public UUID id;
 
+  @JsonSetter(nulls=Nulls.SKIP)
   public SCIMMeta meta = new SCIMMeta();
 
   public List<String> schemas;
@@ -56,17 +58,6 @@ public abstract class BaseSCIMResource {
   @Override
   public int hashCode() {
     return Objects.hash(externalId, id, meta, schemas);
-  }
-
-  // [brettp]Note: This method should go away, but since it will happen for every resource
-  //   it might make sense to have a BaseConverter to populate meta?
-  //   Note also, I'm still stuck :shrug: on how to pass down the `location` since the converter in
-  //   the direction `User -> ScimUser` for example needs to take `baseUrl` or something as a param.
-  protected void createMeta(UUID id, String resource, ZonedDateTime created, ZonedDateTime lastModified) {
-//    meta.resourceType = resourceType;
-//    meta.created = created;
-//    meta.lastModified = lastModified;
-//    meta.location = "https://basescim.url/scim/v2/" + resourceType + "/" + id;
   }
 
 }

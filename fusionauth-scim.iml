@@ -118,17 +118,6 @@
     <orderEntry type="module-library">
       <library>
         <CLASSES>
-          <root url="jar://$USER_HOME$/.savant/cache/io/fusionauth/fusionauth-java-client/1.99.0-{integration}/fusionauth-java-client-1.99.0-{integration}.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES>
-          <root url="jar://$USER_HOME$/.savant/cache/io/fusionauth/fusionauth-java-client/1.99.0-{integration}/fusionauth-java-client-1.99.0-{integration}-src.jar!/" />
-        </SOURCES>
-      </library>
-    </orderEntry>
-    <orderEntry type="module-library">
-      <library>
-        <CLASSES>
           <root url="jar://$USER_HOME$/.savant/cache/com/inversoft/jackson5/2.6.1/jackson5-2.6.1.jar!/" />
         </CLASSES>
         <JAVADOC />
@@ -259,28 +248,6 @@
     <orderEntry type="module-library" scope="RUNTIME">
       <library>
         <CLASSES>
-          <root url="jar://$USER_HOME$/.savant/cache/com/inversoft/java-error/2.2.3/java-error-2.2.3.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES>
-          <root url="jar://$USER_HOME$/.savant/cache/com/inversoft/java-error/2.2.3/java-error-2.2.3-src.jar!/" />
-        </SOURCES>
-      </library>
-    </orderEntry>
-    <orderEntry type="module-library" scope="RUNTIME">
-      <library>
-        <CLASSES>
-          <root url="jar://$USER_HOME$/.savant/cache/com/inversoft/restify/3.9.0/restify-3.9.0.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES>
-          <root url="jar://$USER_HOME$/.savant/cache/com/inversoft/restify/3.9.0/restify-3.9.0-src.jar!/" />
-        </SOURCES>
-      </library>
-    </orderEntry>
-    <orderEntry type="module-library" scope="RUNTIME">
-      <library>
-        <CLASSES>
           <root url="jar://$USER_HOME$/.savant/cache/org/slf4j/slf4j-api/2.0.0-alpha5/slf4j-api-2.0.0-alpha5.jar!/" />
         </CLASSES>
         <JAVADOC />
@@ -289,16 +256,6 @@
         </SOURCES>
       </library>
     </orderEntry>
-    <orderEntry type="module-library" scope="RUNTIME">
-      <library>
-        <CLASSES>
-          <root url="jar://$USER_HOME$/.savant/cache/io/fusionauth/fusionauth-jwt/3.6.0/fusionauth-jwt-3.6.0.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES>
-          <root url="jar://$USER_HOME$/.savant/cache/io/fusionauth/fusionauth-jwt/3.6.0/fusionauth-jwt-3.6.0-src.jar!/" />
-        </SOURCES>
-      </library>
-    </orderEntry>
   </component>
 </module>
+

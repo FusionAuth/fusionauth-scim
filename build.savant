@@ -2,7 +2,7 @@
  * Copyright (c) 2020, FusionAuth, All Rights Reserved
  */
 savantVersion = "1.0.0"
-fusionauthVersion = "1.0.0-{integration}"
+fusionauthVersion = "1.0.1-{integration}"
 
 fusionAuthJavaClientVersion = "1.99.0-{integration}"
 jacksonVersion = "2.13.0"
@@ -12,7 +12,7 @@ guiceVersion = "5.0.1"
 guavaVersion = "30.1.0-jre"
 testngVersion = "7.3.0"
 
-project(group: "io.fusionauth", name: "fusionauth-scim", version: "1.0.0-{integration}", licenses: ["Commercial"]) {
+project(group: "io.fusionauth", name: "fusionauth-scim", version: "1.0.1-{integration}", licenses: ["Commercial"]) {
   workflow {
     fetch {
       cache()
@@ -37,7 +37,6 @@ project(group: "io.fusionauth", name: "fusionauth-scim", version: "1.0.0-{integr
       dependency(id: "com.fasterxml.jackson.core:jackson-core:${jacksonVersion}")
       dependency(id: "com.fasterxml.jackson.core:jackson-databind:${jacksonVersion}")
       dependency(id: "com.inversoft:jackson5:${jackson5Version}")
-      dependency(id: "io.fusionauth:fusionauth-java-client:${fusionAuthJavaClientVersion}")
     }
     group(name: "runtime") {
     }

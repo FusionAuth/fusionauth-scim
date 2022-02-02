@@ -1,11 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="03233d92-9c55-4fc6-a0a1-ca12d3c8bf0d" name="Changes" comment="Little refactoring of SCIMUser and SCIMEnterpriseUser to get a little better code reuse.">
-      <change afterPath="$PROJECT_DIR$/src/main/java/io.fusionauth.scim/domain/api/SCIMResourceSchema.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/io.fusionauth.scim/domain/api/SCIMResourceSchemaAttribute.java" afterDir="false" />
+    <list default="true" id="03233d92-9c55-4fc6-a0a1-ca12d3c8bf0d" name="Changes" comment="Add POJOs for Schema.">
+      <change beforePath="$PROJECT_DIR$/build.savant" beforeDir="false" afterPath="$PROJECT_DIR$/build.savant" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/fusionauth-scim.iml" beforeDir="false" afterPath="$PROJECT_DIR$/fusionauth-scim.iml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/fusionauth-scim.iws" beforeDir="false" afterPath="$PROJECT_DIR$/fusionauth-scim.iws" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/io.fusionauth.scim/domain/api/SCIMServiceProviderConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/io.fusionauth.scim/domain/api/SCIMServiceProviderConfig.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/io.fusionauth.scim/domain/api/BaseSCIMResource.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/io.fusionauth.scim/domain/api/BaseSCIMResource.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/io.fusionauth.scim/domain/api/SCIMEnterpriseUser.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/io.fusionauth.scim/domain/api/SCIMEnterpriseUser.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/io.fusionauth.scim/domain/api/SCIMEnterpriseUserConverter.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/io.fusionauth.scim/domain/api/SCIMGroupConverter.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/io.fusionauth.scim/domain/api/SCIMUser.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/io.fusionauth.scim/domain/api/SCIMUser.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/io.fusionauth.scim/domain/api/SCIMUserConverter.java" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -94,7 +99,9 @@
       <workItem from="1642602835279" duration="123000" />
       <workItem from="1642602979709" duration="7941000" />
       <workItem from="1642690533930" duration="13943000" />
-      <workItem from="1643034143131" duration="1409000" />
+      <workItem from="1643034143131" duration="6781000" />
+      <workItem from="1643223548423" duration="532000" />
+      <workItem from="1643639508568" duration="1607000" />
     </task>
     <task id="LOCAL-00001" summary="initial commit">
       <created>1640188577589</created>
@@ -145,7 +152,14 @@
       <option name="project" value="LOCAL" />
       <updated>1642708613582</updated>
     </task>
-    <option name="localTasksCounter" value="8" />
+    <task id="LOCAL-00008" summary="Add POJOs for Schema.">
+      <created>1643049906138</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1643049906138</updated>
+    </task>
+    <option name="localTasksCounter" value="9" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -172,6 +186,7 @@
     <MESSAGE value="initial commit" />
     <MESSAGE value="Add EnterpriseUser support" />
     <MESSAGE value="Little refactoring of SCIMUser and SCIMEnterpriseUser to get a little better code reuse." />
-    <option name="LAST_COMMIT_MESSAGE" value="Little refactoring of SCIMUser and SCIMEnterpriseUser to get a little better code reuse." />
+    <MESSAGE value="Add POJOs for Schema." />
+    <option name="LAST_COMMIT_MESSAGE" value="Add POJOs for Schema." />
   </component>
 </project>
