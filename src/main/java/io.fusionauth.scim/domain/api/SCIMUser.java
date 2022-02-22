@@ -19,11 +19,11 @@ import java.net.URI;
 import java.security.cert.X509Certificate;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
+import com.fasterxml.jackson.annotation.JsonAnyGetter;
+import com.fasterxml.jackson.annotation.JsonAnySetter;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.inversoft.json.JacksonConstructor;
 import com.inversoft.json.ToString;
 
@@ -76,8 +76,24 @@ public class SCIMUser extends BaseSCIMResource {
 
   public List<X509Certificate> x509Certificates;
 
+  private Map<String, Object> extensions = new HashMap<>();
+
+  @JsonAnyGetter
+  public Map<String, Object> any() {
+    return extensions;
+  }
+
+  @JsonAnySetter
+  public void set(String name, Object value) {
+    extensions.put(name, value);
+  }
+
   @JacksonConstructor
   public SCIMUser() {
+  }
+
+  public void setExtensions(Map<String, Object> newExtensions) {
+    extensions = newExtensions;
   }
 
   @Override

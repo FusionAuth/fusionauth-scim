@@ -15,8 +15,12 @@
  */
 package io.fusionauth.scim.domain.api;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 
+import com.fasterxml.jackson.annotation.JsonAnyGetter;
+import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.inversoft.json.JacksonConstructor;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -30,9 +34,26 @@ public class SCIMEnterpriseUser extends SCIMUser {
   @JsonProperty("urn:ietf:params:scim:schemas:extension:enterprise:2.0:User")
   public SCIMEnterpriseSchemaExtension extension;
 
+  private Map<String, Object> extensions = new HashMap<>();
+
+  @JsonAnyGetter
+  public Map<String, Object> any() {
+    return extensions;
+  }
+
+  @JsonAnySetter
+  public void set(String name, Object value) {
+    extensions.put(name, value);
+  }
+
   @JacksonConstructor
   public SCIMEnterpriseUser() {
   }
+
+  public void setExtensions(Map<String, Object> newExtensions) {
+    extensions = newExtensions;
+  }
+
 
   @Override
   public boolean equals(Object o) {
