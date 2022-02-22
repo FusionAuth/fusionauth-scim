@@ -2,8 +2,11 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="03233d92-9c55-4fc6-a0a1-ca12d3c8bf0d" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/build.savant" beforeDir="false" afterPath="$PROJECT_DIR$/build.savant" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/io.fusionauth.scim/domain/api/SCIMErrorResponse.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/fusionauth-scim.iws" beforeDir="false" afterPath="$PROJECT_DIR$/fusionauth-scim.iws" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/io.fusionauth.scim/domain/api/SCIMEnterpriseUser.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/io.fusionauth.scim/domain/api/SCIMEnterpriseUser.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/io.fusionauth.scim/domain/api/SCIMGroup.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/io.fusionauth.scim/domain/api/SCIMGroup.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/io.fusionauth.scim/domain/api/SCIMUser.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/io.fusionauth.scim/domain/api/SCIMUser.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -94,7 +97,10 @@
       <workItem from="1642690533930" duration="13943000" />
       <workItem from="1643034143131" duration="6781000" />
       <workItem from="1643223548423" duration="532000" />
-      <workItem from="1643639508568" duration="2775000" />
+      <workItem from="1643639508568" duration="3375000" />
+      <workItem from="1644504480033" duration="1445000" />
+      <workItem from="1644513775505" duration="4089000" />
+      <workItem from="1645461070062" duration="3477000" />
     </task>
     <task id="LOCAL-00001" summary="initial commit">
       <created>1640188577589</created>
@@ -159,7 +165,14 @@
       <option name="project" value="LOCAL" />
       <updated>1643813300702</updated>
     </task>
-    <option name="localTasksCounter" value="10" />
+    <task id="LOCAL-00010" summary="move converters out of library to eliminate dependency on fusionauth">
+      <created>1644263044209</created>
+      <option name="number" value="00010" />
+      <option name="presentableId" value="LOCAL-00010" />
+      <option name="project" value="LOCAL" />
+      <updated>1644263044209</updated>
+    </task>
+    <option name="localTasksCounter" value="11" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
