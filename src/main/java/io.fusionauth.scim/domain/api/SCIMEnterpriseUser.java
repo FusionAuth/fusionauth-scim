@@ -15,14 +15,14 @@
  */
 package io.fusionauth.scim.domain.api;
 
+import com.fasterxml.jackson.annotation.JsonAnyGetter;
+import com.fasterxml.jackson.annotation.JsonAnySetter;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.inversoft.json.JacksonConstructor;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
-
-import com.fasterxml.jackson.annotation.JsonAnyGetter;
-import com.fasterxml.jackson.annotation.JsonAnySetter;
-import com.inversoft.json.JacksonConstructor;
-import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
  * Container for SCIM Enterprise User information.
@@ -30,11 +30,14 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * @author Brett Pontarelli
  */
 public class SCIMEnterpriseUser extends SCIMUser {
-
   @JsonProperty("urn:ietf:params:scim:schemas:extension:enterprise:2.0:User")
   public SCIMEnterpriseSchemaExtension extension;
 
   private Map<String, Object> extensions = new HashMap<>();
+
+  @JacksonConstructor
+  public SCIMEnterpriseUser() {
+  }
 
   @JsonAnyGetter
   public Map<String, Object> any() {
@@ -46,15 +49,11 @@ public class SCIMEnterpriseUser extends SCIMUser {
     extensions.put(name, value);
   }
 
-  @JacksonConstructor
-  public SCIMEnterpriseUser() {
-  }
-
   public void setExtensions(Map<String, Object> newExtensions) {
     extensions = newExtensions;
   }
 
-
+  // TODO : SCIM : All POJOS, confirm equals and hashCode and code formatting.
   @Override
   public boolean equals(Object o) {
     if (this == o) {

@@ -15,17 +15,18 @@
  */
 package io.fusionauth.scim.domain.api;
 
+import com.fasterxml.jackson.annotation.JsonAnyGetter;
+import com.fasterxml.jackson.annotation.JsonAnySetter;
+import com.inversoft.json.JacksonConstructor;
+import com.inversoft.json.ToString;
+
 import java.net.URI;
 import java.security.cert.X509Certificate;
 import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
-import java.util.*;
-
-import com.fasterxml.jackson.annotation.JsonAnyGetter;
-import com.fasterxml.jackson.annotation.JsonAnySetter;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.inversoft.json.JacksonConstructor;
-import com.inversoft.json.ToString;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
 /**
  * Container for SCIM User information.
@@ -78,6 +79,10 @@ public class SCIMUser extends BaseSCIMResource {
 
   private Map<String, Object> extensions = new HashMap<>();
 
+  @JacksonConstructor
+  public SCIMUser() {
+  }
+
   @JsonAnyGetter
   public Map<String, Object> any() {
     return extensions;
@@ -86,10 +91,6 @@ public class SCIMUser extends BaseSCIMResource {
   @JsonAnySetter
   public void set(String name, Object value) {
     extensions.put(name, value);
-  }
-
-  @JacksonConstructor
-  public SCIMUser() {
   }
 
   public void setExtensions(Map<String, Object> newExtensions) {

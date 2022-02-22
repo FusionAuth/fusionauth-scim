@@ -15,9 +15,9 @@
  */
 package io.fusionauth.scim.domain.api;
 
-import java.util.Objects;
-
 import com.inversoft.json.JacksonConstructor;
+
+import java.util.Objects;
 
 /**
  * Container for SCIM Enterprise User schema.

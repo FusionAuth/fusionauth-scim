@@ -5,15 +5,19 @@ import com.inversoft.json.JacksonConstructor;
 
 import java.util.List;
 
+// TODO : SCIM : Do we need this?
 public class SCIMResourceSchema extends BaseSCIMResource {
+  @JsonProperty("id")
+  public String schemaId;
 
-    @JsonProperty("id")
-    public String schemaId;
-    public String name;
-    public String description;
-    public List<SCIMResourceSchemaAttribute> attributes;
+  public String description;
 
-    @JacksonConstructor
-    public SCIMResourceSchema() {
-    }
+  public String name;
+
+  public List<SCIMResourceSchemaAttribute> attributes;
+
+  // TODO : SCIM : Not necessary, can be deleted
+  @JacksonConstructor
+  public SCIMResourceSchema() {
+  }
 }

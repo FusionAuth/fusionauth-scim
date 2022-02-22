@@ -15,21 +15,28 @@
  */
 package io.fusionauth.scim.domain.api;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.inversoft.json.JacksonConstructor;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.inversoft.json.JacksonConstructor;
-
 public class SCIMResourceResponse {
   public UUID id;
+
   public List<String> schemas;
+
   public String externalId;
+
   public HashMap<String, String> meta;
+
   public HashMap<String, String> name;
+
   public String userName;
+
   public List<HashMap<String, String>> phoneNumbers;
+
   public List<HashMap<String, Object>> emails;
 
   @JsonProperty("urn:ietf:params:scim:schemas:extension:enterprise:2.0:User")

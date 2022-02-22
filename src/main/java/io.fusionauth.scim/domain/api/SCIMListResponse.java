@@ -15,9 +15,9 @@
  */
 package io.fusionauth.scim.domain.api;
 
-import java.util.List;
-
 import com.inversoft.json.JacksonConstructor;
+
+import java.util.List;
 
 public class SCIMListResponse {
   public int totalResults;

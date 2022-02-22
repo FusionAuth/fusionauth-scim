@@ -15,8 +15,6 @@
  */
 package io.fusionauth.scim.domain.api;
 
-import java.time.ZonedDateTime;
-
 /**
  * Container for SCIM Meta data
  *

@@ -1,11 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="03233d92-9c55-4fc6-a0a1-ca12d3c8bf0d" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/src/main/java/io.fusionauth.scim/domain/api/SCIMErrorResponse.java" afterDir="false" />
+    <list default="true" id="03233d92-9c55-4fc6-a0a1-ca12d3c8bf0d" name="Changes" comment="move converters out of library to eliminate dependency on fusionauth">
+      <change beforePath="$PROJECT_DIR$/build.savant" beforeDir="false" afterPath="$PROJECT_DIR$/build.savant" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/fusionauth-scim.ipr" beforeDir="false" afterPath="$PROJECT_DIR$/fusionauth-scim.ipr" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/fusionauth-scim.iws" beforeDir="false" afterPath="$PROJECT_DIR$/fusionauth-scim.iws" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/io.fusionauth.scim/domain/api/BaseSCIMResource.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/io.fusionauth.scim/domain/api/BaseSCIMResource.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/io.fusionauth.scim/domain/api/SCIMEnterpriseSchemaExtension.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/io.fusionauth.scim/domain/api/SCIMEnterpriseSchemaExtension.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/io.fusionauth.scim/domain/api/SCIMEnterpriseUser.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/io.fusionauth.scim/domain/api/SCIMEnterpriseUser.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/io.fusionauth.scim/domain/api/SCIMErrorResponse.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/io.fusionauth.scim/domain/api/SCIMErrorResponse.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/io.fusionauth.scim/domain/api/SCIMGroup.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/io.fusionauth.scim/domain/api/SCIMGroup.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/io.fusionauth.scim/domain/api/SCIMListResponse.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/io.fusionauth.scim/domain/api/SCIMListResponse.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/io.fusionauth.scim/domain/api/SCIMMeta.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/io.fusionauth.scim/domain/api/SCIMMeta.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/io.fusionauth.scim/domain/api/SCIMResourceResponse.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/io.fusionauth.scim/domain/api/SCIMResourceResponse.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/io.fusionauth.scim/domain/api/SCIMResourceSchema.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/io.fusionauth.scim/domain/api/SCIMResourceSchema.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/io.fusionauth.scim/domain/api/SCIMResourceSchemaAttribute.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/io.fusionauth.scim/domain/api/SCIMResourceSchemaAttribute.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/io.fusionauth.scim/domain/api/SCIMSchemasResponse.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/io.fusionauth.scim/domain/api/SCIMSchemasResponse.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/io.fusionauth.scim/domain/api/SCIMServiceProviderConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/io.fusionauth.scim/domain/api/SCIMServiceProviderConfig.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/io.fusionauth.scim/domain/api/SCIMUser.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/io.fusionauth.scim/domain/api/SCIMUser.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -22,6 +33,7 @@
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+    <option name="UPDATE_TYPE" value="REBASE" />
   </component>
   <component name="GitSEFilterConfiguration">
     <file-type-list>
@@ -48,6 +60,7 @@
     <property name="project.structure.last.edited" value="Modules" />
     <property name="project.structure.proportion" value="0.15" />
     <property name="project.structure.side.proportion" value="0.35977012" />
+    <property name="settings.editor.selected.configurable" value="preferences.sourceCode.Java" />
   </component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
@@ -101,6 +114,8 @@
       <workItem from="1644504480033" duration="1445000" />
       <workItem from="1644513775505" duration="4089000" />
       <workItem from="1645461070062" duration="3477000" />
+      <workItem from="1645553853570" duration="4744000" />
+      <workItem from="1645566896194" duration="284000" />
     </task>
     <task id="LOCAL-00001" summary="initial commit">
       <created>1640188577589</created>

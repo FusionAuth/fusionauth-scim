@@ -15,16 +15,19 @@
  */
 package io.fusionauth.scim.domain.api;
 
+import com.inversoft.json.JacksonConstructor;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 
-import com.inversoft.json.JacksonConstructor;
-
 public class SCIMSchemasResponse {
   public UUID id;
+
   public List<String> schemas;
+
   public String externalId;
+
   public HashMap<String, String> meta;
 
   @JacksonConstructor

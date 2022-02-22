@@ -36,13 +36,8 @@ project(group: "io.fusionauth", name: "fusionauth-scim", version: "1.0.0-{integr
       dependency(id: "com.fasterxml.jackson.core:jackson-annotations:${jacksonVersion}")
       dependency(id: "com.fasterxml.jackson.core:jackson-core:${jacksonVersion}")
       dependency(id: "com.fasterxml.jackson.core:jackson-databind:${jacksonVersion}")
+      // TODO : SCIM : Using this for ToString.toString(), we could copy that code, or not use it if we want to remove that dep.
       dependency(id: "com.inversoft:jackson5:${jackson5Version}")
-    }
-    group(name: "runtime") {
-    }
-    group(name: "test-compile") {
-      dependency(id: "com.google.guava:guava:${guavaVersion}", skipCompatibilityCheck: true)
-      dependency(id: "org.testng:testng:${testngVersion}")
     }
   }
 

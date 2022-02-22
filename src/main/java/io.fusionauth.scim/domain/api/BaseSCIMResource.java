@@ -15,13 +15,13 @@
  */
 package io.fusionauth.scim.domain.api;
 
-import java.util.List;
-import java.util.Objects;
-import java.util.UUID;
-
 import com.fasterxml.jackson.annotation.JsonSetter;
 import com.fasterxml.jackson.annotation.Nulls;
 import com.inversoft.json.JacksonConstructor;
+
+import java.util.List;
+import java.util.Objects;
+import java.util.UUID;
 
 /**
  * Base class for all SCIM domain objects.
@@ -29,12 +29,11 @@ import com.inversoft.json.JacksonConstructor;
  * @author Brett Pontarelli
  */
 public abstract class BaseSCIMResource {
-
   public String externalId;
 
   public UUID id;
 
-  @JsonSetter(nulls=Nulls.SKIP)
+  @JsonSetter(nulls = Nulls.SKIP)
   public SCIMMeta meta = new SCIMMeta();
 
   public List<String> schemas;

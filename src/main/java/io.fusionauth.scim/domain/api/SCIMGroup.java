@@ -15,14 +15,14 @@
  */
 package io.fusionauth.scim.domain.api;
 
+import com.fasterxml.jackson.annotation.JsonAnyGetter;
+import com.fasterxml.jackson.annotation.JsonAnySetter;
+import com.inversoft.json.JacksonConstructor;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-
-import com.fasterxml.jackson.annotation.JsonAnyGetter;
-import com.fasterxml.jackson.annotation.JsonAnySetter;
-import com.inversoft.json.JacksonConstructor;
 
 /**
  * Container for SCIM Group information.
@@ -37,6 +37,10 @@ public class SCIMGroup extends BaseSCIMResource {
 
   private Map<String, Object> extensions = new HashMap<>();
 
+  @JacksonConstructor
+  public SCIMGroup() {
+  }
+
   @JsonAnyGetter
   public Map<String, Object> any() {
     return extensions;
@@ -45,10 +49,6 @@ public class SCIMGroup extends BaseSCIMResource {
   @JsonAnySetter
   public void set(String name, Object value) {
     extensions.put(name, value);
-  }
-
-  @JacksonConstructor
-  public SCIMGroup() {
   }
 
   public void setExtensions(Map<String, Object> newExtensions) {
