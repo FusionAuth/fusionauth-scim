@@ -29,7 +29,7 @@ import io.fusionauth.domain.utils.ToString;
  *
  * @author Brett Pontarelli
  */
-public class SCIMGroup extends BaseSCIMResource implements Buildable<SCIMGroup> {
+public class SCIMGroup extends BaseSCIMResource implements SCIMResponse, Buildable<SCIMGroup> {
   public String displayName;
 
   public List<SCIMMember> members;
