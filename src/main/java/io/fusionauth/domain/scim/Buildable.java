@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021, FusionAuth, All Rights Reserved
+ * Copyright (c) 2022, FusionAuth, All Rights Reserved
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,23 +13,17 @@
  * either express or implied. See the License for the specific
  * language governing permissions and limitations under the License.
  */
-package io.fusionauth.scim.domain.api;
+package io.fusionauth.domain.scim;
+
+import java.util.function.Consumer;
 
 /**
- * @author Brett Pontarelli
+ * @author Daniel DeGroff
  */
-public class SCIMUserAddress {
-  public String country;
-
-  public String formatted;
-
-  public String locality;
-
-  public String postalCode;
-
-  public boolean primary;  // Not exactly in spec?, but in the example?
-
-  public String region;
-
-  public String streetAddress;
+@SuppressWarnings("unchecked")
+public interface Buildable<T> {
+  default T with(Consumer<T> consumer) {
+    consumer.accept((T) this);
+    return (T) this;
+  }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021, FusionAuth, All Rights Reserved
+ * Copyright (c) 2022, FusionAuth, All Rights Reserved
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,34 +13,29 @@
  * either express or implied. See the License for the specific
  * language governing permissions and limitations under the License.
  */
-package io.fusionauth.scim.domain.api;
-
-import com.inversoft.json.JacksonConstructor;
+package io.fusionauth.domain.scim;
 
 import java.util.Objects;
+
+import io.fusionauth.domain.utils.ToString;
 
 /**
  * Container for SCIM Enterprise User schema.
  *
  * @author Rob Davis
  */
-public class SCIMEnterpriseSchemaExtension {
+public class SCIMEnterpriseSchemaExtension implements Buildable<SCIMEnterpriseSchemaExtension> {
+  public String costCenter;
 
-  public String costCenter = "";
+  public String department;
 
-  public String department = "";
+  public String division;
 
-  public String division = "";
-
-  public String employeeNumber = "";
+  public String employeeNumber;
 
   public SCIMMember manager;
 
-  public String organization = "";
-
-  @JacksonConstructor
-  public SCIMEnterpriseSchemaExtension() {
-  }
+  public String organization;
 
   @Override
   public boolean equals(Object o) {
@@ -57,5 +52,10 @@ public class SCIMEnterpriseSchemaExtension {
   @Override
   public int hashCode() {
     return Objects.hash(costCenter, department, division, employeeNumber, manager, organization);
+  }
+
+  @Override
+  public String toString() {
+    return ToString.toString(this);
   }
 }

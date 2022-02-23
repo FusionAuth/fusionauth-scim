@@ -13,12 +13,7 @@
  * either express or implied. See the License for the specific
  * language governing permissions and limitations under the License.
  */
-package io.fusionauth.scim.domain.api;
-
-import com.fasterxml.jackson.annotation.JsonAnyGetter;
-import com.fasterxml.jackson.annotation.JsonAnySetter;
-import com.inversoft.json.JacksonConstructor;
-import com.inversoft.json.ToString;
+package io.fusionauth.domain.scim;
 
 import java.net.URI;
 import java.security.cert.X509Certificate;
@@ -28,13 +23,16 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+import com.fasterxml.jackson.annotation.JsonAnyGetter;
+import com.fasterxml.jackson.annotation.JsonAnySetter;
+import io.fusionauth.domain.utils.ToString;
+
 /**
  * Container for SCIM User information.
  *
  * @author Brett Pontarelli
  */
-public class SCIMUser extends BaseSCIMResource {
-
+public class SCIMUser extends BaseSCIMResource implements Buildable<SCIMUser> {
   public boolean active;
 
   public List<SCIMUserAddress> addresses;
@@ -79,22 +77,9 @@ public class SCIMUser extends BaseSCIMResource {
 
   private Map<String, Object> extensions = new HashMap<>();
 
-  @JacksonConstructor
-  public SCIMUser() {
-  }
-
   @JsonAnyGetter
   public Map<String, Object> any() {
     return extensions;
-  }
-
-  @JsonAnySetter
-  public void set(String name, Object value) {
-    extensions.put(name, value);
-  }
-
-  public void setExtensions(Map<String, Object> newExtensions) {
-    extensions = newExtensions;
   }
 
   @Override
@@ -117,6 +102,16 @@ public class SCIMUser extends BaseSCIMResource {
     return Objects.hash(super.hashCode(), active, displayName, emails, groups, name, phoneNumbers, photos, preferredLanguage, timezone, userName);
   }
 
+  @JsonAnySetter
+  public void set(String name, Object value) {
+    extensions.put(name, value);
+  }
+
+  public void setExtensions(Map<String, Object> newExtensions) {
+    extensions = newExtensions;
+  }
+
+  @Override
   public String toString() {
     return ToString.toString(this);
   }

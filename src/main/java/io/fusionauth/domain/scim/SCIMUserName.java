@@ -13,34 +13,27 @@
  * either express or implied. See the License for the specific
  * language governing permissions and limitations under the License.
  */
-package io.fusionauth.scim.domain.api;
+package io.fusionauth.domain.scim;
 
-import com.fasterxml.jackson.annotation.JsonSetter;
-import com.fasterxml.jackson.annotation.Nulls;
-import com.inversoft.json.JacksonConstructor;
-
-import java.util.List;
 import java.util.Objects;
-import java.util.UUID;
+
+import io.fusionauth.domain.utils.ToString;
 
 /**
- * Base class for all SCIM domain objects.
- *
  * @author Brett Pontarelli
  */
-public abstract class BaseSCIMResource {
-  public String externalId;
+public class SCIMUserName implements Buildable<SCIMUserName> {
+  public String familyName;
 
-  public UUID id;
+  public String formatted;
 
-  @JsonSetter(nulls = Nulls.SKIP)
-  public SCIMMeta meta = new SCIMMeta();
+  public String givenName;
 
-  public List<String> schemas;
+  public String honorificPrefix;
 
-  @JacksonConstructor
-  public BaseSCIMResource() {
-  }
+  public String honorificSuffix;
+
+  public String middleName;
 
   @Override
   public boolean equals(Object o) {
@@ -50,13 +43,17 @@ public abstract class BaseSCIMResource {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    BaseSCIMResource that = (BaseSCIMResource) o;
-    return Objects.equals(externalId, that.externalId) && Objects.equals(id, that.id) && Objects.equals(meta, that.meta) && Objects.equals(schemas, that.schemas);
+    SCIMUserName that = (SCIMUserName) o;
+    return Objects.equals(familyName, that.familyName) && Objects.equals(formatted, that.formatted) && Objects.equals(givenName, that.givenName) && Objects.equals(honorificPrefix, that.honorificPrefix) && Objects.equals(honorificSuffix, that.honorificSuffix) && Objects.equals(middleName, that.middleName);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(externalId, id, meta, schemas);
+    return Objects.hash(familyName, formatted, givenName, honorificPrefix, honorificSuffix, middleName);
   }
 
+  @Override
+  public String toString() {
+    return ToString.toString(this);
+  }
 }

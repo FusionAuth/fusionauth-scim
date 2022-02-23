@@ -13,15 +13,13 @@
  * either express or implied. See the License for the specific
  * language governing permissions and limitations under the License.
  */
-package io.fusionauth.scim.domain.api;
+package io.fusionauth.domain.scim;
 
 /**
- * @author Brett Pontarelli
+ * @author Rob Davis
  */
-public class SCIMUserIMS {
-  public boolean primary;
-
-  public String type;
-
-  public String value;
+public enum SCIMResourceType {
+  Users,
+  EnterpriseUsers,
+  Groups
 }

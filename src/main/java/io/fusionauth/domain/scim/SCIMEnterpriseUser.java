@@ -13,16 +13,16 @@
  * either express or implied. See the License for the specific
  * language governing permissions and limitations under the License.
  */
-package io.fusionauth.scim.domain.api;
-
-import com.fasterxml.jackson.annotation.JsonAnyGetter;
-import com.fasterxml.jackson.annotation.JsonAnySetter;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.inversoft.json.JacksonConstructor;
+package io.fusionauth.domain.scim;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+
+import com.fasterxml.jackson.annotation.JsonAnyGetter;
+import com.fasterxml.jackson.annotation.JsonAnySetter;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import io.fusionauth.domain.utils.ToString;
 
 /**
  * Container for SCIM Enterprise User information.
@@ -35,13 +35,29 @@ public class SCIMEnterpriseUser extends SCIMUser {
 
   private Map<String, Object> extensions = new HashMap<>();
 
-  @JacksonConstructor
-  public SCIMEnterpriseUser() {
-  }
-
   @JsonAnyGetter
   public Map<String, Object> any() {
     return extensions;
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+    if (!super.equals(o)) {
+      return false;
+    }
+    SCIMEnterpriseUser that = (SCIMEnterpriseUser) o;
+    return Objects.equals(extension, that.extension) && Objects.equals(extensions, that.extensions);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(super.hashCode(), extension, extensions);
   }
 
   @JsonAnySetter
@@ -53,21 +69,8 @@ public class SCIMEnterpriseUser extends SCIMUser {
     extensions = newExtensions;
   }
 
-  // TODO : SCIM : All POJOS, confirm equals and hashCode and code formatting.
   @Override
-  public boolean equals(Object o) {
-    if (this == o) {
-      return true;
-    }
-    if (o == null || getClass() != o.getClass()) {
-      return false;
-    }
-    SCIMEnterpriseUser that = (SCIMEnterpriseUser) o;
-    return Objects.equals(extension, that.extension);
-  }
-
-  @Override
-  public int hashCode() {
-    return Objects.hash(extension);
+  public String toString() {
+    return ToString.toString(this);
   }
 }

@@ -13,37 +13,52 @@
  * either express or implied. See the License for the specific
  * language governing permissions and limitations under the License.
  */
-package io.fusionauth.scim.domain.api;
-
-import com.fasterxml.jackson.annotation.JsonAnyGetter;
-import com.fasterxml.jackson.annotation.JsonAnySetter;
-import com.inversoft.json.JacksonConstructor;
+package io.fusionauth.domain.scim;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+import com.fasterxml.jackson.annotation.JsonAnyGetter;
+import com.fasterxml.jackson.annotation.JsonAnySetter;
+import io.fusionauth.domain.utils.ToString;
+
 /**
  * Container for SCIM Group information.
  *
  * @author Brett Pontarelli
  */
-public class SCIMGroup extends BaseSCIMResource {
-
+public class SCIMGroup extends BaseSCIMResource implements Buildable<SCIMGroup> {
   public String displayName;
 
   public List<SCIMMember> members;
 
   private Map<String, Object> extensions = new HashMap<>();
 
-  @JacksonConstructor
-  public SCIMGroup() {
-  }
-
   @JsonAnyGetter
   public Map<String, Object> any() {
     return extensions;
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+    if (!super.equals(o)) {
+      return false;
+    }
+    SCIMGroup scimGroup = (SCIMGroup) o;
+    return Objects.equals(displayName, scimGroup.displayName) && Objects.equals(members, scimGroup.members) && Objects.equals(extensions, scimGroup.extensions);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(super.hashCode(), displayName, members, extensions);
   }
 
   @JsonAnySetter
@@ -56,19 +71,7 @@ public class SCIMGroup extends BaseSCIMResource {
   }
 
   @Override
-  public boolean equals(Object o) {
-    if (this == o) {
-      return true;
-    }
-    if (o == null || getClass() != o.getClass()) {
-      return false;
-    }
-    SCIMGroup scimGroup = (SCIMGroup) o;
-    return Objects.equals(displayName, scimGroup.displayName) && Objects.equals(members, scimGroup.members);
-  }
-
-  @Override
-  public int hashCode() {
-    return Objects.hash(displayName, members);
+  public String toString() {
+    return ToString.toString(this);
   }
 }

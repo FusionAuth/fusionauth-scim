@@ -13,20 +13,45 @@
  * either express or implied. See the License for the specific
  * language governing permissions and limitations under the License.
  */
-package io.fusionauth.scim.domain.api;
+package io.fusionauth.domain.scim;
+
+import java.util.Objects;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import io.fusionauth.domain.utils.ToString;
 
 /**
  * Container for SCIM Member information
  *
  * @author Brett Pontarelli
  */
-public class SCIMMember {
-  public String displayName = "";
+public class SCIMMember implements Buildable<SCIMMember> {
+  public String displayName;
 
   @JsonProperty("$ref")
-  public String ref = "";
+  public String ref;
 
-  public String value = "";
+  public String value;
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+    SCIMMember that = (SCIMMember) o;
+    return Objects.equals(displayName, that.displayName) && Objects.equals(ref, that.ref) && Objects.equals(value, that.value);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(displayName, ref, value);
+  }
+
+  @Override
+  public String toString() {
+    return ToString.toString(this);
+  }
 }

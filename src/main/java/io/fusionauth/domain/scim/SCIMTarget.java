@@ -13,26 +13,17 @@
  * either express or implied. See the License for the specific
  * language governing permissions and limitations under the License.
  */
-package io.fusionauth.scim.domain.api;
+package io.fusionauth.domain.scim;
 
-import com.inversoft.json.JacksonConstructor;
-
-import java.util.List;
-
-public class SCIMListResponse {
-  public int totalResults;
-
-  public int startIndex;
-
-  public int itemsPerPage;
-
-  public List<String> schemas;
-
-  public String schema;
-
-  public List<Object> Resources;
-
-  @JacksonConstructor
-  public SCIMListResponse() {
-  }
+/**
+ * @author Rob Davis
+ */
+public enum SCIMTarget {
+  Users,
+  EnterpriseUsers,
+  Groups,
+  Bulk,
+  ServiceProviderConfig,
+  ResourceTypes,
+  Schemas
 }

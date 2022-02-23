@@ -1,6 +1,4 @@
-package io.fusionauth.scim.domain.api;
-
-import com.inversoft.json.JacksonConstructor;
+package io.fusionauth.domain.scim;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -8,13 +6,9 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class SCIMServiceProviderConfig extends BaseSCIMResource {
+public class SCIMServiceProviderConfig extends BaseSCIMResource implements Buildable<SCIMServiceProviderConfig> {
 
-  public String documentationUri = "http://example.com/help/scim.html";
-
-  public Map<String, Object> patch = Stream.of(new Object[][]{
-      {"supported", false}
-  }).collect(Collectors.toMap(data -> (String) data[0], data -> data[1]));
+  public ArrayList<Map<String, Object>> authenticationSchemes;
 
   public Map<String, Object> bulk = Stream.of(new Object[][]{
       {"supported", false},
@@ -22,12 +16,22 @@ public class SCIMServiceProviderConfig extends BaseSCIMResource {
       {"maxPayloadSize", 1048576}
   }).collect(Collectors.toMap(data -> (String) data[0], data -> data[1]));
 
+  public Map<String, Object> changePassword = Stream.of(new Object[][]{
+      {"supported", false}
+  }).collect(Collectors.toMap(data -> (String) data[0], data -> data[1]));
+
+  public String documentationUri = "http://example.com/help/scim.html";
+
+  public Map<String, Object> etag = Stream.of(new Object[][]{
+      {"supported", false}
+  }).collect(Collectors.toMap(data -> (String) data[0], data -> data[1]));
+
   public Map<String, Object> filter = Stream.of(new Object[][]{
       {"supported", false},
       {"maxResults", 200}
   }).collect(Collectors.toMap(data -> (String) data[0], data -> data[1]));
 
-  public Map<String, Object> changePassword = Stream.of(new Object[][]{
+  public Map<String, Object> patch = Stream.of(new Object[][]{
       {"supported", false}
   }).collect(Collectors.toMap(data -> (String) data[0], data -> data[1]));
 
@@ -35,13 +39,6 @@ public class SCIMServiceProviderConfig extends BaseSCIMResource {
       {"supported", false}
   }).collect(Collectors.toMap(data -> (String) data[0], data -> data[1]));
 
-  public Map<String, Object> etag = Stream.of(new Object[][]{
-      {"supported", false}
-  }).collect(Collectors.toMap(data -> (String) data[0], data -> data[1]));
-
-  public ArrayList<Map<String, Object>> authenticationSchemes;
-
-  @JacksonConstructor
   public SCIMServiceProviderConfig() {
     schemas = new ArrayList<>(Collections.singletonList("urn:ietf:params:scim:schemas:core:2.0:ServiceProviderConfig"));
     SCIMMeta configMeta = new SCIMMeta();

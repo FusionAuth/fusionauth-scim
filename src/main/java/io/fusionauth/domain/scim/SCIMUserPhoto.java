@@ -13,15 +13,41 @@
  * either express or implied. See the License for the specific
  * language governing permissions and limitations under the License.
  */
-package io.fusionauth.scim.domain.api;
+package io.fusionauth.domain.scim;
+
+import java.util.Objects;
+
+import io.fusionauth.domain.utils.ToString;
 
 /**
  * @author Brett Pontarelli
  */
-public class SCIMUserEmail {
+public class SCIMUserPhoto implements Buildable<SCIMUserPhoto> {
   public boolean primary;
 
   public String type;
 
   public String value;
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+    SCIMUserPhoto that = (SCIMUserPhoto) o;
+    return primary == that.primary && Objects.equals(type, that.type) && Objects.equals(value, that.value);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(primary, type, value);
+  }
+
+  @Override
+  public String toString() {
+    return ToString.toString(this);
+  }
 }
