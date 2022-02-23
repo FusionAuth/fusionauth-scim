@@ -23,7 +23,7 @@ import io.fusionauth.domain.utils.ToString;
 /**
  * @author Rob Davis
  */
-public class SCIMListResponse implements Buildable<SCIMListResponse> {
+public class SCIMListResponse implements SCIMResponse, Buildable<SCIMListResponse> {
   public List<Object> Resources;
 
   public int itemsPerPage;
