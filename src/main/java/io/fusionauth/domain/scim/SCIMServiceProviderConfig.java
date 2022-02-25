@@ -58,6 +58,8 @@ public class SCIMServiceProviderConfig extends BaseSCIMResource implements Build
       {"supported", false}
   }).collect(Collectors.toMap(data -> (String) data[0], data -> data[1]));
 
+  // TODO : SCIM : Are these URLs placeholders that the user of this library needs to set?
+  // TODO : SCIM : Are these URLs placeholders that the user of this library needs to set?
   public SCIMServiceProviderConfig() {
     schemas = new ArrayList<>(Collections.singletonList("urn:ietf:params:scim:schemas:core:2.0:ServiceProviderConfig"));
     SCIMMeta configMeta = new SCIMMeta();
