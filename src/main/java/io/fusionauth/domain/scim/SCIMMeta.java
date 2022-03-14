@@ -44,7 +44,11 @@ public class SCIMMeta implements Buildable<SCIMMeta> {
       return false;
     }
     SCIMMeta scimMeta = (SCIMMeta) o;
-    return Objects.equals(created, scimMeta.created) && Objects.equals(lastModified, scimMeta.lastModified) && Objects.equals(location, scimMeta.location) && Objects.equals(resourceType, scimMeta.resourceType) && Objects.equals(version, scimMeta.version);
+    return Objects.equals(created, scimMeta.created) &&
+           Objects.equals(lastModified, scimMeta.lastModified) &&
+           Objects.equals(location, scimMeta.location) &&
+           Objects.equals(resourceType, scimMeta.resourceType) &&
+           Objects.equals(version, scimMeta.version);
   }
 
   @Override

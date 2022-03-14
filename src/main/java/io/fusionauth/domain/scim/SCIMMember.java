@@ -42,7 +42,9 @@ public class SCIMMember implements Buildable<SCIMMember> {
       return false;
     }
     SCIMMember that = (SCIMMember) o;
-    return Objects.equals(displayName, that.displayName) && Objects.equals(ref, that.ref) && Objects.equals(value, that.value);
+    return Objects.equals(displayName, that.displayName) &&
+           Objects.equals(ref, that.ref) &&
+           Objects.equals(value, that.value);
   }
 
   @Override

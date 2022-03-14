@@ -19,8 +19,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
-import com.fasterxml.jackson.annotation.JsonSetter;
-import com.fasterxml.jackson.annotation.Nulls;
 import io.fusionauth.domain.utils.ToString;
 
 /**
@@ -33,9 +31,7 @@ public abstract class BaseSCIMResource {
 
   public UUID id;
 
-  // TODO : SCIM : Do we need this?
-  @JsonSetter(nulls = Nulls.SKIP)
-  public SCIMMeta meta = new SCIMMeta();
+  public SCIMMeta meta;
 
   public List<String> schemas;
 
@@ -48,7 +44,10 @@ public abstract class BaseSCIMResource {
       return false;
     }
     BaseSCIMResource that = (BaseSCIMResource) o;
-    return Objects.equals(externalId, that.externalId) && Objects.equals(id, that.id) && Objects.equals(meta, that.meta) && Objects.equals(schemas, that.schemas);
+    return Objects.equals(externalId, that.externalId) &&
+           Objects.equals(id, that.id) &&
+           Objects.equals(meta, that.meta) &&
+           Objects.equals(schemas, that.schemas);
   }
 
   @Override

@@ -31,7 +31,7 @@ public class SCIMUserAddress implements Buildable<SCIMUserAddress> {
 
   public String postalCode;
 
-  public boolean primary;  // Not exactly in spec?, but in the example?
+  public boolean primary;
 
   public String region;
 

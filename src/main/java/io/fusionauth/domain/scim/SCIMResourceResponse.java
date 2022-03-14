@@ -15,8 +15,8 @@
  */
 package io.fusionauth.domain.scim;
 
-import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -27,20 +27,20 @@ import io.fusionauth.domain.utils.ToString;
  * @author Rob Davis
  */
 public class SCIMResourceResponse implements SCIMResponse, Buildable<SCIMResourceResponse> {
-  public List<HashMap<String, Object>> emails;
+  public List<Map<String, Object>> emails;
 
   @JsonProperty("urn:ietf:params:scim:schemas:extension:enterprise:2.0:User")
-  public HashMap<String, Object> enterpriseUserExtension;
+  public Map<String, Object> enterpriseUserExtension;
 
   public String externalId;
 
   public UUID id;
 
-  public HashMap<String, String> meta;
+  public Map<String, String> meta;
 
-  public HashMap<String, String> name;
+  public Map<String, String> name;
 
-  public List<HashMap<String, String>> phoneNumbers;
+  public List<Map<String, String>> phoneNumbers;
 
   public List<String> schemas;
 
@@ -55,7 +55,15 @@ public class SCIMResourceResponse implements SCIMResponse, Buildable<SCIMResourc
       return false;
     }
     SCIMResourceResponse that = (SCIMResourceResponse) o;
-    return Objects.equals(id, that.id) && Objects.equals(schemas, that.schemas) && Objects.equals(externalId, that.externalId) && Objects.equals(meta, that.meta) && Objects.equals(name, that.name) && Objects.equals(userName, that.userName) && Objects.equals(phoneNumbers, that.phoneNumbers) && Objects.equals(emails, that.emails) && Objects.equals(enterpriseUserExtension, that.enterpriseUserExtension);
+    return Objects.equals(id, that.id) &&
+           Objects.equals(schemas, that.schemas) &&
+           Objects.equals(externalId, that.externalId) &&
+           Objects.equals(meta, that.meta) &&
+           Objects.equals(name, that.name) &&
+           Objects.equals(userName, that.userName) &&
+           Objects.equals(phoneNumbers, that.phoneNumbers) &&
+           Objects.equals(emails, that.emails) &&
+           Objects.equals(enterpriseUserExtension, that.enterpriseUserExtension);
   }
 
   @Override

@@ -46,7 +46,12 @@ public class SCIMEnterpriseSchemaExtension implements Buildable<SCIMEnterpriseSc
       return false;
     }
     SCIMEnterpriseSchemaExtension that = (SCIMEnterpriseSchemaExtension) o;
-    return Objects.equals(costCenter, that.costCenter) && Objects.equals(department, that.department) && Objects.equals(division, that.division) && Objects.equals(employeeNumber, that.employeeNumber) && Objects.equals(manager, that.manager) && Objects.equals(organization, that.organization);
+    return Objects.equals(costCenter, that.costCenter) &&
+           Objects.equals(department, that.department) &&
+           Objects.equals(division, that.division) &&
+           Objects.equals(employeeNumber, that.employeeNumber) &&
+           Objects.equals(manager, that.manager) &&
+           Objects.equals(organization, that.organization);
   }
 
   @Override

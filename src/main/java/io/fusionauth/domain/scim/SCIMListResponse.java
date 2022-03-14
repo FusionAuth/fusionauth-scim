@@ -45,12 +45,17 @@ public class SCIMListResponse implements SCIMResponse, Buildable<SCIMListRespons
       return false;
     }
     SCIMListResponse that = (SCIMListResponse) o;
-    return totalResults == that.totalResults && startIndex == that.startIndex && itemsPerPage == that.itemsPerPage && Objects.equals(schemas, that.schemas) && Objects.equals(schema, that.schema) && Objects.equals(Resources, that.Resources);
+    return itemsPerPage == that.itemsPerPage &&
+           startIndex == that.startIndex &&
+           totalResults == that.totalResults &&
+           Objects.equals(Resources, that.Resources) &&
+           Objects.equals(schema, that.schema) &&
+           Objects.equals(schemas, that.schemas);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(totalResults, startIndex, itemsPerPage, schemas, schema, Resources);
+    return Objects.hash(Resources, itemsPerPage, schema, schemas, startIndex, totalResults);
   }
 
   @Override

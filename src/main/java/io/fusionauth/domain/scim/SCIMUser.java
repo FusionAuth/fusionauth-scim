@@ -25,6 +25,7 @@ import java.util.Objects;
 
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import io.fusionauth.domain.utils.ToString;
 
 /**
@@ -61,7 +62,8 @@ public class SCIMUser extends BaseSCIMResource implements SCIMResponse, Buildabl
 
   public String preferredLanguage;
 
-  public URI profileUrl;
+  @JsonProperty("profileUrl")
+  public URI profileURL;
 
   public List<String> roles;
 

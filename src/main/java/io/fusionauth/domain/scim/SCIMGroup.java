@@ -53,7 +53,9 @@ public class SCIMGroup extends BaseSCIMResource implements SCIMResponse, Buildab
       return false;
     }
     SCIMGroup scimGroup = (SCIMGroup) o;
-    return Objects.equals(displayName, scimGroup.displayName) && Objects.equals(members, scimGroup.members) && Objects.equals(extensions, scimGroup.extensions);
+    return Objects.equals(displayName, scimGroup.displayName) &&
+           Objects.equals(members, scimGroup.members) &&
+           Objects.equals(extensions, scimGroup.extensions);
   }
 
   @Override

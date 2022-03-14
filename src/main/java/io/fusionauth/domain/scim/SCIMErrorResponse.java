@@ -15,7 +15,6 @@
  */
 package io.fusionauth.domain.scim;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
@@ -28,7 +27,7 @@ import io.fusionauth.domain.utils.ToString;
 public class SCIMErrorResponse implements SCIMResponse, Buildable<SCIMErrorResponse> {
   public String detail;
 
-  public List<String> schemas = new ArrayList<>(Collections.singletonList("urn:ietf:params:scim:api:messages:2.0:Error"));
+  public List<String> schemas = Collections.singletonList("urn:ietf:params:scim:api:messages:2.0:Error");
 
   public String scimType;
 
@@ -43,12 +42,15 @@ public class SCIMErrorResponse implements SCIMResponse, Buildable<SCIMErrorRespo
       return false;
     }
     SCIMErrorResponse that = (SCIMErrorResponse) o;
-    return Objects.equals(schemas, that.schemas) && Objects.equals(detail, that.detail) && Objects.equals(scimType, that.scimType) && Objects.equals(status, that.status);
+    return Objects.equals(detail, that.detail) &&
+           Objects.equals(schemas, that.schemas) &&
+           Objects.equals(scimType, that.scimType) &&
+           Objects.equals(status, that.status);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(schemas, detail, scimType, status);
+    return Objects.hash(detail, schemas, scimType, status);
   }
 
   @Override
