@@ -16,9 +16,13 @@
 package io.fusionauth.domain.scim;
 
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
+import com.fasterxml.jackson.annotation.JsonAnyGetter;
+import com.fasterxml.jackson.annotation.JsonAnySetter;
 import io.fusionauth.domain.utils.ToString;
 
 /**
@@ -33,6 +37,13 @@ public class SCIMErrorResponse implements SCIMResponse, Buildable<SCIMErrorRespo
 
   public String status;
 
+  private Map<String, Object> extensions = new HashMap<>();
+
+  @JsonAnyGetter
+  public Map<String, Object> any() {
+    return extensions;
+  }
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -45,12 +56,18 @@ public class SCIMErrorResponse implements SCIMResponse, Buildable<SCIMErrorRespo
     return Objects.equals(detail, that.detail) &&
            Objects.equals(schemas, that.schemas) &&
            Objects.equals(scimType, that.scimType) &&
-           Objects.equals(status, that.status);
+           Objects.equals(status, that.status) &&
+           Objects.equals(extensions, that.extensions);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(detail, schemas, scimType, status);
+    return Objects.hash(detail, schemas, scimType, status, extensions);
+  }
+
+  @JsonAnySetter
+  public void set(String name, Object value) {
+    extensions.put(name, value);
   }
 
   @Override
