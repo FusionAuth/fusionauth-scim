@@ -27,7 +27,7 @@ import io.fusionauth.domain.utils.ToString;
 public class SCIMErrorResponse implements SCIMResponse, Buildable<SCIMErrorResponse> {
   public String detail;
 
-  public List<String> schemas = Collections.singletonList("urn:ietf:params:scim:api:messages:2.0:Error");
+  public List<String> schemas = Collections.singletonList(SCIMSchemas.Error);
 
   public String scimType;
 

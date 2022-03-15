@@ -29,7 +29,7 @@ import io.fusionauth.domain.utils.ToString;
 public class SCIMResourceResponse implements SCIMResponse, Buildable<SCIMResourceResponse> {
   public List<Map<String, Object>> emails;
 
-  @JsonProperty("urn:ietf:params:scim:schemas:extension:enterprise:2.0:User")
+  @JsonProperty(SCIMSchemas.User)
   public Map<String, Object> enterpriseUserExtension;
 
   public String externalId;

@@ -33,7 +33,7 @@ import io.fusionauth.domain.utils.ToString;
  *
  * @author Brett Pontarelli
  */
-public class SCIMUser<T> extends SCIMResource<T> implements SCIMResponse {
+public class BaseSCIMUser<T> extends BaseSCIMResource<T> implements SCIMResponse {
   public boolean active;
 
   public List<SCIMUserAddress> addresses;
@@ -95,7 +95,7 @@ public class SCIMUser<T> extends SCIMResource<T> implements SCIMResponse {
     if (!super.equals(o)) {
       return false;
     }
-    SCIMUser that = (SCIMUser) o;
+    BaseSCIMUser that = (BaseSCIMUser) o;
     return active == that.active && Objects.equals(displayName, that.displayName) && Objects.equals(emails, that.emails) && Objects.equals(groups, that.groups) && Objects.equals(name, that.name) && Objects.equals(phoneNumbers, that.phoneNumbers) && Objects.equals(photos, that.photos) && Objects.equals(preferredLanguage, that.preferredLanguage) && Objects.equals(timezone, that.timezone) && Objects.equals(userName, that.userName);
   }
 

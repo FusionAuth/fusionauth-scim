@@ -17,18 +17,23 @@ package io.fusionauth.domain.scim;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
+import io.fusionauth.domain.utils.ToString;
 
 /**
  * @author Rob Davis
  */
-public class SCIMServiceProviderConfig extends BaseSCIMResource implements Buildable<SCIMServiceProviderConfig> {
+public class SCIMServiceProviderConfig extends BaseSCIMResource<SCIMServiceProviderConfig> implements Buildable<SCIMServiceProviderConfig> {
   public List<Map<String, Object>> authenticationSchemes;
 
   public Map<String, Object> bulk;
 
   public Map<String, Object> changePassword;
 
-  public String documentationUri;
+  @JsonProperty("documentationUri")
+  public String documentationURI;
 
   public Map<String, Object> etag;
 
@@ -37,4 +42,36 @@ public class SCIMServiceProviderConfig extends BaseSCIMResource implements Build
   public Map<String, Object> patch;
 
   public Map<String, Object> sort;
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+    if (!super.equals(o)) {
+      return false;
+    }
+    SCIMServiceProviderConfig that = (SCIMServiceProviderConfig) o;
+    return Objects.equals(authenticationSchemes, that.authenticationSchemes) &&
+           Objects.equals(bulk, that.bulk) &&
+           Objects.equals(changePassword, that.changePassword) &&
+           Objects.equals(documentationURI, that.documentationURI) &&
+           Objects.equals(etag, that.etag) &&
+           Objects.equals(filter, that.filter) &&
+           Objects.equals(patch, that.patch) &&
+           Objects.equals(sort, that.sort);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(super.hashCode(), authenticationSchemes, bulk, changePassword, documentationURI, etag, filter, patch, sort);
+  }
+
+  @Override
+  public String toString() {
+    return ToString.toString(this);
+  }
 }

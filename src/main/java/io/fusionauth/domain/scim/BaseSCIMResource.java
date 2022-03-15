@@ -26,7 +26,7 @@ import io.fusionauth.domain.utils.ToString;
  *
  * @author Brett Pontarelli
  */
-public abstract class BaseSCIMResource {
+public abstract class BaseSCIMResource<T> implements Buildable<T>, SCIMResource {
   public String externalId;
 
   public UUID id;

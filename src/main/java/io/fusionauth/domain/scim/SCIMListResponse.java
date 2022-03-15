@@ -15,6 +15,8 @@
  */
 package io.fusionauth.domain.scim;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
@@ -24,13 +26,13 @@ import io.fusionauth.domain.utils.ToString;
  * @author Rob Davis
  */
 public class SCIMListResponse implements SCIMResponse, Buildable<SCIMListResponse> {
-  public List<Object> Resources;
+  public List<SCIMResource> Resources = new ArrayList<>();
 
   public int itemsPerPage;
 
   public String schema;
 
-  public List<String> schemas;
+  public List<String> schemas = Arrays.asList(SCIMSchemas.ListResponse);
 
   public int startIndex;
 
