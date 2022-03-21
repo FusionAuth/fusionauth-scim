@@ -29,7 +29,7 @@ import io.fusionauth.domain.utils.ToString;
  *
  * @author Brett Pontarelli
  */
-public class SCIMEnterpriseUser extends BaseSCIMUser<SCIMEnterpriseUser> implements SCIMResponse {
+public class SCIMEnterpriseUser extends BaseSCIMUser<SCIMEnterpriseUser> {
   @JsonProperty(SCIMSchemas.EnterpriseUser)
   public SCIMEnterpriseSchemaExtension extension;
 

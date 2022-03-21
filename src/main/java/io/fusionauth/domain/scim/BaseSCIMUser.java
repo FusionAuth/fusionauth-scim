@@ -33,7 +33,7 @@ import io.fusionauth.domain.utils.ToString;
  *
  * @author Brett Pontarelli
  */
-public class BaseSCIMUser<T extends BaseSCIMUser<T>> extends BaseSCIMResource<T> implements SCIMResponse {
+public class BaseSCIMUser<T extends BaseSCIMUser<T>> extends BaseSCIMResource<T> {
   public boolean active;
 
   public List<SCIMUserAddress> addresses;

@@ -20,5 +20,5 @@ package io.fusionauth.domain.scim;
  *
  * @author Brett Pontarelli
  */
-public class SCIMUser extends BaseSCIMUser<SCIMUser> implements SCIMResponse {
+public class SCIMUser extends BaseSCIMUser<SCIMUser> {
 }

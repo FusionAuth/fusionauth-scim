@@ -18,5 +18,5 @@ package io.fusionauth.domain.scim;
 /**
  * @author Daniel DeGroff
  */
-public interface SCIMResource {
+public interface SCIMResource extends SCIMResponse {
 }
