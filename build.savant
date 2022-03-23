@@ -15,9 +15,9 @@
  */
 
 guiceVersion = "5.0.1"
-jacksonVersion = "2.13.0"
+jacksonVersion = "2.13.2"
 
-project(group: "io.fusionauth", name: "fusionauth-scim", version: "1.0.0-{integration}", licenses: ["ApacheV2_0"]) {
+project(group: "io.fusionauth", name: "fusionauth-scim", version: "1.0.0", licenses: ["ApacheV2_0"]) {
   workflow {
     fetch {
       cache()
