@@ -33,9 +33,6 @@ project(group: "io.fusionauth", name: "fusionauth-scim", version: "1.0.0", licen
   }
 
   dependencies {
-    group(name: "provided") {
-      dependency(id: "com.google.inject:guice:${guiceVersion}", skipCompatibilityCheck: true)
-    }
     group(name: "compile") {
       dependency(id: "com.fasterxml.jackson.core:jackson-annotations:${jacksonVersion}")
       dependency(id: "com.fasterxml.jackson.core:jackson-core:${jacksonVersion}")
