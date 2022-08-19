@@ -29,6 +29,8 @@ public class SCIMSchemas {
 
   public static final String ListResponse = "urn:ietf:params:scim:api:messages:2.0:ListResponse";
 
+  public static final String PatchOp = "urn:ietf:params:scim:api:messages:2.0:PatchOp";
+
   public static final String ResourceType = "urn:ietf:params:scim:schemas:core:2.0:ResourceType";
 
   public static final String ServiceProviderConfig = "urn:ietf:params:scim:schemas:core:2.0:ServiceProviderConfig";
