@@ -33,7 +33,7 @@ public class SCIMEnterpriseSchemaExtension implements Buildable<SCIMEnterpriseSc
 
   public String employeeNumber;
 
-  public SCIMMember manager;
+  public SCIMUserManager manager;
 
   public String organization;
 

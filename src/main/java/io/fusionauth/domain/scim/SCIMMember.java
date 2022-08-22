@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021, FusionAuth, All Rights Reserved
+ * Copyright (c) 2021-2022, FusionAuth, All Rights Reserved
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,10 +26,12 @@ import io.fusionauth.domain.utils.ToString;
  * @author Brett Pontarelli
  */
 public class SCIMMember implements Buildable<SCIMMember> {
-  public String displayName;
+  public String display;
 
   @JsonProperty("$ref")
   public String ref;
+
+  public String type;
 
   public String value;
 
@@ -42,14 +44,15 @@ public class SCIMMember implements Buildable<SCIMMember> {
       return false;
     }
     SCIMMember that = (SCIMMember) o;
-    return Objects.equals(displayName, that.displayName) &&
+    return Objects.equals(display, that.display) &&
            Objects.equals(ref, that.ref) &&
+           Objects.equals(type, that.type) &&
            Objects.equals(value, that.value);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(displayName, ref, value);
+    return Objects.hash(display, ref, type, value);
   }
 
   @Override

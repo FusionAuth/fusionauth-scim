@@ -15,15 +15,13 @@
  */
 package io.fusionauth.domain.scim;
 
-import com.fasterxml.jackson.databind.JsonNode;
+import java.util.UUID;
 
 /**
  * @author Daniel DeGroff
  */
-public class SCIMPatchOperation {
-  public SCIMPatchOperationName op;
+public class SCIMUserManager implements Buildable<SCIMUserManager> {
+  public String displayName;
 
-  public String path;
-
-  public JsonNode value;
+  public UUID managerId;
 }
