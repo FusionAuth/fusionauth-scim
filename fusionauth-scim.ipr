@@ -832,16 +832,23 @@
         <option name="BLANK_LINES_AROUND_FIELD" value="1" />
         <option name="BLANK_LINES_AROUND_FIELD_IN_INTERFACE" value="1" />
         <option name="ALIGN_MULTILINE_CHAINED_METHODS" value="true" />
-        <option name="ALIGN_MULTILINE_PARAMETERS_IN_CALLS" value="true" />
+        <option name="ALIGN_MULTILINE_PARAMETERS" value="false" />
         <option name="ALIGN_MULTILINE_BINARY_OPERATION" value="true" />
         <option name="METHOD_PARAMETERS_WRAP" value="1" />
         <option name="THROWS_KEYWORD_WRAP" value="1" />
+        <option name="WRAP_FIRST_METHOD_IN_CALL_CHAIN" value="true" />
+        <option name="KEEP_SIMPLE_BLOCKS_IN_ONE_LINE" value="true" />
+        <option name="KEEP_SIMPLE_METHODS_IN_ONE_LINE" value="true" />
         <option name="KEEP_SIMPLE_LAMBDAS_IN_ONE_LINE" value="true" />
+        <option name="KEEP_SIMPLE_CLASSES_IN_ONE_LINE" value="true" />
+        <option name="KEEP_MULTIPLE_EXPRESSIONS_IN_ONE_LINE" value="true" />
         <option name="IF_BRACE_FORCE" value="3" />
         <option name="DOWHILE_BRACE_FORCE" value="3" />
         <option name="WHILE_BRACE_FORCE" value="3" />
         <option name="FOR_BRACE_FORCE" value="3" />
+        <option name="WRAP_LONG_LINES" value="true" />
         <option name="ENUM_CONSTANTS_WRAP" value="2" />
+        <option name="KEEP_BUILDER_METHODS_INDENTS" value="true" />
         <indentOptions>
           <option name="INDENT_SIZE" value="2" />
           <option name="CONTINUATION_INDENT_SIZE" value="4" />
@@ -1575,7 +1582,7 @@
       <module fileurl="file://$PROJECT_DIR$/fusionauth-scim.iml" filepath="$PROJECT_DIR$/fusionauth-scim.iml" />
     </modules>
   </component>
-  <component name="ProjectRootManager" version="2" languageLevel="JDK_1_8" default="true" project-jdk-name="1.8" project-jdk-type="JavaSDK">
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_17" default="true" project-jdk-name="Java 17" project-jdk-type="JavaSDK">
     <output url="file://$PROJECT_DIR$/out" />
   </component>
   <component name="VcsDirectoryMappings">

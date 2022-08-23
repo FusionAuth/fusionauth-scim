@@ -15,6 +15,7 @@
  */
 
 jacksonVersion = "2.13.3"
+testngVersion = "7.3.0"
 
 project(group: "io.fusionauth", name: "fusionauth-scim", version: "2.0.0", licenses: ["ApacheV2_0"]) {
   workflow {
@@ -37,6 +38,9 @@ project(group: "io.fusionauth", name: "fusionauth-scim", version: "2.0.0", licen
       dependency(id: "com.fasterxml.jackson.core:jackson-core:${jacksonVersion}")
       dependency(id: "com.fasterxml.jackson.core:jackson-databind:${jacksonVersion}")
     }
+    group(name: "test-compile", export: false) {
+      dependency(id: "org.testng:testng:${testngVersion}")
+    }
   }
 
   publications {
@@ -49,10 +53,11 @@ project(group: "io.fusionauth", name: "fusionauth-scim", version: "2.0.0", licen
  */
 dependency = loadPlugin(id: "org.savantbuild.plugin:dependency:1.0.2")
 java = loadPlugin(id: "org.savantbuild.plugin:java:1.2.0")
+javaTestNG = loadPlugin(id: "org.savantbuild.plugin:java-testng:1.0.12")
 idea = loadPlugin(id: "org.savantbuild.plugin:idea:1.0.1")
 release = loadPlugin(id: "org.savantbuild.plugin:release-git:1.0.0")
 
-java.settings.javaVersion = "1.8"
+java.settings.javaVersion = "17"
 
 target(name: "clean", description: "Cleans out the build directory") {
   java.clean()
