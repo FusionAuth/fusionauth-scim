@@ -10,15 +10,36 @@ public class SCIMFilterParser {
   public FilterResult parse(String filter) {
     char[] source = filter.toCharArray();
 
-    SCIMParserState state = SCIMParserState.attributeValue;
+    SCIMParserState state = SCIMParserState.token;
     StringBuilder sb = new StringBuilder();
     FilterResult result = new FilterResult();
 
+    TokenMode mode = TokenMode.attribute;
     int variableStart = 0;
+
+    // Note:
+    // 1. Always start as token.
+    // 2. The token type will depend upon context.
+    // 3. Mode will indicate what type of token.
+    //
+
+    // Token rules:
+    //   1. First token has to be the attribute to filter on?
+    //   2. Followed by the operation.
+    //   3. Followed by?
 
     for (int i = 0; i < source.length; ) {
       //noinspection EnhancedSwitchMigration
       switch (state) {
+        case attribute:
+          state = state.next(source[i]);
+          if (state == space) {
+            result.attribute = sb.toString();
+            sb.setLength(0);
+            mode = TokenMode.op;
+          }
+          i++;
+          break;
         case attributeValue:
           state = state.next(source[i]);
           if (state == SCIMParserState.attributeValue) {

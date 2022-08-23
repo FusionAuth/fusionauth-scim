@@ -136,6 +136,21 @@ public enum SCIMParserState {
     }
   },
 
+  token {
+    @Override
+    public SCIMParserState next(char c) {
+      if (c == ' ') {
+        return space;
+      } else if (c == '[') {
+        return openSquareBracket;
+      } else if (c == '(') {
+        return openParen;
+      } else {
+        return token;
+      }
+    }
+  },
+
   complete {
     @Override
     public SCIMParserState next(char c) {

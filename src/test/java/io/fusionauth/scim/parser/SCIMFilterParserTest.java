@@ -14,6 +14,7 @@ public class SCIMFilterParserTest {
   public Object[][] data() {
     return new Object[][]{
         // Examples from : https://www.rfc-editor.org/rfc/rfc7644.html
+        // Examples: https://confluence.soffid.com/display/SOF/5.+SCIM+filter+language#id-5.SCIMfilterlanguage-SCIMfiltering
         {"userName eq \"bjensen\"",
             new FilterResult()
                 .with(r -> r.attribute = "userName")

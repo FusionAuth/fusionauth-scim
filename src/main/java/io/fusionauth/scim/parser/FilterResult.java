@@ -11,7 +11,6 @@ import io.fusionauth.scim.utils.ToString;
  * @author Daniel DeGroff
  */
 public class FilterResult implements Buildable<FilterResult> {
-
   public String attribute;
 
   public String attributeSchema;
@@ -29,8 +28,11 @@ public class FilterResult implements Buildable<FilterResult> {
     if (this == o) {return true;}
     if (o == null || getClass() != o.getClass()) {return false;}
     FilterResult that = (FilterResult) o;
-    return Objects.equals(attribute, that.attribute) && Objects.equals(op, that.op) && Objects.equals(value,
-        that.value) && Objects.equals(postfix, that.postfix) && Objects.equals(prefix, that.prefix);
+    return Objects.equals(attribute, that.attribute) &&
+           Objects.equals(op, that.op) &&
+           Objects.equals(value, that.value) &&
+           Objects.equals(postfix, that.postfix) &&
+           Objects.equals(prefix, that.prefix);
   }
 
   @JsonIgnore
