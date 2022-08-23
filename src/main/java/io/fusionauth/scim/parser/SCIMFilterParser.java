@@ -51,7 +51,7 @@ public class SCIMFilterParser {
         case space:
           state = state.next(source[i]);
           if (state != space) {
-            result.filterAttribute = sb.toString();
+            result.attribute = sb.toString();
             sb.setLength(0);
           }
           i++;
@@ -61,7 +61,7 @@ public class SCIMFilterParser {
           state = state.next(source[i]);
           // Opening square bracket, collect the attribute
           if (sb.length() > 0) {
-            result.filterAttribute = sb.toString();
+            result.attribute = sb.toString();
             sb.setLength(0);
           }
           i++;

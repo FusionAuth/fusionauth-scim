@@ -12,23 +12,25 @@ import io.fusionauth.scim.utils.ToString;
  */
 public class FilterResult implements Buildable<FilterResult> {
 
-  public String filterAttribute;
+  public String attribute;
 
-  public String filterOp;
+  public String attributeSchema;
 
-  public String filterValue;
+  public String op;
 
   public String postfix;
 
   public String prefix;
+
+  public String value;
 
   @Override
   public boolean equals(Object o) {
     if (this == o) {return true;}
     if (o == null || getClass() != o.getClass()) {return false;}
     FilterResult that = (FilterResult) o;
-    return Objects.equals(filterAttribute, that.filterAttribute) && Objects.equals(filterOp, that.filterOp) && Objects.equals(filterValue,
-        that.filterValue) && Objects.equals(postfix, that.postfix) && Objects.equals(prefix, that.prefix);
+    return Objects.equals(attribute, that.attribute) && Objects.equals(op, that.op) && Objects.equals(value,
+        that.value) && Objects.equals(postfix, that.postfix) && Objects.equals(prefix, that.prefix);
   }
 
   @JsonIgnore
@@ -51,7 +53,7 @@ public class FilterResult implements Buildable<FilterResult> {
 
   @Override
   public int hashCode() {
-    return Objects.hash(filterAttribute, filterOp, filterValue, postfix, prefix);
+    return Objects.hash(attribute, op, value, postfix, prefix);
   }
 
   /**
@@ -72,21 +74,21 @@ public class FilterResult implements Buildable<FilterResult> {
    * @return true if it matches the condition
    */
   public boolean matches(JsonNode node) {
-    if (!node.has(filterAttribute)) {
+    if (!node.has(attribute)) {
       return false;
     }
 
-    return switch (filterOp) {
-      case "eq" -> filterValue.equals(node.asText());
-      case "ne" -> !filterValue.equals(node.asText());
-      case "co" -> filterValue.contains(node.asText());
-      case "sw" -> filterValue.startsWith(node.asText());
-      case "ew" -> filterValue.endsWith(node.asText());
+    return switch (op) {
+      case "eq" -> value.equals(node.asText());
+      case "ne" -> !value.equals(node.asText());
+      case "co" -> value.contains(node.asText());
+      case "sw" -> value.startsWith(node.asText());
+      case "ew" -> value.endsWith(node.asText());
       case "pr" -> true;
-      case "gt" -> Long.parseLong(filterValue) > node.asLong();
-      case "ge" -> Long.parseLong(filterValue) >= node.asLong();
-      case "lt" -> Long.parseLong(filterValue) < node.asLong();
-      case "le" -> Long.parseLong(filterValue) <= node.asLong();
+      case "gt" -> Long.parseLong(value) > node.asLong();
+      case "ge" -> Long.parseLong(value) >= node.asLong();
+      case "lt" -> Long.parseLong(value) < node.asLong();
+      case "le" -> Long.parseLong(value) <= node.asLong();
       default -> false;
     };
   }
