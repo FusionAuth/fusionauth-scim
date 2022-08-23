@@ -31,7 +31,7 @@ import io.fusionauth.scim.domain.SCIMPatchOperation;
 /**
  * @author Daniel DeGroff
  */
-public class JSONPatchTools {
+public class SCIMPatchTools {
   private final static Pattern JSONPointerFilter = Pattern.compile(".*\\[(.*)].*");
 
   /**
