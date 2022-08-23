@@ -79,6 +79,8 @@ public class FilterResult implements Buildable<FilterResult> {
     if (!node.has(attribute)) {
       return false;
     }
+    // TODO : See definitions: https://www.rfc-editor.org/rfc/rfc7644#section-3.4.2.2
+    //        gt, ge, lt, le will need to apply to strings, dates, and integers I think.
 
     return switch (op) {
       case "eq" -> value.equals(node.asText());
