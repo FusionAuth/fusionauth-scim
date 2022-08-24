@@ -1,5 +1,7 @@
 package io.fusionauth.scim.parser;
 
+import java.util.regex.Pattern;
+
 /**
  * SCIM Filter parser
  * <p>
@@ -14,7 +16,7 @@ public enum SCIMParserState {
       if (s.charAt(0) == '(') {
         return new SCIMParserToken(openParen, s.substring(1), "(");
       } else {
-        int tokenEnd = Math.min(s.indexOf('['), s.indexOf(' '));
+        int tokenEnd = SCIMParserState.tokenEnd(s, '[', ' ');
         return new SCIMParserToken(attribute, s.substring(tokenEnd).trim(), s.substring(0, tokenEnd));
       }
     }
@@ -27,7 +29,7 @@ public enum SCIMParserState {
         return new SCIMParserToken(openBracket, s.substring(1), "[");
       } else {
         // Need an operator
-        int tokenEnd = s.indexOf(' ');
+        int tokenEnd = SCIMParserState.tokenEnd(s, ' ');
         String token = s.substring(0, tokenEnd);
         // The `pr` operator does not have an operator value
         return token.equals("pr")
@@ -47,7 +49,8 @@ public enum SCIMParserState {
   op {
     @Override
     public SCIMParserToken next(String s) {
-      return null;
+      int tokenEnd = SCIMParserState.tokenEnd(s, ')', ']', ' ');
+      return new SCIMParserToken(SCIMParserState.opValue, s.substring(tokenEnd).trim(), s.substring(0, tokenEnd));
     }
   },
 
@@ -79,4 +82,15 @@ public enum SCIMParserState {
    * @return the token value and next state of the parser.
    */
   public abstract SCIMParserToken next(String s);
+
+  private static int tokenEnd(String s, char... chars) {
+    int result = s.length();
+    for (char c : chars) {
+      int index = s.indexOf(c);
+      if (index != -1 && index < result) {
+        result = index;
+      }
+    }
+    return result;
+  }
 }
