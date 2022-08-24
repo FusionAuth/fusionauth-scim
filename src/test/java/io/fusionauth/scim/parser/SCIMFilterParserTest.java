@@ -23,6 +23,46 @@ public class SCIMFilterParserTest {
                     .with(f -> f.value = "bjensen")
             )
         },
+        {"userName eq true",
+            new FilterGroup().addFilter(
+                new Filter("userName")
+                    .with(f -> f.op = Op.eq)
+                    .with(f -> f.valueType = ValueType.bool)
+                    .with(f -> f.value = "true")
+            )
+        },
+        {"userName eq false",
+            new FilterGroup().addFilter(
+                new Filter("userName")
+                    .with(f -> f.op = Op.eq)
+                    .with(f -> f.valueType = ValueType.bool)
+                    .with(f -> f.value = "false")
+            )
+        },
+        {"userName eq 1234",
+            new FilterGroup().addFilter(
+                new Filter("userName")
+                    .with(f -> f.op = Op.eq)
+                    .with(f -> f.valueType = ValueType.number)
+                    .with(f -> f.value = "1234")
+            )
+        },
+        {"userName eq -123.42",
+            new FilterGroup().addFilter(
+                new Filter("userName")
+                    .with(f -> f.op = Op.eq)
+                    .with(f -> f.valueType = ValueType.number)
+                    .with(f -> f.value = "-123.42")
+            )
+        },
+        {"userName eq null",
+            new FilterGroup().addFilter(
+                new Filter("userName")
+                    .with(f -> f.op = Op.eq)
+                    .with(f -> f.valueType = ValueType.nul)
+                    .with(f -> f.value = "null")
+            )
+        },
         {"name.familyName co \"O'Malley\"",
             new FilterGroup().addFilter(
                 new Filter("name.familyName")
