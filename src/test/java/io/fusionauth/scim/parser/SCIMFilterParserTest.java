@@ -99,8 +99,8 @@ public class SCIMFilterParserTest {
   }
 
   @Test(dataProvider = "data")
-  public void parse(String filter, FilterResult expected) {
-    FilterResult actual = parser.parse(filter);
+  public void parse(String filter, FilterGroup expected) {
+    FilterGroup actual = parser.parse(filter);
     assertEquals(expected, actual);
   }
 }

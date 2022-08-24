@@ -8,161 +8,75 @@ package io.fusionauth.scim.parser;
  * @author Daniel DeGroff
  */
 public enum SCIMParserState {
-  escape {
-    @Override
-    public SCIMParserState next(char c) {
-      return attributeValue;
-    }
-  },
-
   start {
     @Override
-    public SCIMParserState next(char c) {
-      if (c == '(') {
-        return openParen;
-      } else if (c == '[') {
-        return openSquareBracket;
-      } else if (c == '\\') {
-        return escape;
+    public SCIMParserToken next(String s) {
+      if (s.charAt(0) == '(') {
+        return new SCIMParserToken(openParen, s.substring(1), "(");
       } else {
-        return attributeValue;
-      }
-    }
-  },
-
-  openParen {
-    @Override
-    public SCIMParserState next(char c) {
-      if (c == ')') {
-        return SCIMParserState.closeParen;
-      }
-
-      return SCIMParserState.attributeValue;
-    }
-  },
-
-  closeParen {
-    @Override
-    public SCIMParserState next(char c) {
-      if (c == '(') {
-        return SCIMParserState.openParen;
-      } else if (c == '[') {
-        return SCIMParserState.openSquareBracket;
-      } else {
-        return SCIMParserState.attributeValue;
-      }
-    }
-  },
-
-  openSquareBracket {
-    @Override
-    public SCIMParserState next(char c) {
-      if (c == '(') {
-        return SCIMParserState.openParen;
-      } else if (c == '[') {
-        return SCIMParserState.openSquareBracket;
-      } else {
-        return SCIMParserState.attributeValue;
-      }
-    }
-  },
-
-  closeSquareBracket {
-    @Override
-    public SCIMParserState next(char c) {
-      if (c == '(') {
-        return SCIMParserState.openParen;
-      } else if (c == '[') {
-        return SCIMParserState.openSquareBracket;
-      } else {
-        return SCIMParserState.attributeValue;
-      }
-    }
-  },
-
-  space {
-    @Override
-    public SCIMParserState next(char c) {
-      if (c == ' ') {
-        return SCIMParserState.space;
-      } else if (c == '(') {
-        return SCIMParserState.openParen;
-      } else if (c == '[') {
-        return SCIMParserState.openSquareBracket;
-      } else {
-        return SCIMParserState.attributeValue;
+        int tokenEnd = Math.min(s.indexOf('['), s.indexOf(' '));
+        return new SCIMParserToken(attribute, s.substring(tokenEnd).trim(), s.substring(0, tokenEnd));
       }
     }
   },
 
   attribute {
     @Override
-    public SCIMParserState next(char c) {
-      if (c == '\\') {
-        return escape;
-      } else if (c == '[') {
-        return openSquareBracket;
-      } else if (c == '(') {
-        return openParen;
+    public SCIMParserToken next(String s) {
+      if (s.charAt(0) == '[') {
+        return new SCIMParserToken(openBracket, s.substring(1), "[");
       } else {
-        return attributeValue;
+        // Need an operator
+        int tokenEnd = s.indexOf(' ');
+        String token = s.substring(0, tokenEnd);
+        // The `pr` operator does not have an operator value
+        return token.equals("pr")
+            ? new SCIMParserToken(unaryOp, s.substring(tokenEnd).trim(), token)
+            : new SCIMParserToken(op, s.substring(tokenEnd).trim(), token);
       }
     }
   },
 
-  attributeValue {
+  unaryOp {
     @Override
-    public SCIMParserState next(char c) {
-      if (c == '\\') {
-        return escape;
-      } else if (c == '[') {
-        return openSquareBracket;
-      } else if (c == '(') {
-        return openParen;
-      } else {
-        return attributeValue;
-      }
+    public SCIMParserToken next(String s) {
+      return null;
     }
   },
 
-  operation {
+  op {
     @Override
-    public SCIMParserState next(char c) {
-      if (c == ' ') {
-        return space;
-      } else {
-        return operation;
-      }
+    public SCIMParserToken next(String s) {
+      return null;
     }
   },
 
-  token {
+  opValue {
     @Override
-    public SCIMParserState next(char c) {
-      if (c == ' ') {
-        return space;
-      } else if (c == '[') {
-        return openSquareBracket;
-      } else if (c == '(') {
-        return openParen;
-      } else {
-        return token;
-      }
+    public SCIMParserToken next(String s) {
+      return null;
     }
   },
 
-  complete {
+  openBracket {
     @Override
-    public SCIMParserState next(char c) {
-      return complete;
+    public SCIMParserToken next(String s) {
+      return null;
+    }
+  },
+
+  openParen {
+    @Override
+    public SCIMParserToken next(String s) {
+      return null;
     }
   };
 
   /**
-   * Transition the parser to the next state based upon the current character.
+   * Read the next token, returning the value and the next state of the parser
    *
-   * @param c the current character on the input string.
-   * @return the next state of the parser.
+   * @param s The input string, starting from the current position
+   * @return the token value and next state of the parser.
    */
-  public abstract SCIMParserState next(char c);
+  public abstract SCIMParserToken next(String s);
 }
