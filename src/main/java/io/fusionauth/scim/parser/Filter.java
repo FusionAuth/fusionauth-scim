@@ -31,4 +31,15 @@ public class Filter implements Buildable<Filter> {
   public int hashCode() {
     return Objects.hash(attribute, schema, op, valueType, value);
   }
+
+  @Override
+  public String toString() {
+    return "Filter{" +
+           "attribute='" + attribute + '\'' +
+           ", schema='" + schema + '\'' +
+           ", op=" + op +
+           ", valueType=" + valueType +
+           ", value='" + value + '\'' +
+           '}';
+  }
 }

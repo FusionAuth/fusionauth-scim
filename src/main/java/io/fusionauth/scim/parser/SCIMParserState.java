@@ -31,7 +31,7 @@ public enum SCIMParserState {
         return new SCIMParserToken(openBracket, s.substring(1), "[");
       } else {
         // Need an operator
-        int tokenEnd = SCIMParserState.tokenEnd(s, ' ');
+        int tokenEnd = SCIMParserState.tokenEnd(s, ' ', ')');
         String token = s.substring(0, tokenEnd);
         // The `pr` operator does not have an operator value
         return token.equals("pr")
@@ -123,14 +123,26 @@ public enum SCIMParserState {
   openParen {
     @Override
     public SCIMParserToken next(String s) {
-      return null;
+      int tokenEnd = SCIMParserState.tokenEnd(s, ' ', '[');
+      String value = s.substring(0, tokenEnd);
+      if (value.equals("not")) {
+        return new SCIMParserToken(not, s.substring(tokenEnd), value);
+      } else {
+        return new SCIMParserToken(attribute, s.substring(tokenEnd), value);
+      }
     }
   },
 
   closeParen {
     @Override
     public SCIMParserToken next(String s) {
-      return null;
+      if (s.charAt(0) == ')') {
+        return new SCIMParserToken(closeParen, s.substring(1), ")");
+      } else {
+        // Must be a logical operator to link Filters
+        int tokenEnd = SCIMParserState.tokenEnd(s, ' ');
+        return new SCIMParserToken(logicOp, s.substring(tokenEnd), s.substring(0, tokenEnd));
+      }
     }
   };
 

@@ -22,6 +22,11 @@ public class FilterGroup implements Buildable<FilterGroup> {
     return this;
   }
 
+  public FilterGroup addSubGroup(FilterGroup group) {
+    subGroups.add(group);
+    return this;
+  }
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {return true;}
@@ -33,5 +38,16 @@ public class FilterGroup implements Buildable<FilterGroup> {
   @Override
   public int hashCode() {
     return Objects.hash(filters, subGroups, inverted, logicalOperator, parent);
+  }
+
+  @Override
+  public String toString() {
+    return "FilterGroup{" +
+           "filters=" + filters +
+           ", subGroups=" + subGroups +
+           ", inverted=" + inverted +
+           ", logicalOperator=" + logicalOperator +
+           ", parent='" + parent + '\'' +
+           '}';
   }
 }

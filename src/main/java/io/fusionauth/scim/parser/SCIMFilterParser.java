@@ -2,6 +2,8 @@ package io.fusionauth.scim.parser;
 
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+import java.util.ArrayDeque;
+import java.util.Deque;
 
 /**
  * @author Spencer Witt
@@ -12,10 +14,13 @@ public class SCIMFilterParser {
     SCIMParserToken token = new SCIMParserToken(SCIMParserState.start, filter.trim(), null);
     FilterGroup result = new FilterGroup();
     Filter currentFilter = null;
+    Deque<FilterGroup> scope = new ArrayDeque<>();
+    scope.push(result);
+
+    boolean invertNextGroup = false;
 
     while (!token.remaining.isEmpty()) {
       token = token.state.next(token.remaining);
-      //noinspection EnhancedSwitchMigration
       switch (token.state) {
         case attribute:
           currentFilter = new Filter(token.value);
@@ -27,16 +32,16 @@ public class SCIMFilterParser {
           // This should always be `pr`
           currentFilter.op = Op.valueOf(token.value);
           currentFilter.valueType = ValueType.none;
-          result.filters.add(currentFilter);
+          scope.peek().filters.add(currentFilter);
           currentFilter = null;
           break;
         case logicOp:
-          result.logicalOperator = LogicalOperator.valueOf(token.value);
+          scope.peek().logicalOperator = LogicalOperator.valueOf(token.value);
           // TODO : if logical operator has changed, we need a new group
           break;
         case not:
-          // TODO : unless this is the start of the filter, it should actually invert the next subGroup
-          result.inverted = true;
+          // We should have a precedence grouping next that needs to be inverted
+          invertNextGroup = true;
           break;
         case opValue:
           currentFilter.value = token.value;
@@ -63,12 +68,34 @@ public class SCIMFilterParser {
               throw new Exception("Invalid opValue " + token.value);
             }
           }
-          result.filters.add(currentFilter);
+          scope.peek().filters.add(currentFilter);
           currentFilter = null;
+          break;
+        case openParen:
+          // Create a subGroup
+          FilterGroup group = new FilterGroup();
+          group.inverted = invertNextGroup;
+          invertNextGroup = false;
+          // Add to the current FilterGroup's subGroups
+          scope.peek().subGroups.add(group);
+          // Make this new FilterGroup the current scope
+          scope.push(group);
+          break;
+        case closeParen:
+          // Finish off the current scope
+          scope.pop();
           break;
         default:
           throw new Exception("Unexpected state value " + token.state);
       }
+    }
+
+    // Only the base result scope should be left in the stack
+    assert scope.size() == 1;
+
+    // If the result contains a single subGroup, we can make that the result
+    if (result.filters.isEmpty() && result.subGroups.size() == 1) {
+      result = result.subGroups.get(0);
     }
 
     return result;
