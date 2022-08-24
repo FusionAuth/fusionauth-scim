@@ -17,6 +17,11 @@ public class FilterGroup implements Buildable<FilterGroup> {
 
   public String parent = null;
 
+  public FilterGroup addFilter(Filter filter) {
+    filters.add(filter);
+    return this;
+  }
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {return true;}
