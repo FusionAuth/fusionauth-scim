@@ -17,10 +17,10 @@ public class SCIMFilterParserTest {
         // Examples: https://confluence.soffid.com/display/SOF/5.+SCIM+filter+language#id-5.SCIMfilterlanguage-SCIMfiltering
         {"userName eq \"bjensen\"",
             new FilterGroup().addFilter(
-              new Filter("userName")
-                  .with(f -> f.op = Op.eq)
-                  .with(f -> f.valueType = ValueType.text)
-                  .with(f -> f.value = "bjensen")
+                new Filter("userName")
+                    .with(f -> f.op = Op.eq)
+                    .with(f -> f.valueType = ValueType.text)
+                    .with(f -> f.value = "bjensen")
             )
         },
         {"name.familyName co \"O'Malley\"",
@@ -90,16 +90,16 @@ public class SCIMFilterParserTest {
             new FilterGroup()
                 .with(g -> g.logicalOperator = LogicalOperator.and)
                 .addFilter(
-                  new Filter("title")
-                      .with(f -> f.op = Op.pr)
-                      .with(r -> r.valueType = ValueType.none)
+                    new Filter("title")
+                        .with(f -> f.op = Op.pr)
+                        .with(r -> r.valueType = ValueType.none)
                 )
                 .addFilter(
-                  new Filter("userType")
-                      .with(f -> f.op = Op.eq)
-                      .with(f -> f.valueType = ValueType.text)
-                      .with(f -> f.value = "Employee")
-                )
+                new Filter("userType")
+                    .with(f -> f.op = Op.eq)
+                    .with(f -> f.valueType = ValueType.text)
+                    .with(f -> f.value = "Employee")
+            )
         },
         {"title pr and userType eq \"Employee\" and meta.lastModified gt \"2011-05-13T04:42:34Z\"",
             new FilterGroup()
@@ -110,17 +110,17 @@ public class SCIMFilterParserTest {
                         .with(r -> r.valueType = ValueType.none)
                 )
                 .addFilter(
-                  new Filter("userType")
-                      .with(f -> f.op = Op.eq)
-                      .with(f -> f.valueType = ValueType.text)
-                      .with(f -> f.value = "Employee")
+                    new Filter("userType")
+                        .with(f -> f.op = Op.eq)
+                        .with(f -> f.valueType = ValueType.text)
+                        .with(f -> f.value = "Employee")
                 )
                 .addFilter(
-                  new Filter("meta.lastModified")
-                      .with(f -> f.op = Op.gt)
-                      .with(f -> f.valueType = ValueType.date)
-                      .with(f -> f.value = "2011-05-13T04:42:34Z")
-                )
+                new Filter("meta.lastModified")
+                    .with(f -> f.op = Op.gt)
+                    .with(f -> f.valueType = ValueType.date)
+                    .with(f -> f.value = "2011-05-13T04:42:34Z")
+            )
         },
         {"title pr or userType eq \"Intern\"",
             new FilterGroup()
@@ -131,11 +131,11 @@ public class SCIMFilterParserTest {
                         .with(f -> f.valueType = ValueType.none)
                 )
                 .addFilter(
-                  new Filter("userType")
-                      .with(f -> f.op = Op.eq)
-                      .with(f -> f.valueType = ValueType.text)
-                      .with(f -> f.value = "Intern")
-                )
+                new Filter("userType")
+                    .with(f -> f.op = Op.eq)
+                    .with(f -> f.valueType = ValueType.text)
+                    .with(f -> f.value = "Intern")
+            )
         },
         {"schemas eq \"urn:ietf:params:scim:schemas:extension:enterprise:2.0:User\"",
             new FilterGroup().addFilter(

@@ -132,16 +132,7 @@ public enum SCIMParserState {
     public SCIMParserToken next(String s) {
       return null;
     }
-  }
-  ;
-
-  /**
-   * Read the next token, returning the value and the next state of the parser
-   *
-   * @param s The input string, starting from the current position
-   * @return the token value and next state of the parser.
-   */
-  public abstract SCIMParserToken next(String s) throws Exception;
+  };
 
   private static int tokenEnd(String s, char... chars) {
     int result = s.length();
@@ -153,4 +144,12 @@ public enum SCIMParserState {
     }
     return result;
   }
+
+  /**
+   * Read the next token, returning the value and the next state of the parser
+   *
+   * @param s The input string, starting from the current position
+   * @return the token value and next state of the parser.
+   */
+  public abstract SCIMParserToken next(String s) throws Exception;
 }
