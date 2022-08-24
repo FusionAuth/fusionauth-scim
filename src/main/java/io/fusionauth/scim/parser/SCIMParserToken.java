@@ -7,7 +7,7 @@ public class SCIMParserToken {
 
   public SCIMParserToken(SCIMParserState state, String remaining, String value) {
     this.state = state;
-    this.remaining = remaining;
+    this.remaining = remaining.trim();
     this.value = value;
   }
 }

@@ -1,14 +1,10 @@
 package io.fusionauth.scim.parser;
 
-import java.text.DateFormat;
-import java.text.NumberFormat;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 
-import com.fasterxml.jackson.databind.util.ISO8601DateFormat;
-
 /**
- * @author Daniel DeGroff
+ * @author Spencer Witt
  */
 public class SCIMFilterParser {
 
@@ -19,6 +15,7 @@ public class SCIMFilterParser {
 
     while (!token.remaining.isEmpty()) {
       token = token.state.next(token.remaining);
+      //noinspection EnhancedSwitchMigration
       switch (token.state) {
         case attribute:
           currentFilter = new Filter(token.value);
@@ -32,6 +29,14 @@ public class SCIMFilterParser {
           currentFilter.valueType = ValueType.none;
           result.filters.add(currentFilter);
           currentFilter = null;
+          break;
+        case logicOp:
+          result.logicalOperator = LogicalOperator.valueOf(token.value);
+          // TODO : if logical operator has changed, we need a new group
+          break;
+        case not:
+          // TODO : unless this is the start of the filter, it should actually invert the next subGroup
+          result.inverted = true;
           break;
         case opValue:
           currentFilter.value = token.value;
@@ -61,6 +66,8 @@ public class SCIMFilterParser {
           result.filters.add(currentFilter);
           currentFilter = null;
           break;
+        default:
+          throw new Exception("Unexpected state value " + token.state);
       }
     }
 

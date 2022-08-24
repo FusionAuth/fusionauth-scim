@@ -1,7 +1,5 @@
 package io.fusionauth.scim.parser;
 
-import java.util.regex.Pattern;
-
 /**
  * SCIM Filter parser
  * <p>
@@ -16,8 +14,12 @@ public enum SCIMParserState {
       if (s.charAt(0) == '(') {
         return new SCIMParserToken(openParen, s.substring(1), "(");
       } else {
-        int tokenEnd = SCIMParserState.tokenEnd(s, '[', ' ');
-        return new SCIMParserToken(attribute, s.substring(tokenEnd).trim(), s.substring(0, tokenEnd));
+        int tokenEnd = SCIMParserState.tokenEnd(s, '[', ' ', '(');
+        String value = s.substring(0, tokenEnd);
+        if (value.equals("not")) {
+          return new SCIMParserToken(not, s.substring(tokenEnd), value);
+        }
+        return new SCIMParserToken(attribute, s.substring(tokenEnd), s.substring(0, tokenEnd));
       }
     }
   },
@@ -33,8 +35,8 @@ public enum SCIMParserState {
         String token = s.substring(0, tokenEnd);
         // The `pr` operator does not have an operator value
         return token.equals("pr")
-            ? new SCIMParserToken(unaryOp, s.substring(tokenEnd).trim(), token)
-            : new SCIMParserToken(op, s.substring(tokenEnd).trim(), token);
+            ? new SCIMParserToken(unaryOp, s.substring(tokenEnd), token)
+            : new SCIMParserToken(op, s.substring(tokenEnd), token);
       }
     }
   },
@@ -42,7 +44,15 @@ public enum SCIMParserState {
   unaryOp {
     @Override
     public SCIMParserToken next(String s) {
-      return null;
+      if (s.charAt(0) == ')') {
+        return new SCIMParserToken(closeParen, s.substring(1), ")");
+      } else if (s.charAt(0) == ']') {
+        return new SCIMParserToken(closeBracket, s.substring(1), "]");
+      } else {
+        // Must be a logical operator to link Filters
+        int tokenEnd = SCIMParserState.tokenEnd(s, ' ');
+        return new SCIMParserToken(logicOp, s.substring(tokenEnd), s.substring(0, tokenEnd));
+      }
     }
   },
 
@@ -50,18 +60,60 @@ public enum SCIMParserState {
     @Override
     public SCIMParserToken next(String s) {
       int tokenEnd = SCIMParserState.tokenEnd(s, ')', ']', ' ');
-      return new SCIMParserToken(SCIMParserState.opValue, s.substring(tokenEnd).trim(), s.substring(0, tokenEnd));
+      return new SCIMParserToken(opValue, s.substring(tokenEnd), s.substring(0, tokenEnd));
     }
   },
 
   opValue {
     @Override
     public SCIMParserToken next(String s) {
-      return null;
+      if (s.charAt(0) == ')') {
+        return new SCIMParserToken(closeParen, s.substring(1), ")");
+      } else if (s.charAt(0) == ']') {
+        return new SCIMParserToken(closeBracket, s.substring(1), "]");
+      } else {
+        // Must be a logical operator to link Filters
+        int tokenEnd = SCIMParserState.tokenEnd(s, ' ');
+        return new SCIMParserToken(logicOp, s.substring(tokenEnd), s.substring(0, tokenEnd));
+      }
+    }
+  },
+
+  logicOp {
+    @Override
+    public SCIMParserToken next(String s) {
+      if (s.charAt(0) == '(') {
+        return new SCIMParserToken(openParen, s.substring(1), "(");
+      } else {
+        int tokenEnd = SCIMParserState.tokenEnd(s, ' ', '[');
+        String value = s.substring(0, tokenEnd);
+        if (value.equals("not")) {
+          return new SCIMParserToken(not, s.substring(tokenEnd), value);
+        } else {
+          return new SCIMParserToken(attribute, s.substring(tokenEnd), value);
+        }
+      }
+    }
+  },
+
+  not {
+    @Override
+    public SCIMParserToken next(String s) throws Exception {
+      if (s.charAt(0) != '(') {
+        throw new Exception("[not] operator must be followed by '('");
+      }
+      return new SCIMParserToken(openParen, s.substring(1), "(");
     }
   },
 
   openBracket {
+    @Override
+    public SCIMParserToken next(String s) {
+      return null;
+    }
+  },
+
+  closeBracket {
     @Override
     public SCIMParserToken next(String s) {
       return null;
@@ -73,7 +125,15 @@ public enum SCIMParserState {
     public SCIMParserToken next(String s) {
       return null;
     }
-  };
+  },
+
+  closeParen {
+    @Override
+    public SCIMParserToken next(String s) {
+      return null;
+    }
+  }
+  ;
 
   /**
    * Read the next token, returning the value and the next state of the parser
@@ -81,7 +141,7 @@ public enum SCIMParserState {
    * @param s The input string, starting from the current position
    * @return the token value and next state of the parser.
    */
-  public abstract SCIMParserToken next(String s);
+  public abstract SCIMParserToken next(String s) throws Exception;
 
   private static int tokenEnd(String s, char... chars) {
     int result = s.length();
