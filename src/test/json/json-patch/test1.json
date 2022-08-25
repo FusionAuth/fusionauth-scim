@@ -1,0 +1,7 @@
+[
+  {
+    "op": "remove",
+    "path": "/emails/0/value",
+    "value": "erlich@piedpiper.com"
+  }
+]

@@ -20,7 +20,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 /**
  * @author Daniel DeGroff
  */
-public class SCIMPatchOperation {
+public class SCIMPatchOperation implements Buildable<SCIMPatchOperation> {
   public SCIMPatchOperationName op;
 
   public String path;
