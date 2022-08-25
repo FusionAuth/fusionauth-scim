@@ -7,22 +7,32 @@ import io.fusionauth.scim.domain.Buildable;
 public class Filter implements Buildable<Filter> {
   public String attribute;
 
-  public String schema = null;
-
   public Op op;
 
-  public ValueType valueType;
+  public String schema = null;
 
   public String value = null;
 
+  public ValueType valueType;
+
   public Filter(String attribute) {
-    this.attribute = attribute;
+    if (attribute.startsWith("urn:")) {
+      int lastColon = attribute.lastIndexOf(':');
+      this.schema = attribute.substring(0, lastColon);
+      this.attribute = attribute.substring(lastColon + 1);
+    } else {
+      this.attribute = attribute;
+    }
   }
 
   @Override
   public boolean equals(Object o) {
-    if (this == o) {return true;}
-    if (o == null || getClass() != o.getClass()) {return false;}
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
     Filter filter = (Filter) o;
     return attribute.equals(filter.attribute) && Objects.equals(schema, filter.schema) && op == filter.op && valueType == filter.valueType && Objects.equals(value, filter.value);
   }

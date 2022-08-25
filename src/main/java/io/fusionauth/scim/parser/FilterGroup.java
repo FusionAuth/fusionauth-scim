@@ -9,13 +9,13 @@ import io.fusionauth.scim.domain.Buildable;
 public class FilterGroup implements Buildable<FilterGroup> {
   public List<Filter> filters = new ArrayList<>();
 
-  public List<FilterGroup> subGroups = new ArrayList<>();
-
   public boolean inverted = false;
 
   public LogicalOperator logicalOperator = null;
 
   public String parent = null;
+
+  public List<FilterGroup> subGroups = new ArrayList<>();
 
   public FilterGroup addFilter(Filter filter) {
     filters.add(filter);
