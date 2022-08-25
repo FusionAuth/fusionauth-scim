@@ -163,17 +163,18 @@ public class SCIMPatchTools {
         return false;
       }
 
+      JsonNode subAttribute = node.get(filterAttribute);
       return switch (filterOp) {
-        case "eq" -> filterValue.equals(node.asText());
-        case "ne" -> !filterValue.equals(node.asText());
-        case "co" -> filterValue.contains(node.asText());
-        case "sw" -> filterValue.startsWith(node.asText());
-        case "ew" -> filterValue.endsWith(node.asText());
+        case "eq" -> filterValue.equals(subAttribute.asText());
+        case "ne" -> !filterValue.equals(subAttribute.asText());
+        case "co" -> filterValue.contains(subAttribute.asText());
+        case "sw" -> filterValue.startsWith(subAttribute.asText());
+        case "ew" -> filterValue.endsWith(subAttribute.asText());
         case "pr" -> true;
-        case "gt" -> Long.parseLong(filterValue) > node.asLong();
-        case "ge" -> Long.parseLong(filterValue) >= node.asLong();
-        case "lt" -> Long.parseLong(filterValue) < node.asLong();
-        case "le" -> Long.parseLong(filterValue) <= node.asLong();
+        case "gt" -> Long.parseLong(filterValue) > subAttribute.asLong();
+        case "ge" -> Long.parseLong(filterValue) >= subAttribute.asLong();
+        case "lt" -> Long.parseLong(filterValue) < subAttribute.asLong();
+        case "le" -> Long.parseLong(filterValue) <= subAttribute.asLong();
         default -> false;
       };
     }
