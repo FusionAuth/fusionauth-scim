@@ -256,14 +256,48 @@ public class SCIMFilterParserTest {
                                  )
             )
         },
-//        {"userType ne \"Employee\" and not (emails co \"example.com\" or emails.value co \"example.org\")",
-//            new FilterResult()
-//                .with(r -> r.attribute = "title")
-//                .with(r -> r.op = "pr")},
-//        {"userType eq \"Employee\" and (emails.type eq \"work\")",
-//            new FilterResult()
-//                .with(r -> r.attribute = "title")
-//                .with(r -> r.op = "pr")},
+        {"userType ne \"Employee\" and not (emails co \"example.com\" or emails.value co \"example.org\")",
+            new FilterGroup()
+                .with(g -> g.logicalOperator = LogicalOperator.and)
+                .addFilter(
+                    new Filter("userType")
+                        .with(f -> f.op = Op.ne)
+                        .with(f -> f.valueType = ValueType.text)
+                        .with(f -> f.value = "Employee")
+                )
+                .addSubGroup(new FilterGroup()
+                                 .with(g -> g.inverted = true)
+                                 .with(g -> g.logicalOperator = LogicalOperator.or)
+                                 .addFilter(
+                                     new Filter("emails")
+                                         .with(f -> f.op = Op.co)
+                                         .with(f -> f.valueType = ValueType.text)
+                                         .with(f -> f.value = "example.com")
+                                 )
+                                 .addFilter(
+                                     new Filter("emails.value")
+                                         .with(f -> f.op = Op.co)
+                                         .with(f -> f.valueType = ValueType.text)
+                                         .with(f -> f.value = "example.org")
+                                 )
+            )
+        },
+        {"userType eq \"Employee\" and (emails.type eq \"work\")",
+            new FilterGroup()
+                .with(g -> g.logicalOperator = LogicalOperator.and)
+                .addFilter(new Filter("userType")
+                               .with(f -> f.op = Op.eq)
+                               .with(f -> f.valueType = ValueType.text)
+                               .with(f -> f.value = "Employee")
+                )
+                .addSubGroup(new FilterGroup()
+                                 .addFilter(new Filter("emails.type")
+                                                .with(f -> f.op = Op.eq)
+                                                .with(f -> f.valueType = ValueType.text)
+                                                .with(f -> f.value = "work")
+                                 )
+            )
+        },
 //        {"userType eq \"Employee\" and emails[type eq \"work\" and value co \"@example.com\"]",
 //            new FilterResult()
 //                .with(r -> r.attribute = "title")
