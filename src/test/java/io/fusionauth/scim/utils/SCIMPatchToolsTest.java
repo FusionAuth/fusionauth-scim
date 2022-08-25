@@ -52,10 +52,15 @@ public class SCIMPatchToolsTest {
   public Object[][] testFiles() throws IOException {
     List<String> fileNames;
     try (Stream<Path> files = Files.list(jsonDir.resolve("scim-patch"))) {
-      fileNames = files.map(f -> f.getFileName().toString()).filter(n -> n.endsWith(".json")).toList();
+      fileNames = files.map(f -> f.getFileName().toString()).toList();
     }
 
-    return new Object[][]{fileNames.toArray()};
+    Object[][] result = new Object[fileNames.size()][1];
+    for (int i = 0; i < fileNames.size(); i++) {
+      result[i] = new Object[]{fileNames.get(i)};
+    }
+
+    return result;
   }
 
   @Test(dataProvider = "testFiles")

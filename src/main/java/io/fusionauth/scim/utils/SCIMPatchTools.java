@@ -82,7 +82,7 @@ public class SCIMPatchTools {
           JsonNode attributeNode = source.at(attrPathPointer);
           if (attributeNode instanceof ArrayNode array) {
             for (int i = 0; i < array.size(); i++) {
-              if (match(filter, array.get(i))) {
+              if (FilterMatcher.matches(filter, array.get(i))) {
                 // Make a copy since we may create more than one of these from the initial SCIM op
                 // - Add a new op to the result for each matching node. It is plausible we'll match more than one node.
                 ObjectNode copy = operation.deepCopy();
@@ -103,95 +103,5 @@ public class SCIMPatchTools {
     }
 
     return result;
-  }
-
-  private static boolean match(Filter filter, JsonNode node) {
-    return true;
-  }
-
-  private static SCIMFilter parseFilter(String path, String filter) {
-    SCIMFilter result = new SCIMFilter();
-    String[] parts = filter.split(" ");
-    if (parts.length == 3) {
-      result.filterAttribute = parts[0];
-      result.filterOp = parts[1];
-      result.filterValue = parts[2];
-      if (result.filterValue.startsWith("\"")) {
-        result.filterValue = result.filterValue.substring(1, result.filterValue.length() - 1);
-      }
-    }
-
-    result.prefix = path.substring(0, path.indexOf(filter) - 1);
-    result.postfixAttribute = path.substring(path.indexOf(filter) + filter.length() + 2);
-
-    return result;
-  }
-
-  private static class SCIMFilter {
-    public String filterAttribute;
-
-    public String filterOp;
-
-    public String filterValue;
-
-    public String postfixAttribute;
-
-    public String prefix;
-
-    public String getPostfixAttribute() {
-      if (postfixAttribute == null) {
-        return "";
-      }
-
-      return "/" + postfixAttribute;
-    }
-
-    public String getPrefix() {
-      if (prefix == null) {
-        return "";
-      }
-
-      return "/" + prefix;
-    }
-
-    /**
-     * eq: equal
-     * ne: not equal
-     * co: contains
-     * sw: starts with
-     * ew: ends with
-     * pr: present (has value)
-     * gt: greater than
-     * ge: greater than or equal to
-     * lt: less than
-     * le: less than or equal to
-     *
-     * @param node the value to compare
-     * @return true if it matches the condition
-     */
-    public boolean matches(JsonNode node) {
-      if (!node.has(filterAttribute)) {
-        return false;
-      }
-
-      JsonNode subAttribute = node.get(filterAttribute);
-      return switch (filterOp) {
-        case "eq" -> filterValue.equals(subAttribute.asText());
-        case "ne" -> !filterValue.equals(subAttribute.asText());
-        case "co" -> filterValue.contains(subAttribute.asText());
-        case "sw" -> filterValue.startsWith(subAttribute.asText());
-        case "ew" -> filterValue.endsWith(subAttribute.asText());
-        case "pr" -> true;
-        case "gt" -> Long.parseLong(filterValue) > subAttribute.asLong();
-        case "ge" -> Long.parseLong(filterValue) >= subAttribute.asLong();
-        case "lt" -> Long.parseLong(filterValue) < subAttribute.asLong();
-        case "le" -> Long.parseLong(filterValue) <= subAttribute.asLong();
-        default -> false;
-      };
-    }
-
-    public JsonNode pathToNode(JsonNode node) {
-      return node.at("/" + prefix.replace(".", "/"));
-    }
   }
 }

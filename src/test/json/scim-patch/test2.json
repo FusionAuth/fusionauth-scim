@@ -5,8 +5,11 @@
   "Operations": [
     {
       "op": "replace",
-      "path": "emails[type eq \"work\"].value",
-      "value": "erlich@hooli.com"
+      "path": "emails[type eq \"work\"]",
+      "value": {
+        "type": "work",
+        "value": "erlich@piedpiper.com"
+      }
     }
   ]
 }

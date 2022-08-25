@@ -1,0 +1,7 @@
+[
+  {
+    "op": "replace",
+    "path": "/emails/0/value",
+    "value": "erlich@bachmanity.com"
+  }
+]
