@@ -102,14 +102,11 @@ public class FilterMatcher {
     if (valueType == ValueType.text) {
       return filter.value.compareTo(attribute.asText()) > 0;
     } else if (valueType == ValueType.number) {
-      if (attribute.isBigInteger()) {
-        return new BigInteger(value).compareTo(BigInteger.valueOf(attribute.asLong())) > 0;
-      } else if (attribute.isBigDecimal()) {
-        return new BigDecimal(value).compareTo(BigDecimal.valueOf(attribute.asDouble())) > 0;
+      if (attribute.isBigInteger() || attribute.isLong() || attribute.isInt()) {
+        return new BigInteger(value).compareTo(attribute.bigIntegerValue()) > 0;
       }
-
-      // TODO : What else could this be?
-      return false;
+      // Assume some sort of decimal
+      return new BigDecimal(value).compareTo(attribute.decimalValue()) > 0;
     } else if (valueType == ValueType.bool) {
       throw new InvalidFilterExpressionException("The gt or ge operator cannot be used with a boolean type value.");
     } else if (valueType == ValueType.date) {
@@ -129,14 +126,12 @@ public class FilterMatcher {
     if (valueType == ValueType.text) {
       return filter.value.compareTo(attribute.asText()) < 0;
     } else if (valueType == ValueType.number) {
-      if (attribute.isBigInteger()) {
-        return new BigInteger(value).compareTo(BigInteger.valueOf(attribute.asLong())) < 0;
-      } else if (attribute.isBigDecimal()) {
-        return new BigDecimal(value).compareTo(BigDecimal.valueOf(attribute.asDouble())) < 0;
+      if (attribute.isBigInteger() || attribute.isLong() || attribute.isInt()) {
+        return new BigInteger(value).compareTo(attribute.bigIntegerValue()) < 0;
       }
 
-      // TODO : What else could this be?
-      return false;
+      // Assume some sort of decimal
+      return new BigDecimal(value).compareTo(attribute.decimalValue()) < 0;
     } else if (valueType == ValueType.bool) {
       throw new InvalidFilterExpressionException("The lt or le operator cannot be used with a boolean type value.");
     } else if (valueType == ValueType.date) {
