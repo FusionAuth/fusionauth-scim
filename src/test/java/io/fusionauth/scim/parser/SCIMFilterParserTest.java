@@ -320,6 +320,74 @@ public class SCIMFilterParserTest {
                 .addFilter(simpleFilter("C")
             )
         },
+        {"A pr and B pr and C pr or D pr or E pr and F pr",
+            new FilterGroup()
+                .with(g -> g.logicalOperator = LogicalOperator.or)
+                .addSubGroup(new FilterGroup()
+                                 .with(g -> g.logicalOperator = LogicalOperator.and)
+                                 .addFilter(simpleFilter("A"))
+                                 .addFilter(simpleFilter("B"))
+                                 .addFilter(simpleFilter("C"))
+                )
+                .addFilter(simpleFilter("D"))
+                .addSubGroup(new FilterGroup()
+                                 .with(g -> g.logicalOperator = LogicalOperator.and)
+                                 .addFilter(simpleFilter("E"))
+                                 .addFilter(simpleFilter("F"))
+            )
+        },
+        {"(A pr and B pr) or (C pr and D pr) and E pr",
+            new FilterGroup(LogicalOperator.or)
+                .addSubGroup(new FilterGroup(LogicalOperator.and)
+                                 .addFilter(simpleFilter("A"))
+                                 .addFilter(simpleFilter("B"))
+                )
+                .addSubGroup(new FilterGroup(LogicalOperator.and)
+                                 .addSubGroup(
+                                     new FilterGroup(LogicalOperator.and)
+                                         .addFilter(simpleFilter("C"))
+                                         .addFilter(simpleFilter("D"))
+                                 )
+                                 .addFilter(simpleFilter("E"))
+            )
+        },
+        {"A pr and B pr or (C pr and D pr or E pr) and (F pr or G pr and H pr) or I pr",
+            new FilterGroup()
+                .with(g -> g.logicalOperator = LogicalOperator.or)
+                .addSubGroup(new FilterGroup()
+                                 .with(g -> g.logicalOperator = LogicalOperator.and)
+                                 .addFilter(simpleFilter("A"))
+                                 .addFilter(simpleFilter("B"))
+                )
+                .addSubGroup(
+                    new FilterGroup()
+                        .with(g -> g.logicalOperator = LogicalOperator.and)
+                        .addSubGroup(
+                            new FilterGroup()
+                                .with(g -> g.logicalOperator = LogicalOperator.or)
+                                .addSubGroup(
+                                    new FilterGroup()
+                                        .with(g -> g.logicalOperator = LogicalOperator.and)
+                                        .addFilter(simpleFilter("C"))
+                                        .addFilter(simpleFilter("D"))
+                                )
+                                .addFilter(simpleFilter("E"))
+                        )
+                        .addSubGroup(
+                            new FilterGroup()
+                                .with(g -> g.logicalOperator = LogicalOperator.or)
+                                .addFilter(simpleFilter("F"))
+                                .addSubGroup(
+                                    new FilterGroup()
+                                        .with(g -> g.logicalOperator = LogicalOperator.and)
+                                        .addFilter(simpleFilter("G"))
+                                        .addFilter(simpleFilter("H"))
+                                )
+                        )
+                )
+                .addFilter(simpleFilter("I")
+            )
+        },
 //        {"userType eq \"Employee\" and emails[type eq \"work\" and value co \"@example.com\"]",
 //            new FilterResult()
 //                .with(r -> r.attribute = "title")

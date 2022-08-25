@@ -43,15 +43,29 @@ public class SCIMFilterParser {
           } else if (currentGroup.lastLogicalOp != logicalOperator) {
             if (currentGroup.lastLogicalOp == LogicalOperator.or && logicalOperator == LogicalOperator.and) {
               // Going from OR to AND
-              // 1) Remove the last Filter from currentGroup
-              Filter f = currentGroup.filters.remove(currentGroup.filters.size() - 1);
-              // 2) Create a new FilterGroup with AND operator and the removed Filter
-              FilterGroup fg = new FilterGroup()
-                  .with(g -> g.logicalOperator = LogicalOperator.and)
-                  .with(g -> g.lastLogicalOp = LogicalOperator.and)
-                  .addFilter(f);
-              // 3) Add new FilterGroup to currentGroup.subGroups
-              currentGroup.addSubGroup(fg);
+              if (currentGroup.isLastAddGroup) {
+                // The last object added to currentGroup was a subGroup
+                // 1a) Remove the last FilterGroup from currentGroup
+                FilterGroup fg = currentGroup.subGroups.remove(currentGroup.subGroups.size() - 1);
+                // 2b) Create a new FilterGroup with AND operator and the removed FilterGroup
+                FilterGroup newGroup = new FilterGroup()
+                    .with(g -> g.logicalOperator = LogicalOperator.and)
+                    .with(g -> g.lastLogicalOp = LogicalOperator.and)
+                    .addSubGroup(fg);
+                // 3b) Add new FilterGroup to currentGroup.subGroups
+                currentGroup.addSubGroup(newGroup);
+              } else {
+                // The last object added to currentGroup was a Filter
+                // 1b) Remove the last Filter from currentGroup
+                Filter f = currentGroup.filters.remove(currentGroup.filters.size() - 1);
+                // 2b) Create a new FilterGroup with AND operator and the removed Filter
+                FilterGroup newGroup = new FilterGroup()
+                    .with(g -> g.logicalOperator = LogicalOperator.and)
+                    .with(g -> g.lastLogicalOp = LogicalOperator.and)
+                    .addFilter(f);
+                // 3b) Add new FilterGroup to currentGroup.subGroups
+                currentGroup.addSubGroup(newGroup);
+              }
               // 4) Set currentGroup.lastLogicalOp
               currentGroup.lastLogicalOp = logicalOperator;
               // TODO : should we make new FilterGroup the currentGroup by pushing to stack?
@@ -67,10 +81,10 @@ public class SCIMFilterParser {
                   .addSubGroup(currentGroup);
               FilterGroup parentGroup = scope.peek();
               // If there is a parentGroup
-              //  3) Remove currentGroup from subGroups
-              //  4) Add newGroup to subGroups
               if (parentGroup != null) {
+                //  3) Remove currentGroup from subGroups
                 parentGroup.subGroups.remove(fg);
+                //  4) Add newGroup to subGroups
                 parentGroup.addSubGroup(newGroup);
               }
               // 5) Add newGroup to scope
@@ -116,7 +130,7 @@ public class SCIMFilterParser {
           group.inverted = invertNextGroup;
           invertNextGroup = false;
           // Add to the current FilterGroup's subGroups
-          currentGroup.subGroups.add(group);
+          currentGroup.addSubGroup(group);
           // Make this new FilterGroup the current scope
           scope.push(group);
           break;

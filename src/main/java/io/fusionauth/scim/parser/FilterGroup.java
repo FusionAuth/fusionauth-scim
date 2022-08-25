@@ -11,6 +11,8 @@ public class FilterGroup implements Buildable<FilterGroup> {
 
   public boolean inverted = false;
 
+  public boolean isLastAddGroup = false;
+
   /**
    * This is used to handle mixed and-or logical operators at the same level
    * without nesting properly (e.g. A * B + C + D * E * F)
@@ -23,13 +25,22 @@ public class FilterGroup implements Buildable<FilterGroup> {
 
   public List<FilterGroup> subGroups = new ArrayList<>();
 
+  public FilterGroup() {
+  }
+
+  public FilterGroup(LogicalOperator logicalOperator) {
+    this.logicalOperator = logicalOperator;
+  }
+
   public FilterGroup addFilter(Filter filter) {
     filters.add(filter);
+    isLastAddGroup = false;
     return this;
   }
 
   public FilterGroup addSubGroup(FilterGroup group) {
     subGroups.add(group);
+    isLastAddGroup = true;
     return this;
   }
 
