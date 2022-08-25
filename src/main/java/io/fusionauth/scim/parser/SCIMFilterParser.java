@@ -21,6 +21,7 @@ public class SCIMFilterParser {
 
     while (!token.remaining.isEmpty()) {
       token = token.state.next(token.remaining);
+      FilterGroup currentGroup = scope.peek();
       switch (token.state) {
         case attribute:
           currentFilter = new Filter(token.value);
@@ -32,11 +33,34 @@ public class SCIMFilterParser {
           // This should always be `pr`
           currentFilter.op = Op.valueOf(token.value);
           currentFilter.valueType = ValueType.none;
-          scope.peek().filters.add(currentFilter);
+          addFilter(currentGroup, currentFilter);
           currentFilter = null;
           break;
         case logicOp:
-          scope.peek().logicalOperator = LogicalOperator.valueOf(token.value);
+          LogicalOperator logicalOperator = LogicalOperator.valueOf(token.value);
+          if (currentGroup.logicalOperator == null) {
+            currentGroup.logicalOperator = logicalOperator;
+            currentGroup.lastLogicalOp = logicalOperator;
+          } else if (currentGroup.lastLogicalOp != logicalOperator) {
+            if (currentGroup.lastLogicalOp == LogicalOperator.or && logicalOperator == LogicalOperator.and) {
+              // Going from OR to AND
+              // 1) Remove the last Filter from currentGroup
+              Filter f = currentGroup.filters.remove(currentGroup.filters.size() - 1);
+              // 2) Create a new FilterGroup with AND operator and the removed Filter
+              FilterGroup fg = new FilterGroup()
+                  .with(g -> g.logicalOperator = LogicalOperator.and)
+                  .with(g -> g.lastLogicalOp = LogicalOperator.and)
+                  .addFilter(f);
+              // 3) Add new FilterGroup to currentGroup.subGroups
+              currentGroup.addSubGroup(fg);
+              // 4) Set currentGroup.lastLogicalOp
+              currentGroup.lastLogicalOp = logicalOperator;
+              // TODO : should we make new FilterGroup the currentGroup by pushing to stack?
+            } else if (currentGroup.lastLogicalOp == LogicalOperator.and && logicalOperator == LogicalOperator.or) {
+              // Going from AND to OR
+              // 1)
+            }
+          }
           // TODO : if logical operator has changed, we need a new group
           break;
         case not:
@@ -68,7 +92,7 @@ public class SCIMFilterParser {
               throw new Exception("Invalid opValue " + token.value);
             }
           }
-          scope.peek().filters.add(currentFilter);
+          addFilter(currentGroup, currentFilter);
           currentFilter = null;
           break;
         case openParen:
@@ -77,7 +101,7 @@ public class SCIMFilterParser {
           group.inverted = invertNextGroup;
           invertNextGroup = false;
           // Add to the current FilterGroup's subGroups
-          scope.peek().subGroups.add(group);
+          currentGroup.subGroups.add(group);
           // Make this new FilterGroup the current scope
           scope.push(group);
           break;
@@ -99,6 +123,26 @@ public class SCIMFilterParser {
     }
 
     return result;
+  }
+
+  private void addFilter(FilterGroup currentGroup, Filter newFilter) {
+    if (currentGroup.logicalOperator == null) {
+      currentGroup.addFilter(newFilter);
+    } else if (currentGroup.logicalOperator == LogicalOperator.or) {
+      if (currentGroup.lastLogicalOp == LogicalOperator.and) {
+        // Add to the last subGroup.filters
+        currentGroup.subGroups.get(currentGroup.subGroups.size() - 1).addFilter(newFilter);
+      } else {
+        // Add to currentGroup.filters
+        currentGroup.addFilter(newFilter);
+      }
+    } else if (currentGroup.logicalOperator == LogicalOperator.and) {
+      if (currentGroup.lastLogicalOp == LogicalOperator.and) {
+        currentGroup.addFilter(newFilter);
+      } else {
+
+      }
+    }
   }
 
 }

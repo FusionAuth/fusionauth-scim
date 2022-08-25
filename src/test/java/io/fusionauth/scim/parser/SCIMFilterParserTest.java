@@ -298,6 +298,17 @@ public class SCIMFilterParserTest {
                                  )
             )
         },
+        // Mixing logical operators
+        {"A pr or B pr and C pr",
+            new FilterGroup()
+                .with(g -> g.logicalOperator = LogicalOperator.or)
+                .addFilter(simpleFilter("A"))
+                .addSubGroup(new FilterGroup()
+                                 .with(g -> g.logicalOperator = LogicalOperator.and)
+                                 .addFilter(simpleFilter("B"))
+                                 .addFilter(simpleFilter("C"))
+            )
+        },
 //        {"userType eq \"Employee\" and emails[type eq \"work\" and value co \"@example.com\"]",
 //            new FilterResult()
 //                .with(r -> r.attribute = "title")
@@ -313,5 +324,17 @@ public class SCIMFilterParserTest {
   public void parse(String filter, FilterGroup expected) throws Exception {
     FilterGroup actual = parser.parse(filter);
     assertEquals(expected, actual);
+  }
+
+  /**
+   * Helper to return a simple filter to be used for logic/grouping tests
+   *
+   * @param attribute Name of the attribute
+   * @return A simple presence Filter for the given attribute
+   */
+  private Filter simpleFilter(String attribute) {
+    return new Filter(attribute)
+        .with(f -> f.op = Op.pr)
+        .with(f -> f.valueType = ValueType.none);
   }
 }

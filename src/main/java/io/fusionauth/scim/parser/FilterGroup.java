@@ -11,6 +11,12 @@ public class FilterGroup implements Buildable<FilterGroup> {
 
   public boolean inverted = false;
 
+  /**
+   * This is used to handle mixed and-or logical operators at the same level
+   * without nesting properly (e.g. A * B + C + D * E * F)
+   */
+  public LogicalOperator lastLogicalOp = null;
+
   public LogicalOperator logicalOperator = null;
 
   public String parent = null;
@@ -29,8 +35,12 @@ public class FilterGroup implements Buildable<FilterGroup> {
 
   @Override
   public boolean equals(Object o) {
-    if (this == o) {return true;}
-    if (o == null || getClass() != o.getClass()) {return false;}
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
     FilterGroup that = (FilterGroup) o;
     return inverted == that.inverted && filters.equals(that.filters) && subGroups.equals(that.subGroups) && logicalOperator == that.logicalOperator && Objects.equals(parent, that.parent);
   }
