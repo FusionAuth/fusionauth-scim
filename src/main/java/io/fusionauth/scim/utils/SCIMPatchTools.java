@@ -47,7 +47,7 @@ public class SCIMPatchTools {
    * @throws IOException when something bad happens.
    */
   public static ArrayNode convertSCIMPatchToJSONPatch(ObjectMapper objectMapper, JsonNode source, List<SCIMPatchOperation> operations)
-      throws IOException {
+      throws Exception {
     ArrayNode result = JsonNodeFactory.instance.arrayNode();
 
     for (SCIMPatchOperation op : operations) {

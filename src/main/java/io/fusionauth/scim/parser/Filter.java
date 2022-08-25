@@ -1,17 +1,36 @@
+/*
+ * Copyright (c) 2022, FusionAuth, All Rights Reserved
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
+ * either express or implied. See the License for the specific
+ * language governing permissions and limitations under the License.
+ */
 package io.fusionauth.scim.parser;
 
 import java.util.Objects;
 
 import io.fusionauth.scim.domain.Buildable;
+import io.fusionauth.scim.utils.ToString;
 
+/**
+ * @author Spencer Witt
+ */
 public class Filter implements Buildable<Filter> {
   public String attribute;
 
   public Op op;
 
-  public String schema = null;
+  public String schema;
 
-  public String value = null;
+  public String value;
 
   public ValueType valueType;
 
@@ -34,22 +53,20 @@ public class Filter implements Buildable<Filter> {
       return false;
     }
     Filter filter = (Filter) o;
-    return attribute.equals(filter.attribute) && Objects.equals(schema, filter.schema) && op == filter.op && valueType == filter.valueType && Objects.equals(value, filter.value);
+    return attribute.equals(filter.attribute) &&
+           op == filter.op &&
+           Objects.equals(schema, filter.schema) &&
+           Objects.equals(value, filter.value) &&
+           valueType == filter.valueType;
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(attribute, schema, op, valueType, value);
+    return Objects.hash(attribute, op, schema, value, valueType);
   }
 
   @Override
   public String toString() {
-    return "Filter{" +
-           "attribute='" + attribute + '\'' +
-           ", schema='" + schema + '\'' +
-           ", op=" + op +
-           ", valueType=" + valueType +
-           ", value='" + value + '\'' +
-           '}';
+    return ToString.toString((this));
   }
 }
