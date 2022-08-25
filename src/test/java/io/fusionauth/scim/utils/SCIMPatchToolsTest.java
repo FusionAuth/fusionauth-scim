@@ -19,6 +19,8 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.List;
+import java.util.stream.Stream;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -28,6 +30,7 @@ import org.testng.annotations.BeforeTest;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 import static org.testng.Assert.assertEquals;
+import static org.testng.FileAssert.fail;
 
 /**
  * @author Daniel DeGroff
@@ -46,19 +49,27 @@ public class SCIMPatchToolsTest {
   }
 
   @DataProvider(name = "testFiles")
-  public Object[][] testFiles() {
-    return new Object[][]{
-        {"test1"}
-    };
+  public Object[][] testFiles() throws IOException {
+    List<String> fileNames;
+    try (Stream<Path> files = Files.list(jsonDir.resolve("scim-patch"))) {
+      fileNames = files.map(f -> f.getFileName().toString()).filter(n -> n.endsWith(".json")).toList();
+    }
+
+    return new Object[][]{fileNames.toArray()};
   }
 
   @Test(dataProvider = "testFiles")
   public void testing(String testName) throws Exception {
-    String scimPatch = Files.readString(jsonDir.resolve("scim-patch/" + testName + ".json"));
+    String scimPatch = Files.readString(jsonDir.resolve("scim-patch/" + testName));
     SCIMPatchRequest scimPatchRequest = objectMapper.readerFor(SCIMPatchRequest.class).readValue(scimPatch);
     ArrayNode actual = SCIMPatchTools.convertSCIMPatchToJSONPatch(objectMapper, source, scimPatchRequest.Operations);
 
-    String jsonPatch = Files.readString(jsonDir.resolve("json-patch/" + testName + ".json"));
+    Path target = jsonDir.resolve("json-patch/" + testName);
+    if (!target.toFile().exists()) {
+      fail("You are missing the expected version of the [" + testName + "] in JSON patch version. Create the file json-patch/" + testName + ".");
+    }
+
+    String jsonPatch = Files.readString(target);
     ArrayNode expected = (ArrayNode) objectMapper.readTree(jsonPatch);
 
     assertEquals(actual, expected);
