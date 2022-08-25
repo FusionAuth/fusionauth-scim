@@ -309,6 +309,17 @@ public class SCIMFilterParserTest {
                                  .addFilter(simpleFilter("C"))
             )
         },
+        {"A pr and B pr or C pr",
+            new FilterGroup()
+                .with(g -> g.logicalOperator = LogicalOperator.or)
+                .addSubGroup(new FilterGroup()
+                                 .with(g -> g.logicalOperator = LogicalOperator.and)
+                                 .addFilter(simpleFilter("A"))
+                                 .addFilter(simpleFilter("B"))
+                )
+                .addFilter(simpleFilter("C")
+            )
+        },
 //        {"userType eq \"Employee\" and emails[type eq \"work\" and value co \"@example.com\"]",
 //            new FilterResult()
 //                .with(r -> r.attribute = "title")

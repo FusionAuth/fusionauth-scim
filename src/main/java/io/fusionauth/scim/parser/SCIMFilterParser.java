@@ -12,10 +12,9 @@ public class SCIMFilterParser {
 
   public FilterGroup parse(String filter) throws Exception {
     SCIMParserToken token = new SCIMParserToken(SCIMParserState.start, filter.trim(), null);
-    FilterGroup result = new FilterGroup();
     Filter currentFilter = null;
     Deque<FilterGroup> scope = new ArrayDeque<>();
-    scope.push(result);
+    scope.push(new FilterGroup());
 
     boolean invertNextGroup = false;
 
@@ -58,10 +57,26 @@ public class SCIMFilterParser {
               // TODO : should we make new FilterGroup the currentGroup by pushing to stack?
             } else if (currentGroup.lastLogicalOp == LogicalOperator.and && logicalOperator == LogicalOperator.or) {
               // Going from AND to OR
-              // 1)
+              // 1) Remove currentGroup from scope
+              FilterGroup fg = scope.pop();
+              assert fg == currentGroup;
+              // 2) Create a new FilterGroup with currentGroup
+              FilterGroup newGroup = new FilterGroup()
+                  .with(g -> g.logicalOperator = LogicalOperator.or)
+                  .with(g -> g.lastLogicalOp = LogicalOperator.or)
+                  .addSubGroup(currentGroup);
+              FilterGroup parentGroup = scope.peek();
+              // If there is a parentGroup
+              //  3) Remove currentGroup from subGroups
+              //  4) Add newGroup to subGroups
+              if (parentGroup != null) {
+                parentGroup.subGroups.remove(fg);
+                parentGroup.addSubGroup(newGroup);
+              }
+              // 5) Add newGroup to scope
+              scope.push(newGroup);
             }
           }
-          // TODO : if logical operator has changed, we need a new group
           break;
         case not:
           // We should have a precedence grouping next that needs to be inverted
@@ -117,6 +132,7 @@ public class SCIMFilterParser {
     // Only the base result scope should be left in the stack
     assert scope.size() == 1;
 
+    FilterGroup result = scope.pop();
     // If the result contains a single subGroup, we can make that the result
     if (result.filters.isEmpty() && result.subGroups.size() == 1) {
       result = result.subGroups.get(0);
@@ -126,9 +142,7 @@ public class SCIMFilterParser {
   }
 
   private void addFilter(FilterGroup currentGroup, Filter newFilter) {
-    if (currentGroup.logicalOperator == null) {
-      currentGroup.addFilter(newFilter);
-    } else if (currentGroup.logicalOperator == LogicalOperator.or) {
+    if (currentGroup.logicalOperator == LogicalOperator.or) {
       if (currentGroup.lastLogicalOp == LogicalOperator.and) {
         // Add to the last subGroup.filters
         currentGroup.subGroups.get(currentGroup.subGroups.size() - 1).addFilter(newFilter);
@@ -136,12 +150,9 @@ public class SCIMFilterParser {
         // Add to currentGroup.filters
         currentGroup.addFilter(newFilter);
       }
-    } else if (currentGroup.logicalOperator == LogicalOperator.and) {
-      if (currentGroup.lastLogicalOp == LogicalOperator.and) {
-        currentGroup.addFilter(newFilter);
-      } else {
-
-      }
+    } else {
+      // No logicalOperator set, or AND
+      currentGroup.addFilter(newFilter);
     }
   }
 
