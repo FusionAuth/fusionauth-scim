@@ -28,9 +28,9 @@ public class Filter implements Buildable<Filter> {
 
   public Op op;
 
-  public String schema = null;
+  public String schema;
 
-  public String value = null;
+  public String value;
 
   public ValueType valueType;
 
