@@ -27,12 +27,15 @@ import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.node.TextNode;
 import io.fusionauth.scim.domain.SCIMPatchOperation;
+import io.fusionauth.scim.parser.Filter;
+import io.fusionauth.scim.parser.FilterGroup;
+import io.fusionauth.scim.parser.SCIMFilterParser;
 
 /**
  * @author Daniel DeGroff
  */
 public class SCIMPatchTools {
-  private final static Pattern JSONPointerFilter = Pattern.compile(".*\\[(.*)].*");
+  private final static Pattern JSONPointerFilter = Pattern.compile("(.*)\\[(.*)](.*)");
 
   /**
    * Convert SCIM Patch Operations to be compatible with RFC 6902 JSON Patch (application/json+patch+json).
@@ -67,19 +70,23 @@ public class SCIMPatchTools {
         // If we do have a path, and it contains a filter, replace it with an exact path.
         Matcher matcher = JSONPointerFilter.matcher(pathNode.asText());
         if (matcher.matches()) {
-          SCIMFilter filter = parseFilter(pathNode.asText(), matcher.group(1));
-          // This essentially must be an array node otherwise the request is invalid.
-          // emails[type sw \"w\"].value
-          // emails/0/value
-          // user.addresses[type = work].city
-          JsonNode attributeNode = filter.pathToNode(source);
+
+          String attrPathPointer = "/" + matcher.group(1).replace(".", "/");
+          String valFilter = matcher.group(2);
+          String subAttrPointer = matcher.group(3).replace(".", "/");
+
+          FilterGroup filteringGroup = new SCIMFilterParser().parse(valFilter);
+          Filter filter = filteringGroup.filters.get(0);
+
+          // emails[type eq work].value
+          JsonNode attributeNode = source.at(attrPathPointer);
           if (attributeNode instanceof ArrayNode array) {
             for (int i = 0; i < array.size(); i++) {
-              if (filter.matches(array.get(i))) {
+              if (FilterMatcher.matches(filter, array.get(i))) {
                 // Make a copy since we may create more than one of these from the initial SCIM op
                 // - Add a new op to the result for each matching node. It is plausible we'll match more than one node.
                 ObjectNode copy = operation.deepCopy();
-                copy.set("path", TextNode.valueOf(filter.getPrefix() + "/" + i + filter.getPostfixAttribute()));
+                copy.set("path", TextNode.valueOf(attrPathPointer + "/" + i + subAttrPointer));
                 result.add(copy);
               }
             }
@@ -96,90 +103,5 @@ public class SCIMPatchTools {
     }
 
     return result;
-  }
-
-  private static SCIMFilter parseFilter(String path, String filter) {
-    SCIMFilter result = new SCIMFilter();
-    String[] parts = filter.split(" ");
-    if (parts.length == 3) {
-      result.filterAttribute = parts[0];
-      result.filterOp = parts[1];
-      result.filterValue = parts[2];
-      if (result.filterValue.startsWith("\"")) {
-        result.filterValue = result.filterValue.substring(1, result.filterValue.length() - 1);
-      }
-    }
-
-    result.prefix = path.substring(0, path.indexOf(filter) - 1);
-    result.postfixAttribute = path.substring(path.indexOf(filter) + filter.length() + 2);
-
-    return result;
-  }
-
-  private static class SCIMFilter {
-    public String filterAttribute;
-
-    public String filterOp;
-
-    public String filterValue;
-
-    public String postfixAttribute;
-
-    public String prefix;
-
-    public String getPostfixAttribute() {
-      if (postfixAttribute == null) {
-        return "";
-      }
-
-      return "/" + postfixAttribute;
-    }
-
-    public String getPrefix() {
-      if (prefix == null) {
-        return "";
-      }
-
-      return "/" + prefix;
-    }
-
-    /**
-     * eq: equal
-     * ne: not equal
-     * co: contains
-     * sw: starts with
-     * ew: ends with
-     * pr: present (has value)
-     * gt: greater than
-     * ge: greater than or equal to
-     * lt: less than
-     * le: less than or equal to
-     *
-     * @param node the value to compare
-     * @return true if it matches the condition
-     */
-    public boolean matches(JsonNode node) {
-      if (!node.has(filterAttribute)) {
-        return false;
-      }
-
-      return switch (filterOp) {
-        case "eq" -> filterValue.equals(node.asText());
-        case "ne" -> !filterValue.equals(node.asText());
-        case "co" -> filterValue.contains(node.asText());
-        case "sw" -> filterValue.startsWith(node.asText());
-        case "ew" -> filterValue.endsWith(node.asText());
-        case "pr" -> true;
-        case "gt" -> Long.parseLong(filterValue) > node.asLong();
-        case "ge" -> Long.parseLong(filterValue) >= node.asLong();
-        case "lt" -> Long.parseLong(filterValue) < node.asLong();
-        case "le" -> Long.parseLong(filterValue) <= node.asLong();
-        default -> false;
-      };
-    }
-
-    public JsonNode pathToNode(JsonNode node) {
-      return node.at("/" + prefix.replace(".", "/"));
-    }
   }
 }

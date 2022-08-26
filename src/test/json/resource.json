@@ -1,0 +1,12 @@
+{
+  "emails": [
+    {
+      "type": "home",
+      "value": "erlich@bachmanity.com"
+    },
+    {
+      "type": "work",
+      "value": "erlich@piedpiper.com"
+    }
+  ]
+}

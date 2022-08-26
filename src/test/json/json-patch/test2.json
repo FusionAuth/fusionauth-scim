@@ -1,0 +1,10 @@
+[
+  {
+    "op": "replace",
+    "path": "/emails/1",
+    "value": {
+      "type": "work",
+      "value": "erlich@piedpiper.com"
+    }
+  }
+]
