@@ -29,7 +29,6 @@ import com.fasterxml.jackson.databind.node.TextNode;
 import io.fusionauth.scim.domain.SCIMPatchOperation;
 import io.fusionauth.scim.parser.Filter;
 import io.fusionauth.scim.parser.FilterGroup;
-import io.fusionauth.scim.parser.SCIMFilterParser;
 
 /**
  * @author Daniel DeGroff
@@ -75,7 +74,8 @@ public class SCIMPatchTools {
           String valFilter = matcher.group(2);
           String subAttrPointer = matcher.group(3).replace(".", "/");
 
-          FilterGroup filteringGroup = new SCIMFilterParser().parse(valFilter);
+//          FilterGroup filteringGroup = new SCIMFilterParser().parse(valFilter);
+          FilterGroup filteringGroup = new FilterGroup();
           Filter filter = filteringGroup.filters.get(0);
 
           // emails[type eq work].value
