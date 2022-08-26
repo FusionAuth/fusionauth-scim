@@ -93,7 +93,7 @@ public class SCIMFilterParser {
               FilterGroup newGroup = new FilterGroup()
                   .with(g -> g.logicalOperator = LogicalOperator.or)
                   .with(g -> g.lastLogicalOp = LogicalOperator.or)
-                  .addSubGroup(currentGroup);
+                  .addSubGroup(fg);
               FilterGroup parentGroup = scope.peek();
               // If there is a parentGroup
               if (parentGroup != null) {
@@ -145,6 +145,10 @@ public class SCIMFilterParser {
           group.inverted = invertNextGroup;
           invertNextGroup = false;
           // Add to the current FilterGroup's subGroups
+          // TODO : This one should be going to the new SubGroup that was created in the previous OR->AND transition
+          //  A * B + (C * D + E) * (F + G * H) + I
+          //          |----X----|   |----Y----|
+          //  Y should have been added to a group alongside X, but instead it was added to the base group here
           currentGroup.addSubGroup(group);
           // Make this new FilterGroup the current scope
           scope.push(group);
