@@ -22,6 +22,7 @@ import java.nio.file.Paths;
 import java.util.List;
 import java.util.stream.Stream;
 
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
@@ -36,7 +37,8 @@ import static org.testng.FileAssert.fail;
  * @author Daniel DeGroff
  */
 public class SCIMPatchToolsTest {
-  private final ObjectMapper objectMapper = new ObjectMapper();
+  private final ObjectMapper objectMapper = new ObjectMapper()
+      .setSerializationInclusion(Include.NON_NULL);
 
   private Path jsonDir;
 

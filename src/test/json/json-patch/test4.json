@@ -1,0 +1,12 @@
+[
+  {
+    "op": "replace",
+    "path": "/id",
+    "value": "839abed4-c97b-41fb-a9a9-e1aba5e4970c"
+  },
+  {
+    "op": "replace",
+    "path": "/displayName",
+    "value": "Changed Group Name"
+  }
+]
