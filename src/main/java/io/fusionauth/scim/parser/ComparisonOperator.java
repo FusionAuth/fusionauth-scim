@@ -18,7 +18,7 @@ package io.fusionauth.scim.parser;
 /**
  * @author Spencer Witt
  */
-public enum Op {
+public enum ComparisonOperator {
   /**
    * Equal. Operator value and attribute value must match exactly
    */

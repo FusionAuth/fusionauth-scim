@@ -15,178 +15,245 @@
  */
 package io.fusionauth.scim.parser;
 
+import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
-import java.util.ArrayDeque;
-import java.util.Deque;
+
+import io.fusionauth.scim.parser.exception.ComparisonValueException;
+import io.fusionauth.scim.parser.exception.InvalidStateException;
+import io.fusionauth.scim.parser.exception.OperatorException;
+import io.fusionauth.scim.parser.expression.AttributeBooleanComparisonExpression;
+import io.fusionauth.scim.parser.expression.AttributeDateComparisonExpression;
+import io.fusionauth.scim.parser.expression.AttributeNullComparisonExpression;
+import io.fusionauth.scim.parser.expression.AttributeNumberComparisonExpression;
+import io.fusionauth.scim.parser.expression.AttributePresentExpression;
+import io.fusionauth.scim.parser.expression.AttributeTextComparisonExpression;
+import io.fusionauth.scim.parser.expression.Expression;
 
 /**
  * @author Spencer Witt
  */
 public class SCIMFilterParser {
 
-  public FilterGroup parse(String filter) throws Exception {
-    SCIMParserToken token = new SCIMParserToken(SCIMParserState.start, filter.trim(), null);
-    Filter currentFilter = null;
-    Deque<FilterGroup> scope = new ArrayDeque<>();
-    scope.push(new FilterGroup());
+  public Expression parse(String filter) throws InvalidStateException, OperatorException, ComparisonValueException {
+    // Add a trailing space to ensure all tokens are parsed
+    char[] source = new char[filter.length() + 1];
+    filter.getChars(0, filter.length(), source, 0);
+    source[source.length - 1] = ' ';
+    SCIMParserState state = SCIMParserState.filterStart;
+    String attrPath = null;
+    ComparisonOperator attrOp = null;
+    Expression currentExpression = null;
+    StringBuilder sb = new StringBuilder();
 
-    boolean invertNextGroup = false;
-
-    while (!token.remaining.isEmpty()) {
-      token = token.state.next(token.remaining);
-      FilterGroup currentGroup = scope.peek();
-      switch (token.state) {
-        case attribute:
-          currentFilter = new Filter(token.value);
+    for (int i = 0; i < source.length; i++) {
+      char c = source[i];
+      //noinspection EnhancedSwitchMigration
+      switch (state) {
+        case filterStart:
+          state = state.next(c);
+          if (state == SCIMParserState.attributePath) {
+            sb.append(c);
+          }
           break;
-        case op:
-          currentFilter.op = Op.valueOf(token.value);
+        case attributePath:
+          state = state.next(c);
+          if (state == SCIMParserState.attributePath || state == SCIMParserState.beforeSubAttribute) {
+            sb.append(c);
+          } else if (state == SCIMParserState.beforeOperator) {
+            attrPath = sb.toString();
+            sb.setLength(0);
+          }
           break;
-        case unaryOp:
-          // This should always be `pr`
-          currentFilter.op = Op.valueOf(token.value);
-          currentFilter.valueType = ValueType.none;
-          addFilter(currentGroup, currentFilter);
-          currentFilter = null;
+        case beforeSubAttribute:
+          state = state.next(c);
+          if (state == SCIMParserState.subAttribute) {
+            sb.append(c);
+          }
           break;
-        case logicOp:
-          LogicalOperator logicalOperator = LogicalOperator.valueOf(token.value);
-          if (currentGroup.logicalOperator == null) {
-            currentGroup.logicalOperator = logicalOperator;
-            currentGroup.lastLogicalOp = logicalOperator;
-          } else if (currentGroup.lastLogicalOp != logicalOperator) {
-            if (currentGroup.lastLogicalOp == LogicalOperator.or && logicalOperator == LogicalOperator.and) {
-              // Going from OR to AND
-              if (currentGroup.isLastAddGroup) {
-                // The last object added to currentGroup was a subGroup
-                // 1a) Remove the last FilterGroup from currentGroup
-                FilterGroup fg = currentGroup.subGroups.remove(currentGroup.subGroups.size() - 1);
-                // 2b) Create a new FilterGroup with AND operator and the removed FilterGroup
-                FilterGroup newGroup = new FilterGroup()
-                    .with(g -> g.logicalOperator = LogicalOperator.and)
-                    .with(g -> g.lastLogicalOp = LogicalOperator.and)
-                    .addSubGroup(fg);
-                // 3b) Add new FilterGroup to currentGroup.subGroups
-                currentGroup.addSubGroup(newGroup);
-              } else {
-                // The last object added to currentGroup was a Filter
-                // 1b) Remove the last Filter from currentGroup
-                Filter f = currentGroup.filters.remove(currentGroup.filters.size() - 1);
-                // 2b) Create a new FilterGroup with AND operator and the removed Filter
-                FilterGroup newGroup = new FilterGroup()
-                    .with(g -> g.logicalOperator = LogicalOperator.and)
-                    .with(g -> g.lastLogicalOp = LogicalOperator.and)
-                    .addFilter(f);
-                // 3b) Add new FilterGroup to currentGroup.subGroups
-                currentGroup.addSubGroup(newGroup);
-              }
-              // 4) Set currentGroup.lastLogicalOp
-              currentGroup.lastLogicalOp = logicalOperator;
-              // TODO : should we make new FilterGroup the currentGroup by pushing to stack?
-            } else if (currentGroup.lastLogicalOp == LogicalOperator.and && logicalOperator == LogicalOperator.or) {
-              // Going from AND to OR
-              // 1) Remove currentGroup from scope
-              FilterGroup fg = scope.pop();
-              assert fg == currentGroup;
-              // 2) Create a new FilterGroup with currentGroup
-              FilterGroup newGroup = new FilterGroup()
-                  .with(g -> g.logicalOperator = LogicalOperator.or)
-                  .with(g -> g.lastLogicalOp = LogicalOperator.or)
-                  .addSubGroup(fg);
-              FilterGroup parentGroup = scope.peek();
-              // If there is a parentGroup
-              if (parentGroup != null) {
-                //  3) Remove currentGroup from subGroups
-                parentGroup.subGroups.remove(fg);
-                //  4) Add newGroup to subGroups
-                parentGroup.addSubGroup(newGroup);
-              }
-              // 5) Add newGroup to scope
-              scope.push(newGroup);
+        case subAttribute:
+          state = state.next(c);
+          if (state == SCIMParserState.subAttribute) {
+            sb.append(c);
+          } else if (state == SCIMParserState.beforeOperator) {
+            attrPath = sb.toString();
+            sb.setLength(0);
+          }
+          break;
+        case beforeOperator:
+          state = state.next(c);
+          if (state == SCIMParserState.unaryOperator ||
+              state == SCIMParserState.comparisonOperator
+          ) {
+            sb.append(c);
+          }
+          break;
+        case unaryOperator:
+          state = state.next(c);
+          if (state == SCIMParserState.afterAttributeExpression) {
+            sb.append(c);
+            try {
+              assert ComparisonOperator.valueOf(sb.toString()) == ComparisonOperator.pr;
+              currentExpression = new AttributePresentExpression(attrPath);
+              attrPath = null;
+              sb.setLength(0);
+            } catch (IllegalArgumentException e) {
+              throw new OperatorException("No operator for [" + sb + "]");
             }
           }
           break;
-        case not:
-          // We should have a precedence grouping next that needs to be inverted
-          invertNextGroup = true;
-          break;
-        case opValue:
-          currentFilter.value = token.value;
-          if (currentFilter.value.startsWith("\"") && currentFilter.value.endsWith("\"")) {
-            // This is either text or date. Remove start/end quote
-            currentFilter.value = currentFilter.value.substring(1, currentFilter.value.length() - 1);
+        case comparisonOperator:
+          state = state.next(c);
+          if (state == SCIMParserState.beforeComparisonValue) {
+            sb.append(c);
             try {
-              // If we can parse as date, it's a date type...
-              DateTimeFormatter.ISO_DATE_TIME.parse(currentFilter.value);
-              currentFilter.valueType = ValueType.date;
-            } catch (DateTimeParseException ignored) {
-              // ...otherwise it's text
-              currentFilter.valueType = ValueType.text;
-            }
-          } else if (currentFilter.value.equals("null")) {
-            currentFilter.valueType = ValueType.nul;
-          } else if (currentFilter.value.equals("true") || currentFilter.value.equals("false")) {
-            currentFilter.valueType = ValueType.bool;
-          } else {
-            try {
-              Double.parseDouble(currentFilter.value);
-              currentFilter.valueType = ValueType.number;
-            } catch (NumberFormatException ignored) {
-              throw new Exception("Invalid opValue " + token.value);
+              attrOp = ComparisonOperator.valueOf(sb.toString());
+              sb.setLength(0);
+            } catch (IllegalArgumentException e) {
+              throw new OperatorException("No operator for [" + sb + "]");
             }
           }
-          addFilter(currentGroup, currentFilter);
-          currentFilter = null;
           break;
-        case openParen:
-          // Create a subGroup
-          FilterGroup group = new FilterGroup();
-          group.inverted = invertNextGroup;
-          invertNextGroup = false;
-          // Add to the current FilterGroup's subGroups
-          // TODO : This one should be going to the new SubGroup that was created in the previous OR->AND transition
-          //  A * B + (C * D + E) * (F + G * H) + I
-          //          |----X----|   |----Y----|
-          //  Y should have been added to a group alongside X, but instead it was added to the base group here
-          currentGroup.addSubGroup(group);
-          // Make this new FilterGroup the current scope
-          scope.push(group);
+        case beforeComparisonValue:
+          state = state.next(c);
+          if (state == SCIMParserState.booleanValue ||
+              state == SCIMParserState.nullValue ||
+              state == SCIMParserState.minus ||
+              state == SCIMParserState.numberValue
+          ) {
+            sb.append(c);
+          }
+          // Skip appending for beginning of textValue. We don't need the leading "
           break;
-        case closeParen:
-          // Finish off the current scope
-          scope.pop();
+        case booleanValue:
+          state = state.next(c);
+          if (state == SCIMParserState.booleanValue) {
+            sb.append(c);
+          } else if (state == SCIMParserState.afterAttributeExpression) {
+            if (sb.toString().equals("true")) {
+              currentExpression = new AttributeBooleanComparisonExpression(attrPath, attrOp, true);
+            } else if (sb.toString().equals("false")) {
+              currentExpression = new AttributeBooleanComparisonExpression(attrPath, attrOp, false);
+            } else {
+              throw new ComparisonValueException("[" + sb + "] is not a valid comparison value");
+            }
+            sb.setLength(0);
+            if (attrOp != ComparisonOperator.eq && attrOp != ComparisonOperator.ne) {
+              throw new OperatorException("[" + attrOp + "] is not a valid operator for a boolean comparison");
+            }
+          }
           break;
-        default:
-          throw new Exception("Unexpected state value " + token.state);
+        case nullValue:
+          state = state.next(c);
+          if (state == SCIMParserState.nullValue) {
+            sb.append(c);
+          } else if (state == SCIMParserState.afterAttributeExpression) {
+            if (sb.toString().equals("null")) {
+              currentExpression = new AttributeNullComparisonExpression(attrPath, attrOp);
+              sb.setLength(0);
+            } else {
+              throw new ComparisonValueException("[" + sb + "] is not a valid comparison value");
+            }
+          }
+          if (attrOp != ComparisonOperator.eq && attrOp != ComparisonOperator.ne) {
+            throw new OperatorException("[" + attrOp + "] is not a valid operator for a null comparison");
+          }
+          break;
+        case minus:
+          state = state.next(c);
+          if (state == SCIMParserState.numberValue) {
+            sb.append(c);
+          }
+          break;
+        case numberValue:
+          state = state.next(c);
+          if (state == SCIMParserState.numberValue || state == SCIMParserState.decimalValue || state == SCIMParserState.exponentSign) {
+            sb.append(c);
+          } else if (state == SCIMParserState.afterAttributeExpression) {
+            try {
+              currentExpression = new AttributeNumberComparisonExpression(attrPath, attrOp, Double.parseDouble(sb.toString()));
+              sb.setLength(0);
+            } catch (NumberFormatException e) {
+              throw new ComparisonValueException("[" + sb + "] is not a valid comparison value");
+            }
+          }
+          break;
+        case decimalValue:
+          state = state.next(c);
+          if (state == SCIMParserState.decimalValue || state == SCIMParserState.exponentSign) {
+            sb.append(c);
+          } else if (state == SCIMParserState.afterAttributeExpression) {
+            try {
+              currentExpression = new AttributeNumberComparisonExpression(attrPath, attrOp, Double.parseDouble(sb.toString()));
+              sb.setLength(0);
+            } catch (NumberFormatException e) {
+              throw new ComparisonValueException("[" + sb + "] is not a valid comparison value");
+            }
+          }
+          break;
+        case exponentSign:
+          state = state.next(c);
+          if (state == SCIMParserState.exponentValue) {
+            sb.append(c);
+          }
+          break;
+        case exponentValue:
+          state = state.next(c);
+          if (state == SCIMParserState.exponentValue) {
+            sb.append(c);
+          } else if (state == SCIMParserState.afterAttributeExpression) {
+            try {
+              currentExpression = new AttributeNumberComparisonExpression(attrPath, attrOp, Double.parseDouble(sb.toString()));
+              sb.setLength(0);
+            } catch (NumberFormatException e) {
+              throw new ComparisonValueException("[" + sb + "] is not a valid comparison value");
+            }
+          }
+          break;
+        case textValue:
+          state = state.next(c);
+          if (state == SCIMParserState.textValue) {
+            sb.append(c);
+          } else if (state == SCIMParserState.afterAttributeExpression) {
+            try {
+              // Try to parse as Date...
+              currentExpression = new AttributeDateComparisonExpression(attrPath, attrOp, ZonedDateTime.from(DateTimeFormatter.ISO_DATE_TIME.parse(sb.toString())).toEpochSecond());
+            } catch (DateTimeParseException e) {
+              // ...otherwise treat as text
+              currentExpression = new AttributeTextComparisonExpression(attrPath, attrOp, sb.toString());
+            }
+            sb.setLength(0);
+          }
+          break;
+        case escapedText:
+          state = state.next(c);
+          if (state == SCIMParserState.textValue) {
+            if (c == 't') {
+              sb.append('\t');
+            } else if (c == 'b') {
+              sb.append('\b');
+            } else if (c == 'n') {
+              sb.append('\n');
+            } else if (c == 'r') {
+              sb.append('\r');
+            } else if (c == 'f') {
+              sb.append('\f');
+            } else if (c == '\'') {
+              sb.append('\'');
+            } else if (c == '"') {
+              sb.append('"');
+            } else if (c == '\\') {
+              sb.append('\\');
+            }
+          }
+          break;
+      }
+
+      if (state == SCIMParserState.invalidState) {
+        throw new InvalidStateException("Invalid state transition at [" + filter.substring(0, Math.min(i + 1, filter.length())) + "]");
       }
     }
 
-    // Only the base result scope should be left in the stack
-    assert scope.size() == 1;
-
-    FilterGroup result = scope.pop();
-    // If the result contains a single subGroup, we can make that the result
-    if (result.filters.isEmpty() && result.subGroups.size() == 1) {
-      result = result.subGroups.get(0);
-    }
-
-    return result;
+    return currentExpression;
   }
-
-  private void addFilter(FilterGroup currentGroup, Filter newFilter) {
-    if (currentGroup.logicalOperator == LogicalOperator.or) {
-      if (currentGroup.lastLogicalOp == LogicalOperator.and) {
-        // Add to the last subGroup.filters
-        currentGroup.subGroups.get(currentGroup.subGroups.size() - 1).addFilter(newFilter);
-      } else {
-        // Add to currentGroup.filters
-        currentGroup.addFilter(newFilter);
-      }
-    } else {
-      // No logicalOperator set, or AND
-      currentGroup.addFilter(newFilter);
-    }
-  }
-
 }
