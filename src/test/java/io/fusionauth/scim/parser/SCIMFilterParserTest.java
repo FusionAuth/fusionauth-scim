@@ -16,6 +16,8 @@
 package io.fusionauth.scim.parser;
 
 import io.fusionauth.scim.parser.exception.InvalidStateException;
+import io.fusionauth.scim.parser.expression.AttributePresentExpression;
+import io.fusionauth.scim.parser.expression.Expression;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 import static org.testng.AssertJUnit.assertEquals;
@@ -104,7 +106,7 @@ public class SCIMFilterParserTest {
     return new Object[][]{
         {
             "A pr",
-            SCIMParserState.afterAttributeExpression
+            new AttributePresentExpression("A")
         },
         {
             "A eq true",
@@ -159,8 +161,8 @@ public class SCIMFilterParserTest {
   }
 
   @Test(dataProvider = "goodData")
-  public void parseGood(String filter, SCIMParserState expected) throws Exception {
-    SCIMParserState actual = parser.parse(filter);
+  public void parseGood(String filter, Expression expected) throws Exception {
+    Expression actual = parser.parse(filter);
     assertEquals(expected, actual);
   }
 }

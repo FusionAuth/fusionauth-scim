@@ -26,7 +26,7 @@ import io.fusionauth.scim.utils.ToString;
 public class Filter implements Buildable<Filter> {
   public String attribute;
 
-  public Op op;
+  public ComparisonOperator op;
 
   public String schema;
 

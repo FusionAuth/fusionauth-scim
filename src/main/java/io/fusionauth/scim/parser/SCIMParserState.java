@@ -26,6 +26,9 @@ public enum SCIMParserState {
   afterAttributeExpression {
     @Override
     public SCIMParserState next(char c) {
+      if (c == ' ') {
+        return afterAttributeExpression;
+      }
       return invalidState;
     }
   },
@@ -53,9 +56,11 @@ public enum SCIMParserState {
         return booleanValue;
       } else if (c == 'n') {
         return nullValue;
-      } else if ((Character.isDigit(c) && c != '0') || c == '-') {
+      } else if (Character.isDigit(c) && c != '0') {
         // A leading zero is not allowed according to RFC 7159
         return numberValue;
+      } else if (c == '-') {
+        return minus;
       }
       return invalidState;
     }
@@ -96,8 +101,16 @@ public enum SCIMParserState {
   comparisonOperator {
     @Override
     public SCIMParserState next(char c) {
-      // The parser must check that the two characters are a valid operator
-      return beforeComparisonValue;
+      if (c == 'e' ||
+          c == 'o' ||
+          c == 'q' ||
+          c == 't' ||
+          c == 'w'
+      ) {
+        // The parser must check that the two characters are a valid operator
+        return beforeComparisonValue;
+      }
+      return invalidState;
     }
   },
   escapedText {
@@ -129,6 +142,15 @@ public enum SCIMParserState {
   invalidState {
     @Override
     public SCIMParserState next(char c) {
+      return invalidState;
+    }
+  },
+  minus {
+    @Override
+    public SCIMParserState next(char c) {
+      if (Character.isDigit(c) && c != '0') {
+        return numberValue;
+      }
       return invalidState;
     }
   },
