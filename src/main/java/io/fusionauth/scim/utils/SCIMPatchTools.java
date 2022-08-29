@@ -103,8 +103,11 @@ public class SCIMPatchTools {
           // Path must begin with a slash.
           String path = pathNode.asText();
           if (!path.startsWith("/")) {
-            operation.set("path", TextNode.valueOf("/" + path));
+            path = "/" + path;
           }
+
+          path = path.replace(".", "/");
+          operation.set("path", TextNode.valueOf(path));
           result.add(operation);
         }
       }
