@@ -175,6 +175,8 @@ public enum SCIMParserState {
         return decimalValue;
       } else if (c == 'e' || c == 'E') {
         return exponentSign;
+      } else if (c == ' ') {
+        return afterAttributeExpression;
       }
       return invalidState;
     }
@@ -193,6 +195,8 @@ public enum SCIMParserState {
     public SCIMParserState next(char c) {
       if (Character.isDigit(c)) {
         return exponentValue;
+      } else if (c == ' ') {
+        return afterAttributeExpression;
       }
       return invalidState;
     }
@@ -204,6 +208,8 @@ public enum SCIMParserState {
         return decimalValue;
       } else if (c == 'e' || c == 'E') {
         return exponentSign;
+      } else if (c == ' ') {
+        return afterAttributeExpression;
       }
       return invalidState;
     }

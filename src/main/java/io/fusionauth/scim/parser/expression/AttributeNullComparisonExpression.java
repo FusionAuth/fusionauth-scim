@@ -5,13 +5,14 @@ import java.util.Objects;
 import io.fusionauth.scim.parser.ComparisonOperator;
 import io.fusionauth.scim.utils.ToString;
 
-public class AttributePresentExpression implements Expression {
-  public final ComparisonOperator operator = ComparisonOperator.pr;
-
+public class AttributeNullComparisonExpression implements Expression {
   public String attributePath;
 
-  public AttributePresentExpression(String attributePath) {
+  public ComparisonOperator operator;
+
+  public AttributeNullComparisonExpression(String attributePath, ComparisonOperator operator) {
     this.attributePath = attributePath;
+    this.operator = operator;
   }
 
   @Override
@@ -22,13 +23,13 @@ public class AttributePresentExpression implements Expression {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    AttributePresentExpression that = (AttributePresentExpression) o;
-    return operator == that.operator && Objects.equals(attributePath, that.attributePath);
+    AttributeNullComparisonExpression that = (AttributeNullComparisonExpression) o;
+    return Objects.equals(attributePath, that.attributePath) && operator == that.operator;
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(operator, attributePath);
+    return Objects.hash(attributePath, operator);
   }
 
   @Override

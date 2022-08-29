@@ -16,6 +16,9 @@
 package io.fusionauth.scim.parser;
 
 import io.fusionauth.scim.parser.exception.InvalidStateException;
+import io.fusionauth.scim.parser.expression.AttributeBooleanComparisonExpression;
+import io.fusionauth.scim.parser.expression.AttributeNullComparisonExpression;
+import io.fusionauth.scim.parser.expression.AttributeNumberComparisonExpression;
 import io.fusionauth.scim.parser.expression.AttributePresentExpression;
 import io.fusionauth.scim.parser.expression.Expression;
 import org.testng.annotations.DataProvider;
@@ -110,39 +113,39 @@ public class SCIMFilterParserTest {
         },
         {
             "A eq true",
-            SCIMParserState.booleanValue
+            new AttributeBooleanComparisonExpression("A", ComparisonOperator.eq, true)
         },
         {
             "A eq false",
-            SCIMParserState.booleanValue
+            new AttributeBooleanComparisonExpression("A", ComparisonOperator.eq, false)
         },
         {
             "A eq null",
-            SCIMParserState.nullValue
+            new AttributeNullComparisonExpression("A", ComparisonOperator.eq)
         },
         {
             "A eq -121.45e+2",
-            SCIMParserState.exponentValue
+            new AttributeNumberComparisonExpression("A", ComparisonOperator.eq, -12145)
         },
         {
             "A eq 5E-0",
-            SCIMParserState.exponentValue
+            new AttributeNumberComparisonExpression("A", ComparisonOperator.eq, 5)
         },
         {
             // Extra spaces are fine
             "A  eq     5",
-            SCIMParserState.numberValue
+            new AttributeNumberComparisonExpression("A", ComparisonOperator.eq, 5)
         },
         {
             // Special characters are ignored in text values
             "A eq \") ((( ..eq pr 00.1.1.90)) (\"",
-            SCIMParserState.afterAttributeExpression
+            null
         },
         {
             // Special characters are ignored in text values
             """
             A eq "\\'\\"\\"\\t\\b\\n\\r\\f" """,
-            SCIMParserState.afterAttributeExpression
+            null
         },
         // TODO : More tests
         //  A eq "(((  D )) "

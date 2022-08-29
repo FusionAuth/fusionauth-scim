@@ -18,7 +18,9 @@ package io.fusionauth.scim.parser;
 import io.fusionauth.scim.parser.exception.ComparisonValueException;
 import io.fusionauth.scim.parser.exception.InvalidStateException;
 import io.fusionauth.scim.parser.exception.OperatorException;
-import io.fusionauth.scim.parser.expression.AttributeBooleanExpression;
+import io.fusionauth.scim.parser.expression.AttributeBooleanComparisonExpression;
+import io.fusionauth.scim.parser.expression.AttributeNullComparisonExpression;
+import io.fusionauth.scim.parser.expression.AttributeNumberComparisonExpression;
 import io.fusionauth.scim.parser.expression.AttributePresentExpression;
 import io.fusionauth.scim.parser.expression.Expression;
 
@@ -28,7 +30,10 @@ import io.fusionauth.scim.parser.expression.Expression;
 public class SCIMFilterParser {
 
   public Expression parse(String filter) throws InvalidStateException, OperatorException, ComparisonValueException {
-    char[] source = filter.toCharArray();
+    // Add a trailing space to ensure all tokens are parsed
+    char[] source = new char[filter.length() + 1];
+    filter.getChars(0, filter.length(), source, 0);
+    source[source.length - 1] = ' ';
     SCIMParserState state = SCIMParserState.filterStart;
     String attrPath = null;
     ComparisonOperator attrOp = null;
@@ -85,10 +90,10 @@ public class SCIMFilterParser {
               assert ComparisonOperator.valueOf(sb.toString()) == ComparisonOperator.pr;
               currentExpression = new AttributePresentExpression(attrPath);
               attrPath = null;
+              sb.setLength(0);
             } catch (IllegalArgumentException e) {
               throw new OperatorException("No operator for [" + sb + "]");
             }
-            sb.setLength(0);
           }
           break;
         case comparisonOperator:
@@ -97,10 +102,10 @@ public class SCIMFilterParser {
             sb.append(c);
             try {
               attrOp = ComparisonOperator.valueOf(sb.toString());
+              sb.setLength(0);
             } catch (IllegalArgumentException e) {
               throw new OperatorException("No operator for [" + sb + "]");
             }
-            sb.setLength(0);
           }
           break;
         case beforeComparisonValue:
@@ -120,14 +125,82 @@ public class SCIMFilterParser {
             sb.append(c);
           } else if (state == SCIMParserState.afterAttributeExpression) {
             if (sb.toString().equalsIgnoreCase("true")) {
-              currentExpression = new AttributeBooleanExpression(attrPath, attrOp, true);
+              currentExpression = new AttributeBooleanComparisonExpression(attrPath, attrOp, true);
             } else if (sb.toString().equalsIgnoreCase("false")) {
-              currentExpression = new AttributeBooleanExpression(attrPath, attrOp, false);
+              currentExpression = new AttributeBooleanComparisonExpression(attrPath, attrOp, false);
             } else {
-              throw new ComparisonValueException("[" + sb + "] is not a valid boolean comparison value");
+              throw new ComparisonValueException("[" + sb + "] is not a valid comparison value");
             }
+            sb.setLength(0);
             if (attrOp != ComparisonOperator.eq && attrOp != ComparisonOperator.ne) {
               throw new OperatorException("[" + attrOp + "] is not a valid operator for a boolean comparison");
+            }
+          }
+          break;
+        case nullValue:
+          state = state.next(c);
+          if (state == SCIMParserState.nullValue) {
+            sb.append(c);
+          } else if (state == SCIMParserState.afterAttributeExpression) {
+            if (sb.toString().equalsIgnoreCase("null")) {
+              currentExpression = new AttributeNullComparisonExpression(attrPath, attrOp);
+              sb.setLength(0);
+            } else {
+              throw new ComparisonValueException("[" + sb + "] is not a valid comparison value");
+            }
+          }
+          if (attrOp != ComparisonOperator.eq && attrOp != ComparisonOperator.ne) {
+            throw new OperatorException("[" + attrOp + "] is not a valid operator for a null comparison");
+          }
+          break;
+        case minus:
+          state = state.next(c);
+          if (state == SCIMParserState.numberValue) {
+            sb.append(c);
+          }
+          break;
+        case numberValue:
+          state = state.next(c);
+          if (state == SCIMParserState.numberValue || state == SCIMParserState.decimalValue || state == SCIMParserState.exponentSign) {
+            sb.append(c);
+          } else if (state == SCIMParserState.afterAttributeExpression) {
+            try {
+              currentExpression = new AttributeNumberComparisonExpression(attrPath, attrOp, Double.parseDouble(sb.toString()));
+              sb.setLength(0);
+            } catch (NumberFormatException e) {
+              throw new ComparisonValueException("[" + sb + "] is not a valid comparison value");
+            }
+          }
+          break;
+        case decimalValue:
+          state = state.next(c);
+          if (state == SCIMParserState.decimalValue || state == SCIMParserState.exponentSign) {
+            sb.append(c);
+          } else if (state == SCIMParserState.afterAttributeExpression) {
+            try {
+              currentExpression = new AttributeNumberComparisonExpression(attrPath, attrOp, Double.parseDouble(sb.toString()));
+              sb.setLength(0);
+            } catch (NumberFormatException e) {
+              throw new ComparisonValueException("[" + sb + "] is not a valid comparison value");
+            }
+          }
+          break;
+        case exponentSign:
+          state = state.next(c);
+          if (state == SCIMParserState.exponentValue) {
+            sb.append(c);
+          }
+          break;
+        case exponentValue:
+          state = state.next(c);
+          if (state == SCIMParserState.exponentValue) {
+            sb.append(c);
+          } else if (state == SCIMParserState.afterAttributeExpression) {
+            try {
+              currentExpression = new AttributeNumberComparisonExpression(attrPath, attrOp, Double.parseDouble(sb.toString()));
+              sb.setLength(0);
+            } catch (NumberFormatException e) {
+              throw new ComparisonValueException("[" + sb + "] is not a valid comparison value");
             }
           }
           break;
