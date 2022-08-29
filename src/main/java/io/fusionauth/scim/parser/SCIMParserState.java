@@ -100,6 +100,23 @@ public enum SCIMParserState {
       return beforeComparisonValue;
     }
   },
+  escapedText {
+    @Override
+    public SCIMParserState next(char c) {
+      if (c == 't' ||
+          c == 'b' ||
+          c == 'n' ||
+          c == 'r' ||
+          c == 'f' ||
+          c == '\'' ||
+          c == '"' ||
+          c == '\\'
+      ) {
+        return textValue;
+      }
+      return invalidState;
+    }
+  },
   filterStart {
     @Override
     public SCIMParserState next(char c) {
@@ -183,7 +200,12 @@ public enum SCIMParserState {
   textValue {
     @Override
     public SCIMParserState next(char c) {
-      return null;
+      if (c == '\\') {
+        return escapedText;
+      } else if (c == '"') {
+        return afterAttributeExpression;
+      }
+      return textValue;
     }
   },
   unaryOperator {

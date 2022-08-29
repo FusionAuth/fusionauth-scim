@@ -90,11 +90,17 @@ public class SCIMFilterParserTest {
             "A eq 12.4d3",
             "Invalid state transition at [A eq 12.4d]"
         },
+        {
+            // Invalid escape
+            "A eq \"\\c\"",
+            "Invalid state transition at [A eq \"\\c]"
+        },
     };
   }
 
   @DataProvider(name = "goodData")
   public Object[][] goodData() {
+    //noinspection TrailingWhitespacesInTextBlock
     return new Object[][]{
         {
             "A pr",
@@ -119,6 +125,22 @@ public class SCIMFilterParserTest {
         {
             "A eq 5E-0",
             SCIMParserState.exponentValue
+        },
+        {
+            // Extra spaces are fine
+            "A  eq     5",
+            SCIMParserState.numberValue
+        },
+        {
+            // Special characters are ignored in text values
+            "A eq \") ((( ..eq pr 00.1.1.90)) (\"",
+            SCIMParserState.afterAttributeExpression
+        },
+        {
+            // Special characters are ignored in text values
+            """
+            A eq "\\'\\"\\"\\t\\b\\n\\r\\f" """,
+            SCIMParserState.afterAttributeExpression
         },
         // TODO : More tests
         //  A eq "(((  D )) "
