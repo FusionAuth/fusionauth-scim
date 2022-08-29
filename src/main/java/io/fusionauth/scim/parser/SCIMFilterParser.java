@@ -130,9 +130,9 @@ public class SCIMFilterParser {
           if (state == SCIMParserState.booleanValue) {
             sb.append(c);
           } else if (state == SCIMParserState.afterAttributeExpression) {
-            if (sb.toString().equalsIgnoreCase("true")) {
+            if (sb.toString().equals("true")) {
               currentExpression = new AttributeBooleanComparisonExpression(attrPath, attrOp, true);
-            } else if (sb.toString().equalsIgnoreCase("false")) {
+            } else if (sb.toString().equals("false")) {
               currentExpression = new AttributeBooleanComparisonExpression(attrPath, attrOp, false);
             } else {
               throw new ComparisonValueException("[" + sb + "] is not a valid comparison value");
@@ -148,7 +148,7 @@ public class SCIMFilterParser {
           if (state == SCIMParserState.nullValue) {
             sb.append(c);
           } else if (state == SCIMParserState.afterAttributeExpression) {
-            if (sb.toString().equalsIgnoreCase("null")) {
+            if (sb.toString().equals("null")) {
               currentExpression = new AttributeNullComparisonExpression(attrPath, attrOp);
               sb.setLength(0);
             } else {
@@ -250,7 +250,7 @@ public class SCIMFilterParser {
       }
 
       if (state == SCIMParserState.invalidState) {
-        throw new InvalidStateException("Invalid state transition at [" + filter.substring(0, i + 1) + "]");
+        throw new InvalidStateException("Invalid state transition at [" + filter.substring(0, Math.min(i + 1, filter.length())) + "]");
       }
     }
 
