@@ -15,13 +15,19 @@
  */
 package io.fusionauth.scim.parser;
 
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
+
 import io.fusionauth.scim.parser.exception.ComparisonValueException;
 import io.fusionauth.scim.parser.exception.InvalidStateException;
 import io.fusionauth.scim.parser.exception.OperatorException;
 import io.fusionauth.scim.parser.expression.AttributeBooleanComparisonExpression;
+import io.fusionauth.scim.parser.expression.AttributeDateComparisonExpression;
 import io.fusionauth.scim.parser.expression.AttributeNullComparisonExpression;
 import io.fusionauth.scim.parser.expression.AttributeNumberComparisonExpression;
 import io.fusionauth.scim.parser.expression.AttributePresentExpression;
+import io.fusionauth.scim.parser.expression.AttributeTextComparisonExpression;
 import io.fusionauth.scim.parser.expression.Expression;
 
 /**
@@ -201,6 +207,43 @@ public class SCIMFilterParser {
               sb.setLength(0);
             } catch (NumberFormatException e) {
               throw new ComparisonValueException("[" + sb + "] is not a valid comparison value");
+            }
+          }
+          break;
+        case textValue:
+          state = state.next(c);
+          if (state == SCIMParserState.textValue) {
+            sb.append(c);
+          } else if (state == SCIMParserState.afterAttributeExpression) {
+            try {
+              // Try to parse as Date...
+              currentExpression = new AttributeDateComparisonExpression(attrPath, attrOp, ZonedDateTime.from(DateTimeFormatter.ISO_DATE_TIME.parse(sb.toString())).toEpochSecond());
+            } catch (DateTimeParseException e) {
+              // ...otherwise treat as text
+              currentExpression = new AttributeTextComparisonExpression(attrPath, attrOp, sb.toString());
+            }
+            sb.setLength(0);
+          }
+          break;
+        case escapedText:
+          state = state.next(c);
+          if (state == SCIMParserState.textValue) {
+            if (c == 't') {
+              sb.append('\t');
+            } else if (c == 'b') {
+              sb.append('\b');
+            } else if (c == 'n') {
+              sb.append('\n');
+            } else if (c == 'r') {
+              sb.append('\r');
+            } else if (c == 'f') {
+              sb.append('\f');
+            } else if (c == '\'') {
+              sb.append('\'');
+            } else if (c == '"') {
+              sb.append('"');
+            } else if (c == '\\') {
+              sb.append('\\');
             }
           }
           break;

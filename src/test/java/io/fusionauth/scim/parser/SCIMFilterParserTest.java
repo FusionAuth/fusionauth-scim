@@ -15,11 +15,16 @@
  */
 package io.fusionauth.scim.parser;
 
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+
 import io.fusionauth.scim.parser.exception.InvalidStateException;
 import io.fusionauth.scim.parser.expression.AttributeBooleanComparisonExpression;
+import io.fusionauth.scim.parser.expression.AttributeDateComparisonExpression;
 import io.fusionauth.scim.parser.expression.AttributeNullComparisonExpression;
 import io.fusionauth.scim.parser.expression.AttributeNumberComparisonExpression;
 import io.fusionauth.scim.parser.expression.AttributePresentExpression;
+import io.fusionauth.scim.parser.expression.AttributeTextComparisonExpression;
 import io.fusionauth.scim.parser.expression.Expression;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
@@ -139,14 +144,20 @@ public class SCIMFilterParserTest {
         {
             // Special characters are ignored in text values
             "A eq \") ((( ..eq pr 00.1.1.90)) (\"",
-            null
+            new AttributeTextComparisonExpression("A", ComparisonOperator.eq, ") ((( ..eq pr 00.1.1.90)) (")
         },
         {
             // Special characters are ignored in text values
             """
             A eq "\\'\\"\\"\\t\\b\\n\\r\\f" """,
-            null
+            new AttributeTextComparisonExpression("A", ComparisonOperator.eq, """
+                '""\t\b
+                \r\f""")
         },
+        {
+            "A ge \"2011-05-13T04:42:34Z\"",
+            new AttributeDateComparisonExpression("A", ComparisonOperator.ge, ZonedDateTime.of(2011, 5, 13, 4, 42, 34, 0, ZoneId.of("UTC")).toEpochSecond())
+        }
         // TODO : More tests
         //  A eq "(((  D )) "
         //  A eq "\")\"(\")"

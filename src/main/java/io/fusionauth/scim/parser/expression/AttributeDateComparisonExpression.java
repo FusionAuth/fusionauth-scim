@@ -1,6 +1,5 @@
 package io.fusionauth.scim.parser.expression;
 
-import java.time.temporal.TemporalAccessor;
 import java.util.Objects;
 
 import io.fusionauth.scim.parser.ComparisonOperator;
@@ -9,11 +8,11 @@ import io.fusionauth.scim.utils.ToString;
 public class AttributeDateComparisonExpression implements Expression {
   public String attributePath;
 
-  public TemporalAccessor comparisonValue;
+  public long comparisonValue;
 
   public ComparisonOperator operator;
 
-  public AttributeDateComparisonExpression(String attributePath, ComparisonOperator operation, TemporalAccessor comparisonValue) {
+  public AttributeDateComparisonExpression(String attributePath, ComparisonOperator operation, long comparisonValue) {
     this.attributePath = attributePath;
     this.operator = operation;
     this.comparisonValue = comparisonValue;
@@ -28,7 +27,7 @@ public class AttributeDateComparisonExpression implements Expression {
       return false;
     }
     AttributeDateComparisonExpression that = (AttributeDateComparisonExpression) o;
-    return comparisonValue.equals(that.comparisonValue) && Objects.equals(attributePath, that.attributePath) && operator == that.operator;
+    return comparisonValue == that.comparisonValue && Objects.equals(attributePath, that.attributePath) && operator == that.operator;
   }
 
   @Override
