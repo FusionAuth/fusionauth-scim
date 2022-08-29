@@ -42,6 +42,24 @@ public enum SCIMParserState {
       return invalidState;
     }
   },
+  beforeComparisonValue {
+    @Override
+    public SCIMParserState next(char c) {
+      if (c == ' ') {
+        return beforeComparisonValue;
+      } else if (c == '"') {
+        return textValue;
+      } else if (c == 't' || c == 'f') {
+        return booleanValue;
+      } else if (c == 'n') {
+        return nullValue;
+      } else if ((Character.isDigit(c) && c != '0') || c == '-') {
+        // A leading zero is not allowed according to RFC 7159
+        return numberValue;
+      }
+      return invalidState;
+    }
+  },
   beforeOperator {
     @Override
     public SCIMParserState next(char c) {
@@ -64,10 +82,22 @@ public enum SCIMParserState {
       return invalidState;
     }
   },
+  booleanValue {
+    @Override
+    public SCIMParserState next(char c) {
+      if (c == 'r' || c == 'u' || c == 'e' || c == 'a' || c == 'l' || c == 's') {
+        return booleanValue;
+      } else if (c == ' ') {
+        return afterAttributeExpression;
+      }
+      return invalidState;
+    }
+  },
   comparisonOperator {
     @Override
     public SCIMParserState next(char c) {
-      return null;
+      // The parser must check that the two characters are a valid operator
+      return beforeComparisonValue;
     }
   },
   filterStart {
@@ -85,6 +115,60 @@ public enum SCIMParserState {
       return invalidState;
     }
   },
+  nullValue {
+    @Override
+    public SCIMParserState next(char c) {
+      // The parser must check that token evaluates to "null"
+      if (c == 'u' || c == 'l') {
+        return nullValue;
+      } else if (c == ' ') {
+        return afterAttributeExpression;
+      }
+      return invalidState;
+    }
+  },
+  numberValue {
+    @Override
+    public SCIMParserState next(char c) {
+      if (Character.isDigit(c)) {
+        return numberValue;
+      } else if (c == '.') {
+        return decimalValue;
+      } else if (c == 'e' || c == 'E') {
+        return exponentSign;
+      }
+      return invalidState;
+    }
+  },
+  exponentSign {
+    @Override
+    public SCIMParserState next(char c) {
+      if (c == '+' || c == '-' || Character.isDigit(c)) {
+        return exponentValue;
+      }
+      return invalidState;
+    }
+  },
+  exponentValue {
+    @Override
+    public SCIMParserState next(char c) {
+      if (Character.isDigit(c)) {
+        return exponentValue;
+      }
+      return invalidState;
+    }
+  },
+  decimalValue {
+    @Override
+    public SCIMParserState next(char c) {
+      if (Character.isDigit(c)) {
+        return decimalValue;
+      } else if (c == 'e' || c == 'E') {
+        return exponentSign;
+      }
+      return invalidState;
+    }
+  },
   subAttribute {
     @Override
     public SCIMParserState next(char c) {
@@ -94,6 +178,12 @@ public enum SCIMParserState {
         return beforeOperator;
       }
       return invalidState;
+    }
+  },
+  textValue {
+    @Override
+    public SCIMParserState next(char c) {
+      return null;
     }
   },
   unaryOperator {

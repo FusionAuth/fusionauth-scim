@@ -31,9 +31,65 @@ public class SCIMFilterParserTest {
   public Object[][] badData() {
     return new Object[][]{
         {
+            // Invalid operator
             "A pd",
             "Invalid state transition at [A pd]"
-        }
+        },
+        {
+            // Invalid operator
+            "A hj",
+            "Invalid state transition at [A h]"
+        },
+        {
+            // No matching comparison type
+            "A eq z",
+            "Invalid state transition at [A eq z]"
+        },
+        {
+            // No matching comparison type
+            "A eq troe",
+            "Invalid state transition at [A eq tro]"
+        },
+        {
+            // No matching comparison type
+            "A eq nil",
+            "Invalid state transition at [A eq ni]"
+        },
+        {
+            // No leading zeroes on number
+            "A eq 001",
+            "Invalid state transition at [A eq 0]"
+        },
+        {
+            // Only one decimal allowed
+            "A eq 12.4.2",
+            "Invalid state transition at [A eq 12.4.]"
+        },
+        {
+            // Only one decimal allowed
+            "A eq 12.4.2",
+            "Invalid state transition at [A eq 12.4.]"
+        },
+        {
+            // Decimal not allowed in exponent
+            "A eq 12e1.2",
+            "Invalid state transition at [A eq 12e1.]"
+        },
+        {
+            // Need exponent or at least one digit after decimal
+            "A eq 12. ",
+            "Invalid state transition at [A eq 12. ]"
+        },
+        {
+            // Exponent sign must be first
+            "A eq 12.4e1-2",
+            "Invalid state transition at [A eq 12.4e1-]"
+        },
+        {
+            // No random characters in number values
+            "A eq 12.4d3",
+            "Invalid state transition at [A eq 12.4d]"
+        },
     };
   }
 
@@ -43,7 +99,27 @@ public class SCIMFilterParserTest {
         {
             "A pr",
             SCIMParserState.afterAttributeExpression
-        }
+        },
+        {
+            "A eq true",
+            SCIMParserState.booleanValue
+        },
+        {
+            "A eq false",
+            SCIMParserState.booleanValue
+        },
+        {
+            "A eq null",
+            SCIMParserState.nullValue
+        },
+        {
+            "A eq -121.45e+2",
+            SCIMParserState.exponentValue
+        },
+        {
+            "A eq 5E-0",
+            SCIMParserState.exponentValue
+        },
         // TODO : More tests
         //  A eq "(((  D )) "
         //  A eq "\")\"(\")"
