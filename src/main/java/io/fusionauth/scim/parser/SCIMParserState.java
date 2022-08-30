@@ -61,6 +61,8 @@ public enum SCIMParserState {
         return numberValue;
       } else if (c == '-') {
         return minus;
+      } else if (c == '.') {
+        return decimalValue;
       }
       return invalidState;
     }

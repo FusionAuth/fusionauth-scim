@@ -77,6 +77,11 @@ public class SCIMFilterParserTest {
             new AttributeNumberComparisonExpression("A", ComparisonOperator.eq, new BigDecimal(5))
         },
         {
+            // Leading decimal is fine
+            "A eq .5",
+            new AttributeNumberComparisonExpression("A", ComparisonOperator.eq, new BigDecimal(".5"))
+        },
+        {
             // Special characters are ignored in text values
             "A eq \") ((( ..eq pr 00.1.1.90)) (\"",
             new AttributeTextComparisonExpression("A", ComparisonOperator.eq, ") ((( ..eq pr 00.1.1.90)) (")

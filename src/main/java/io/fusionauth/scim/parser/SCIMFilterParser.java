@@ -115,6 +115,7 @@ public class SCIMFilterParser {
           if (state == SCIMParserState.booleanValue ||
               state == SCIMParserState.nullValue ||
               state == SCIMParserState.minus ||
+              state == SCIMParserState.decimalValue ||
               state == SCIMParserState.numberValue
           ) {
             sb.append(c);
