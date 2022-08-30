@@ -4,6 +4,7 @@ import java.util.Objects;
 
 import io.fusionauth.scim.parser.ComparisonOperator;
 import io.fusionauth.scim.parser.ExpressionType;
+import io.fusionauth.scim.parser.ValueType;
 
 public abstract class AttributeExpression extends Expression {
   public String attributePath;
@@ -36,4 +37,6 @@ public abstract class AttributeExpression extends Expression {
   public ExpressionType type() {
     return ExpressionType.attribute;
   }
+
+  public abstract ValueType valueType();
 }

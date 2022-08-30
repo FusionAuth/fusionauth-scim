@@ -6,7 +6,7 @@ import io.fusionauth.scim.parser.ComparisonOperator;
 import io.fusionauth.scim.parser.ValueType;
 import io.fusionauth.scim.utils.ToString;
 
-public class AttributeTextComparisonExpression extends AttributeComparisonExpression<String> {
+public class AttributeTextComparisonExpression extends AttributeComparisonExpression {
   public String comparisonValue;
 
   public AttributeTextComparisonExpression(String attributePath, ComparisonOperator operation, String comparisonValue) {

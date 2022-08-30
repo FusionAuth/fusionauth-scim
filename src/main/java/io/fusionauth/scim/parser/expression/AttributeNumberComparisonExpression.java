@@ -7,7 +7,7 @@ import io.fusionauth.scim.parser.ComparisonOperator;
 import io.fusionauth.scim.parser.ValueType;
 import io.fusionauth.scim.utils.ToString;
 
-public class AttributeNumberComparisonExpression extends AttributeComparisonExpression<BigDecimal> {
+public class AttributeNumberComparisonExpression extends AttributeComparisonExpression {
   public BigDecimal comparisonValue;
 
   public AttributeNumberComparisonExpression(String attributePath, ComparisonOperator operation, BigDecimal comparisonValue) {

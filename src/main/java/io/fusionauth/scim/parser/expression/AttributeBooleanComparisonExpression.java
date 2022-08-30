@@ -6,7 +6,7 @@ import io.fusionauth.scim.parser.ComparisonOperator;
 import io.fusionauth.scim.parser.ValueType;
 import io.fusionauth.scim.utils.ToString;
 
-public class AttributeBooleanComparisonExpression extends AttributeComparisonExpression<Boolean> {
+public class AttributeBooleanComparisonExpression extends AttributeComparisonExpression {
   public Boolean comparisonValue;
 
   public AttributeBooleanComparisonExpression(String attributePath, ComparisonOperator operator, Boolean comparisonValue) {
