@@ -15,6 +15,7 @@
  */
 package io.fusionauth.scim.parser;
 
+import java.math.BigDecimal;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 
@@ -25,9 +26,9 @@ import io.fusionauth.scim.parser.exception.InvalidStateException;
 import io.fusionauth.scim.parser.exception.LogicalOperatorException;
 import io.fusionauth.scim.parser.expression.AttributeBooleanComparisonExpression;
 import io.fusionauth.scim.parser.expression.AttributeDateComparisonExpression;
-import io.fusionauth.scim.parser.expression.AttributeNullComparisonExpression;
+import io.fusionauth.scim.parser.expression.AttributeNullTestExpression;
 import io.fusionauth.scim.parser.expression.AttributeNumberComparisonExpression;
-import io.fusionauth.scim.parser.expression.AttributePresentExpression;
+import io.fusionauth.scim.parser.expression.AttributePresentTestExpression;
 import io.fusionauth.scim.parser.expression.AttributeTextComparisonExpression;
 import io.fusionauth.scim.parser.expression.Expression;
 import io.fusionauth.scim.parser.expression.LogicalLinkExpression;
@@ -48,7 +49,7 @@ public class SCIMFilterParserTest {
     return new Object[][]{
         {
             "A pr",
-            new AttributePresentExpression("A")
+            new AttributePresentTestExpression("A")
         },
         {
             "A eq true",
@@ -60,20 +61,20 @@ public class SCIMFilterParserTest {
         },
         {
             "A eq null",
-            new AttributeNullComparisonExpression("A", ComparisonOperator.eq)
+            new AttributeNullTestExpression("A", ComparisonOperator.eq)
         },
         {
             "A eq -121.45e+2",
-            new AttributeNumberComparisonExpression("A", ComparisonOperator.eq, -12145)
+            new AttributeNumberComparisonExpression("A", ComparisonOperator.eq, new BigDecimal(-12145))
         },
         {
             "A eq 5E-0",
-            new AttributeNumberComparisonExpression("A", ComparisonOperator.eq, 5)
+            new AttributeNumberComparisonExpression("A", ComparisonOperator.eq, new BigDecimal(5))
         },
         {
             // Extra spaces are fine
             "A  eq     5",
-            new AttributeNumberComparisonExpression("A", ComparisonOperator.eq, 5)
+            new AttributeNumberComparisonExpression("A", ComparisonOperator.eq, new BigDecimal(5))
         },
         {
             // Special characters are ignored in text values
@@ -90,19 +91,19 @@ public class SCIMFilterParserTest {
         },
         {
             "meta.lastModified ge \"2011-05-13T04:42:34Z\"",
-            new AttributeDateComparisonExpression("meta.lastModified", ComparisonOperator.ge, ZonedDateTime.of(2011, 5, 13, 4, 42, 34, 0, ZoneId.of("UTC")).toEpochSecond())
+            new AttributeDateComparisonExpression("meta.lastModified", ComparisonOperator.ge, ZonedDateTime.of(2011, 5, 13, 4, 42, 34, 0, ZoneId.of("Z")))
         },
         {
             "meta.lastModified gt \"2011-05-13T04:42:34Z\"",
-            new AttributeDateComparisonExpression("meta.lastModified", ComparisonOperator.gt, ZonedDateTime.of(2011, 5, 13, 4, 42, 34, 0, ZoneId.of("UTC")).toEpochSecond())
+            new AttributeDateComparisonExpression("meta.lastModified", ComparisonOperator.gt, ZonedDateTime.of(2011, 5, 13, 4, 42, 34, 0, ZoneId.of("Z")))
         },
         {
             "meta.lastModified le \"2011-05-13T04:42:34Z\"",
-            new AttributeDateComparisonExpression("meta.lastModified", ComparisonOperator.le, ZonedDateTime.of(2011, 5, 13, 4, 42, 34, 0, ZoneId.of("UTC")).toEpochSecond())
+            new AttributeDateComparisonExpression("meta.lastModified", ComparisonOperator.le, ZonedDateTime.of(2011, 5, 13, 4, 42, 34, 0, ZoneId.of("Z")))
         },
         {
             "meta.lastModified lt \"2011-05-13T04:42:34Z\"",
-            new AttributeDateComparisonExpression("meta.lastModified", ComparisonOperator.lt, ZonedDateTime.of(2011, 5, 13, 4, 42, 34, 0, ZoneId.of("UTC")).toEpochSecond())
+            new AttributeDateComparisonExpression("meta.lastModified", ComparisonOperator.lt, ZonedDateTime.of(2011, 5, 13, 4, 42, 34, 0, ZoneId.of("Z")))
         },
         {
             "userName eq \"bjensen\"",
@@ -138,12 +139,12 @@ public class SCIMFilterParserTest {
         },
         {
             "title pr",
-            new AttributePresentExpression("title")
+            new AttributePresentTestExpression("title")
         },
         {
             "title pr and userType eq \"Employee\"",
             new LogicalLinkExpression(
-                new AttributePresentExpression("title"),
+                new AttributePresentTestExpression("title"),
                 LogicalOperator.and,
                 new AttributeTextComparisonExpression("userType", ComparisonOperator.eq, "Employee")
             )
@@ -151,7 +152,7 @@ public class SCIMFilterParserTest {
         {
             "title pr or userType eq \"Intern\"",
             new LogicalLinkExpression(
-                new AttributePresentExpression("title"),
+                new AttributePresentTestExpression("title"),
                 LogicalOperator.or,
                 new AttributeTextComparisonExpression("userType", ComparisonOperator.eq, "Intern")
             )
@@ -159,15 +160,15 @@ public class SCIMFilterParserTest {
         {
             "A pr and B pr and C pr and D pr",
             new LogicalLinkExpression(
-                new AttributePresentExpression("A"),
+                new AttributePresentTestExpression("A"),
                 LogicalOperator.and,
                 new LogicalLinkExpression(
-                    new AttributePresentExpression("B"),
+                    new AttributePresentTestExpression("B"),
                     LogicalOperator.and,
                     new LogicalLinkExpression(
-                        new AttributePresentExpression("C"),
+                        new AttributePresentTestExpression("C"),
                         LogicalOperator.and,
-                        new AttributePresentExpression("D")
+                        new AttributePresentTestExpression("D")
                     )
                 )
             )
@@ -175,15 +176,15 @@ public class SCIMFilterParserTest {
         {
             "A pr or B pr or C pr or D pr",
             new LogicalLinkExpression(
-                new AttributePresentExpression("A"),
+                new AttributePresentTestExpression("A"),
                 LogicalOperator.or,
                 new LogicalLinkExpression(
-                    new AttributePresentExpression("B"),
+                    new AttributePresentTestExpression("B"),
                     LogicalOperator.or,
                     new LogicalLinkExpression(
-                        new AttributePresentExpression("C"),
+                        new AttributePresentTestExpression("C"),
                         LogicalOperator.or,
-                        new AttributePresentExpression("D")
+                        new AttributePresentTestExpression("D")
                     )
                 )
             )
@@ -192,16 +193,16 @@ public class SCIMFilterParserTest {
             "A pr or B pr and C pr or D pr",
             new LogicalLinkExpression(
                 new LogicalLinkExpression(
-                    new AttributePresentExpression("A"),
+                    new AttributePresentTestExpression("A"),
                     LogicalOperator.or,
                     new LogicalLinkExpression(
-                        new AttributePresentExpression("B"),
+                        new AttributePresentTestExpression("B"),
                         LogicalOperator.and,
-                        new AttributePresentExpression("C")
+                        new AttributePresentTestExpression("C")
                     )
                 ),
                 LogicalOperator.or,
-                new AttributePresentExpression("D")
+                new AttributePresentTestExpression("D")
             )
         },
         {
@@ -209,22 +210,22 @@ public class SCIMFilterParserTest {
             new LogicalLinkExpression(
                 new LogicalLinkExpression(
                     new LogicalLinkExpression(
-                        new AttributePresentExpression("A"),
+                        new AttributePresentTestExpression("A"),
                         LogicalOperator.and,
-                        new AttributePresentExpression("B")
+                        new AttributePresentTestExpression("B")
                     ),
                     LogicalOperator.or,
                     new LogicalLinkExpression(
-                        new AttributePresentExpression("C"),
+                        new AttributePresentTestExpression("C"),
                         LogicalOperator.and,
-                        new AttributePresentExpression("D")
+                        new AttributePresentTestExpression("D")
                     )
                 ),
                 LogicalOperator.or,
                 new LogicalLinkExpression(
-                    new AttributePresentExpression("E"),
+                    new AttributePresentTestExpression("E"),
                     LogicalOperator.or,
-                    new AttributePresentExpression("F")
+                    new AttributePresentTestExpression("F")
                 )
             )
         },
@@ -233,23 +234,23 @@ public class SCIMFilterParserTest {
             new LogicalLinkExpression(
                 new LogicalLinkExpression(
                     new LogicalLinkExpression(
-                        new AttributePresentExpression("A"),
+                        new AttributePresentTestExpression("A"),
                         LogicalOperator.and,
                         new LogicalLinkExpression(
-                            new AttributePresentExpression("B"),
+                            new AttributePresentTestExpression("B"),
                             LogicalOperator.and,
-                            new AttributePresentExpression("C")
+                            new AttributePresentTestExpression("C")
                         )
                     ),
                     LogicalOperator.or,
                     new LogicalLinkExpression(
-                        new AttributePresentExpression("D"),
+                        new AttributePresentTestExpression("D"),
                         LogicalOperator.and,
-                        new AttributePresentExpression("E")
+                        new AttributePresentTestExpression("E")
                     )
                 ),
                 LogicalOperator.or,
-                new AttributePresentExpression("F")
+                new AttributePresentTestExpression("F")
             )
 
         },

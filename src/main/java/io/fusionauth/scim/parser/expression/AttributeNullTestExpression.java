@@ -1,0 +1,15 @@
+package io.fusionauth.scim.parser.expression;
+
+import io.fusionauth.scim.parser.ComparisonOperator;
+import io.fusionauth.scim.utils.ToString;
+
+public class AttributeNullTestExpression extends AttributeExpression {
+  public AttributeNullTestExpression(String attributePath, ComparisonOperator operator) {
+    super(attributePath, operator);
+  }
+
+  @Override
+  public String toString() {
+    return ToString.toString(this);
+  }
+}

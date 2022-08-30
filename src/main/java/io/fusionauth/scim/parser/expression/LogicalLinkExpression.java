@@ -2,23 +2,24 @@ package io.fusionauth.scim.parser.expression;
 
 import java.util.Objects;
 
+import io.fusionauth.scim.parser.ExpressionType;
 import io.fusionauth.scim.parser.LogicalOperator;
 import io.fusionauth.scim.utils.ToString;
 
-public class LogicalLinkExpression implements Expression {
+public class LogicalLinkExpression extends Expression {
   public Expression left;
 
-  public LogicalOperator linkOperator;
+  public LogicalOperator logicalOperator;
 
   public Expression right;
 
-  public LogicalLinkExpression(LogicalOperator linkOperator) {
-    this.linkOperator = linkOperator;
+  public LogicalLinkExpression(LogicalOperator logicalOperator) {
+    this.logicalOperator = logicalOperator;
   }
 
-  public LogicalLinkExpression(Expression left, LogicalOperator linkOperator, Expression right) {
+  public LogicalLinkExpression(Expression left, LogicalOperator logicalOperator, Expression right) {
     this.left = left;
-    this.linkOperator = linkOperator;
+    this.logicalOperator = logicalOperator;
     this.right = right;
   }
 
@@ -31,21 +32,21 @@ public class LogicalLinkExpression implements Expression {
       return false;
     }
     LogicalLinkExpression that = (LogicalLinkExpression) o;
-    return Objects.equals(left, that.left) && linkOperator == that.linkOperator && Objects.equals(right, that.right);
+    return Objects.equals(left, that.left) && logicalOperator == that.logicalOperator && Objects.equals(right, that.right);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(left, linkOperator, right);
-  }
-
-  @Override
-  public boolean match() {
-    return false;
+    return Objects.hash(left, logicalOperator, right);
   }
 
   @Override
   public String toString() {
     return ToString.toString(this);
+  }
+
+  @Override
+  public ExpressionType type() {
+    return ExpressionType.logicalLink;
   }
 }

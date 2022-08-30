@@ -5,16 +5,11 @@ import java.util.Objects;
 import io.fusionauth.scim.parser.ComparisonOperator;
 import io.fusionauth.scim.utils.ToString;
 
-public class AttributeTextComparisonExpression implements Expression {
-  public String attributePath;
-
+public class AttributeTextComparisonExpression extends AttributeComparisonExpression<String> {
   public String comparisonValue;
 
-  public ComparisonOperator operator;
-
   public AttributeTextComparisonExpression(String attributePath, ComparisonOperator operation, String comparisonValue) {
-    this.attributePath = attributePath;
-    this.operator = operation;
+    super(attributePath, operation);
     this.comparisonValue = comparisonValue;
   }
 
@@ -26,22 +21,25 @@ public class AttributeTextComparisonExpression implements Expression {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
+    if (!super.equals(o)) {
+      return false;
+    }
     AttributeTextComparisonExpression that = (AttributeTextComparisonExpression) o;
-    return comparisonValue.equals(that.comparisonValue) && Objects.equals(attributePath, that.attributePath) && operator == that.operator;
+    return Objects.equals(comparisonValue, that.comparisonValue);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(attributePath, comparisonValue, operator);
-  }
-
-  @Override
-  public boolean match() {
-    return false;
+    return Objects.hash(super.hashCode(), comparisonValue);
   }
 
   @Override
   public String toString() {
     return ToString.toString(this);
+  }
+
+  @Override
+  public String value() {
+    return comparisonValue;
   }
 }

@@ -3,14 +3,14 @@ package io.fusionauth.scim.parser.expression;
 import java.util.Objects;
 
 import io.fusionauth.scim.parser.ComparisonOperator;
-import io.fusionauth.scim.utils.ToString;
+import io.fusionauth.scim.parser.ExpressionType;
 
-public class AttributeNullComparisonExpression implements Expression {
+public abstract class AttributeExpression extends Expression {
   public String attributePath;
 
   public ComparisonOperator operator;
 
-  public AttributeNullComparisonExpression(String attributePath, ComparisonOperator operator) {
+  public AttributeExpression(String attributePath, ComparisonOperator operator) {
     this.attributePath = attributePath;
     this.operator = operator;
   }
@@ -23,7 +23,7 @@ public class AttributeNullComparisonExpression implements Expression {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    AttributeNullComparisonExpression that = (AttributeNullComparisonExpression) o;
+    AttributeExpression that = (AttributeExpression) o;
     return Objects.equals(attributePath, that.attributePath) && operator == that.operator;
   }
 
@@ -33,12 +33,7 @@ public class AttributeNullComparisonExpression implements Expression {
   }
 
   @Override
-  public boolean match() {
-    return false;
-  }
-
-  @Override
-  public String toString() {
-    return ToString.toString(this);
+  public ExpressionType type() {
+    return ExpressionType.attribute;
   }
 }

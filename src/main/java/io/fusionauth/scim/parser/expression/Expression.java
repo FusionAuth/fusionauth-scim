@@ -1,7 +1,7 @@
 package io.fusionauth.scim.parser.expression;
 
-public interface Expression {
-  boolean match();
+import io.fusionauth.scim.parser.ExpressionType;
 
-  String toString();
+public abstract class Expression {
+  public abstract ExpressionType type();
 }

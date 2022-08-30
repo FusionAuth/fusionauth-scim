@@ -15,6 +15,7 @@
  */
 package io.fusionauth.scim.parser;
 
+import java.math.BigDecimal;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
@@ -28,9 +29,9 @@ import io.fusionauth.scim.parser.exception.InvalidStateException;
 import io.fusionauth.scim.parser.exception.LogicalOperatorException;
 import io.fusionauth.scim.parser.expression.AttributeBooleanComparisonExpression;
 import io.fusionauth.scim.parser.expression.AttributeDateComparisonExpression;
-import io.fusionauth.scim.parser.expression.AttributeNullComparisonExpression;
+import io.fusionauth.scim.parser.expression.AttributeNullTestExpression;
 import io.fusionauth.scim.parser.expression.AttributeNumberComparisonExpression;
-import io.fusionauth.scim.parser.expression.AttributePresentExpression;
+import io.fusionauth.scim.parser.expression.AttributePresentTestExpression;
 import io.fusionauth.scim.parser.expression.AttributeTextComparisonExpression;
 import io.fusionauth.scim.parser.expression.Expression;
 import io.fusionauth.scim.parser.expression.LogicalLinkExpression;
@@ -40,7 +41,6 @@ import io.fusionauth.scim.parser.expression.LogicalLinkExpression;
  */
 @SuppressWarnings("PatternVariableCanBeUsed")
 public class SCIMFilterParser {
-
   public Expression parse(String filter)
       throws InvalidStateException, ComparisonOperatorException, ComparisonValueException, AttributePathException, LogicalOperatorException {
     // Add a trailing space to ensure all tokens are parsed
@@ -90,7 +90,7 @@ public class SCIMFilterParser {
             sb.append(c);
             try {
               assert ComparisonOperator.valueOf(sb.toString()) == ComparisonOperator.pr;
-              result.push(new AttributePresentExpression(attrPath));
+              result.push(new AttributePresentTestExpression(attrPath));
               attrPath = null;
               sb.setLength(0);
             } catch (IllegalArgumentException e) {
@@ -145,7 +145,7 @@ public class SCIMFilterParser {
             sb.append(c);
           } else if (state == SCIMParserState.afterAttributeExpression) {
             if (sb.toString().equals("null")) {
-              result.push(new AttributeNullComparisonExpression(attrPath, attrOp));
+              result.push(new AttributeNullTestExpression(attrPath, attrOp));
               sb.setLength(0);
             } else {
               throw new ComparisonValueException("[" + sb + "] is not a valid comparison value");
@@ -167,7 +167,7 @@ public class SCIMFilterParser {
             sb.append(c);
           } else if (state == SCIMParserState.afterAttributeExpression) {
             try {
-              result.push(new AttributeNumberComparisonExpression(attrPath, attrOp, Double.parseDouble(sb.toString())));
+              result.push(new AttributeNumberComparisonExpression(attrPath, attrOp, new BigDecimal(sb.toString())));
               sb.setLength(0);
             } catch (NumberFormatException e) {
               throw new ComparisonValueException("[" + sb + "] is not a valid comparison value");
@@ -180,7 +180,7 @@ public class SCIMFilterParser {
             sb.append(c);
           } else if (state == SCIMParserState.afterAttributeExpression) {
             try {
-              result.push(new AttributeNumberComparisonExpression(attrPath, attrOp, Double.parseDouble(sb.toString())));
+              result.push(new AttributeNumberComparisonExpression(attrPath, attrOp, new BigDecimal(sb.toString())));
               sb.setLength(0);
             } catch (NumberFormatException e) {
               throw new ComparisonValueException("[" + sb + "] is not a valid comparison value");
@@ -199,7 +199,7 @@ public class SCIMFilterParser {
             sb.append(c);
           } else if (state == SCIMParserState.afterAttributeExpression) {
             try {
-              result.push(new AttributeNumberComparisonExpression(attrPath, attrOp, Double.parseDouble(sb.toString())));
+              result.push(new AttributeNumberComparisonExpression(attrPath, attrOp, new BigDecimal(sb.toString())));
               sb.setLength(0);
             } catch (NumberFormatException e) {
               throw new ComparisonValueException("[" + sb + "] is not a valid comparison value");
@@ -213,7 +213,7 @@ public class SCIMFilterParser {
           } else if (state == SCIMParserState.afterAttributeExpression) {
             try {
               // Try to parse as Date...
-              result.push(new AttributeDateComparisonExpression(attrPath, attrOp, ZonedDateTime.from(DateTimeFormatter.ISO_DATE_TIME.parse(sb.toString())).toEpochSecond()));
+              result.push(new AttributeDateComparisonExpression(attrPath, attrOp, ZonedDateTime.from(DateTimeFormatter.ISO_DATE_TIME.parse(sb.toString()))));
             } catch (DateTimeParseException e) {
               // ...otherwise treat as text
               result.push(new AttributeTextComparisonExpression(attrPath, attrOp, sb.toString()));
@@ -256,11 +256,11 @@ public class SCIMFilterParser {
           } else if (state == SCIMParserState.filterStart) {
             try {
               LogicalLinkExpression newLogicalExpression = new LogicalLinkExpression(LogicalOperator.valueOf(sb.toString()));
-              if (hold.isEmpty() || precedence(newLogicalExpression.linkOperator) >= precedence(hold.peek().linkOperator)) {
+              if (hold.isEmpty() || precedence(newLogicalExpression.logicalOperator) >= precedence(hold.peek().logicalOperator)) {
                 hold.push(newLogicalExpression);
               } else {
                 while (!hold.isEmpty() &&
-                       precedence(hold.peek().linkOperator) >= precedence(newLogicalExpression.linkOperator)
+                       precedence(hold.peek().logicalOperator) >= precedence(newLogicalExpression.logicalOperator)
                 ) {
                   result.push(hold.pop());
                 }

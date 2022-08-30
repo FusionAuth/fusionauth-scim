@@ -5,16 +5,11 @@ import java.util.Objects;
 import io.fusionauth.scim.parser.ComparisonOperator;
 import io.fusionauth.scim.utils.ToString;
 
-public class AttributeBooleanComparisonExpression implements Expression {
-  public String attributePath;
+public class AttributeBooleanComparisonExpression extends AttributeComparisonExpression<Boolean> {
+  public Boolean comparisonValue;
 
-  public boolean comparisonValue;
-
-  public ComparisonOperator operator;
-
-  public AttributeBooleanComparisonExpression(String attributePath, ComparisonOperator operation, boolean comparisonValue) {
-    this.attributePath = attributePath;
-    this.operator = operation;
+  public AttributeBooleanComparisonExpression(String attributePath, ComparisonOperator operator, Boolean comparisonValue) {
+    super(attributePath, operator);
     this.comparisonValue = comparisonValue;
   }
 
@@ -26,22 +21,25 @@ public class AttributeBooleanComparisonExpression implements Expression {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
+    if (!super.equals(o)) {
+      return false;
+    }
     AttributeBooleanComparisonExpression that = (AttributeBooleanComparisonExpression) o;
-    return comparisonValue == that.comparisonValue && Objects.equals(attributePath, that.attributePath) && operator == that.operator;
+    return Objects.equals(comparisonValue, that.comparisonValue);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(attributePath, comparisonValue, operator);
-  }
-
-  @Override
-  public boolean match() {
-    return false;
+    return Objects.hash(super.hashCode(), comparisonValue);
   }
 
   @Override
   public String toString() {
     return ToString.toString(this);
+  }
+
+  @Override
+  public Boolean value() {
+    return comparisonValue;
   }
 }

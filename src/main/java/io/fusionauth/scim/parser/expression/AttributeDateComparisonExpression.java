@@ -1,20 +1,16 @@
 package io.fusionauth.scim.parser.expression;
 
+import java.time.ZonedDateTime;
 import java.util.Objects;
 
 import io.fusionauth.scim.parser.ComparisonOperator;
 import io.fusionauth.scim.utils.ToString;
 
-public class AttributeDateComparisonExpression implements Expression {
-  public String attributePath;
+public class AttributeDateComparisonExpression extends AttributeComparisonExpression<ZonedDateTime> {
+  public ZonedDateTime comparisonValue;
 
-  public long comparisonValue;
-
-  public ComparisonOperator operator;
-
-  public AttributeDateComparisonExpression(String attributePath, ComparisonOperator operation, long comparisonValue) {
-    this.attributePath = attributePath;
-    this.operator = operation;
+  public AttributeDateComparisonExpression(String attributePath, ComparisonOperator operation, ZonedDateTime comparisonValue) {
+    super(attributePath, operation);
     this.comparisonValue = comparisonValue;
   }
 
@@ -26,22 +22,30 @@ public class AttributeDateComparisonExpression implements Expression {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
+    if (!super.equals(o)) {
+      return false;
+    }
     AttributeDateComparisonExpression that = (AttributeDateComparisonExpression) o;
-    return comparisonValue == that.comparisonValue && Objects.equals(attributePath, that.attributePath) && operator == that.operator;
+    return Objects.equals(comparisonValue, that.comparisonValue);
+  }
+
+  @SuppressWarnings("unused")
+  public long getComparisonValue() {
+    return comparisonValue.toInstant().toEpochMilli();
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(attributePath, comparisonValue, operator);
-  }
-
-  @Override
-  public boolean match() {
-    return false;
+    return Objects.hash(super.hashCode(), comparisonValue);
   }
 
   @Override
   public String toString() {
     return ToString.toString(this);
+  }
+
+  @Override
+  public ZonedDateTime value() {
+    return comparisonValue;
   }
 }
