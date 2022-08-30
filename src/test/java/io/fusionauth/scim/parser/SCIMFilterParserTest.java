@@ -19,9 +19,10 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 
 import io.fusionauth.scim.parser.exception.AttributePathException;
+import io.fusionauth.scim.parser.exception.ComparisonOperatorException;
 import io.fusionauth.scim.parser.exception.ComparisonValueException;
 import io.fusionauth.scim.parser.exception.InvalidStateException;
-import io.fusionauth.scim.parser.exception.OperatorException;
+import io.fusionauth.scim.parser.exception.LogicalOperatorException;
 import io.fusionauth.scim.parser.expression.AttributeBooleanComparisonExpression;
 import io.fusionauth.scim.parser.expression.AttributeDateComparisonExpression;
 import io.fusionauth.scim.parser.expression.AttributeNullComparisonExpression;
@@ -133,7 +134,7 @@ public class SCIMFilterParserTest {
         {
             "title pr",
             new AttributePresentExpression("title")
-        }
+        },
 //    filter=title pr and userType eq "Employee"
 //    filter=title pr or userType eq "Intern"
 //    filter=schemas eq "urn:ietf:params:scim:schemas:extension:enterprise:2.0:User"
@@ -182,8 +183,26 @@ public class SCIMFilterParserTest {
     };
   }
 
-  @DataProvider(name = "invalidComparison")
-  public Object[][] invalidComparison() {
+  @DataProvider(name = "invalidComparisonOperator")
+  public Object[][] invalidComparisonOperator() {
+    return new Object[][]{
+        {
+            "A lw 8",
+            "No comparison operator for [lw]"
+        },
+        {
+            "A lt false",
+            "[lt] is not a valid operator for a boolean comparison"
+        },
+        {
+            "A lt null",
+            "[lt] is not a valid operator for a null comparison"
+        },
+    };
+  }
+
+  @DataProvider(name = "invalidComparisonValue")
+  public Object[][] invalidComparisonValue() {
     return new Object[][]{
         {
             "A eq trul",
@@ -200,20 +219,16 @@ public class SCIMFilterParserTest {
     };
   }
 
-  @DataProvider(name = "invalidOperator")
-  public Object[][] invalidOperator() {
+  @DataProvider(name = "invalidLogicalOperator")
+  public Object[][] invalidLogicalOperator() {
     return new Object[][]{
         {
-            "A lw 8",
-            "No operator for [lw]"
+            "A pr andr B pr",
+            "No logical operator for [andr]"
         },
         {
-            "A lt false",
-            "[lt] is not a valid operator for a boolean comparison"
-        },
-        {
-            "A lt null",
-            "[lt] is not a valid operator for a null comparison"
+            "A pr ord B pr",
+            "No logical operator for [ord]"
         },
     };
   }
@@ -297,6 +312,16 @@ public class SCIMFilterParserTest {
             "A eq \"\\c\"",
             "Invalid state transition at [A eq \"\\c]"
         },
+        {
+            // No linking logical operator
+            "A pr B pr",
+            "Invalid state transition at [A pr B]"
+        },
+        {
+            // Invalid characters in logical operator
+            "A pr anb B pr",
+            "Invalid state transition at [A pr anb]"
+        },
     };
   }
 
@@ -316,8 +341,18 @@ public class SCIMFilterParserTest {
     }
   }
 
-  @Test(dataProvider = "invalidComparison")
-  public void parseInvalidComparison(String filter, String expected) throws Exception {
+  @Test(dataProvider = "invalidComparisonOperator")
+  public void parseInvalidComparisonOperator(String filter, String expected) throws Exception {
+    try {
+      parser.parse(filter);
+      fail("Expected exception for filter [" + filter + "]");
+    } catch (ComparisonOperatorException e) {
+      assertEquals(expected, e.getMessage());
+    }
+  }
+
+  @Test(dataProvider = "invalidComparisonValue")
+  public void parseInvalidComparisonValue(String filter, String expected) throws Exception {
     try {
       parser.parse(filter);
       fail("Expected exception for filter [" + filter + "]");
@@ -326,12 +361,12 @@ public class SCIMFilterParserTest {
     }
   }
 
-  @Test(dataProvider = "invalidOperator")
-  public void parseInvalidOperator(String filter, String expected) throws Exception {
+  @Test(dataProvider = "invalidLogicalOperator")
+  public void parseInvalidLogicalOperator(String filter, String expected) throws Exception {
     try {
       parser.parse(filter);
       fail("Expected exception for filter [" + filter + "]");
-    } catch (OperatorException e) {
+    } catch (LogicalOperatorException e) {
       assertEquals(expected, e.getMessage());
     }
   }

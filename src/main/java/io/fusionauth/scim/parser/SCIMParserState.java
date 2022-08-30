@@ -28,6 +28,8 @@ public enum SCIMParserState {
     public SCIMParserState next(char c) {
       if (c == ' ') {
         return afterAttributeExpression;
+      } else if (c == 'a' || c == 'o') {
+        return logicalOperator;
       }
       return invalidState;
     }
@@ -131,6 +133,17 @@ public enum SCIMParserState {
   invalidState {
     @Override
     public SCIMParserState next(char c) {
+      return invalidState;
+    }
+  },
+  logicalOperator {
+    @Override
+    public SCIMParserState next(char c) {
+      if (c == 'n' || c == 'd' || c == 'r') {
+        return logicalOperator;
+      } else if (c == ' ') {
+        return filterStart;
+      }
       return invalidState;
     }
   },
