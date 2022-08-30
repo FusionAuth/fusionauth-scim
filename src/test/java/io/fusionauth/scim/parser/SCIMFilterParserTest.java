@@ -18,6 +18,7 @@ package io.fusionauth.scim.parser;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 
+import io.fusionauth.scim.parser.exception.AttributePathException;
 import io.fusionauth.scim.parser.exception.ComparisonValueException;
 import io.fusionauth.scim.parser.exception.InvalidStateException;
 import io.fusionauth.scim.parser.exception.OperatorException;
@@ -126,6 +127,10 @@ public class SCIMFilterParserTest {
             new AttributeTextComparisonExpression("urn:ietf:params:scim:schemas:core:2.0:User:userName", ComparisonOperator.sw, "J")
         },
         {
+            "urn:ietf:params:scim:schemas:core:2.0:User:name.firstName sw \"J\"",
+            new AttributeTextComparisonExpression("urn:ietf:params:scim:schemas:core:2.0:User:name.firstName", ComparisonOperator.sw, "J")
+        },
+        {
             "title pr",
             new AttributePresentExpression("title")
         }
@@ -144,6 +149,36 @@ public class SCIMFilterParserTest {
         // TODO : More tests
         //  A eq "(((  D )) "
         //  A eq "\")\"(\")"
+    };
+  }
+
+  @DataProvider(name = "invalidAttributePath")
+  public Object[][] invalidAttributePath() {
+    return new Object[][]{
+        {
+            "A.0a pr",
+            "The attribute path [A.0a] is not valid"
+        },
+        {
+            "A.b.c pr",
+            "The attribute path [A.b.c] is not valid"
+        },
+        {
+            "A. pr",
+            "The attribute path [A.] is not valid"
+        },
+        {
+            "urn:ietf:params:scim:schemas:core:2.0:User:name. pr",
+            "The attribute path [urn:ietf:params:scim:schemas:core:2.0:User:name.] is not valid"
+        },
+        {
+            "urn:ietf:params:scim:schemas:core:2.0:User:name.firstName.initial pr",
+            "The attribute path [urn:ietf:params:scim:schemas:core:2.0:User:name.firstName.initial] is not valid"
+        },
+        {
+            "urn:ietf:params:scim:schemas:core:2.0:User:name.0th pr",
+            "The attribute path [urn:ietf:params:scim:schemas:core:2.0:User:name.0th] is not valid"
+        },
     };
   }
 
@@ -186,6 +221,10 @@ public class SCIMFilterParserTest {
   @DataProvider(name = "invalidState")
   public Object[][] invalidState() {
     return new Object[][]{
+        {
+            ". pr",
+            "Invalid state transition at [.]"
+        },
         {
             // Invalid operator
             "A pd",
@@ -265,6 +304,16 @@ public class SCIMFilterParserTest {
   public void parseGood(String filter, Expression expected) throws Exception {
     Expression actual = parser.parse(filter);
     assertEquals(expected, actual);
+  }
+
+  @Test(dataProvider = "invalidAttributePath")
+  public void parseInvalidAttributePath(String filter, String expected) throws Exception {
+    try {
+      parser.parse(filter);
+      fail("Expected exception for filter [" + filter + "]");
+    } catch (AttributePathException e) {
+      assertEquals(expected, e.getMessage());
+    }
   }
 
   @Test(dataProvider = "invalidComparison")

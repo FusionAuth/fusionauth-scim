@@ -19,6 +19,7 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 
+import io.fusionauth.scim.parser.exception.AttributePathException;
 import io.fusionauth.scim.parser.exception.ComparisonValueException;
 import io.fusionauth.scim.parser.exception.InvalidStateException;
 import io.fusionauth.scim.parser.exception.OperatorException;
@@ -35,7 +36,7 @@ import io.fusionauth.scim.parser.expression.Expression;
  */
 public class SCIMFilterParser {
 
-  public Expression parse(String filter) throws InvalidStateException, OperatorException, ComparisonValueException {
+  public Expression parse(String filter) throws InvalidStateException, OperatorException, ComparisonValueException, AttributePathException {
     // Add a trailing space to ensure all tokens are parsed
     char[] source = new char[filter.length() + 1];
     filter.getChars(0, filter.length(), source, 0);
@@ -58,25 +59,13 @@ public class SCIMFilterParser {
           break;
         case attributePath:
           state = state.next(c);
-          if (state == SCIMParserState.attributePath || state == SCIMParserState.beforeSubAttribute) {
+          if (state == SCIMParserState.attributePath) {
             sb.append(c);
           } else if (state == SCIMParserState.beforeOperator) {
             attrPath = sb.toString();
-            sb.setLength(0);
-          }
-          break;
-        case beforeSubAttribute:
-          state = state.next(c);
-          if (state == SCIMParserState.subAttribute) {
-            sb.append(c);
-          }
-          break;
-        case subAttribute:
-          state = state.next(c);
-          if (state == SCIMParserState.subAttribute) {
-            sb.append(c);
-          } else if (state == SCIMParserState.beforeOperator) {
-            attrPath = sb.toString();
+            if (!validateAttributePath(attrPath)) {
+              throw new AttributePathException("The attribute path [" + attrPath + "] is not valid");
+            }
             sb.setLength(0);
           }
           break;
@@ -255,5 +244,33 @@ public class SCIMFilterParser {
     }
 
     return currentExpression;
+  }
+
+  /**
+   * Validate an attribute path's optional sub-attribute
+   *
+   * @param attrPath The attribute path to validate
+   * @return {@code true} if {@code attrPath} is valid, {@code false} otherwise
+   */
+  private boolean validateAttributePath(String attrPath) {
+    // TODO : Does this need more URI validation for schema URIs?
+    int lastColon = attrPath.lastIndexOf(':');
+    String lastSegment = lastColon != -1 ? attrPath.substring(lastColon) : attrPath;
+    if (lastSegment.chars().filter(c -> c == '.').count() > 1) {
+      // Last segment can have at most one period
+      return false;
+    }
+    int lastPeriod = attrPath.lastIndexOf('.');
+    if (lastPeriod > lastColon) {
+      // A period after the last colon (or absent a colon) indicates the period is the start of a sub-attribute
+      if (attrPath.length() == lastPeriod + 1) {
+        // Cannot end with a period
+        return false;
+      } else {
+        // A sub-attribute must start with a letter
+        return Character.isAlphabetic(attrPath.codePointAt(lastPeriod + 1));
+      }
+    }
+    return true;
   }
 }
