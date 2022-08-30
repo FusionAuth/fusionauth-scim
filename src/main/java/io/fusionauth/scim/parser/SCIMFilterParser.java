@@ -50,8 +50,8 @@ public class SCIMFilterParser {
     SCIMParserState state = SCIMParserState.filterStart;
     String attrPath = null;
     ComparisonOperator attrOp = null;
-    LogicalLinkExpression pendingLogicalExpression = null;
-    Deque<Expression> expressions = new ArrayDeque<>();
+    Deque<Expression> result = new ArrayDeque<>();
+    Deque<LogicalLinkExpression> hold = new ArrayDeque<>();
     StringBuilder sb = new StringBuilder();
 
     for (int i = 0; i < source.length; i++) {
@@ -90,7 +90,7 @@ public class SCIMFilterParser {
             sb.append(c);
             try {
               assert ComparisonOperator.valueOf(sb.toString()) == ComparisonOperator.pr;
-              expressions.push(new AttributePresentExpression(attrPath));
+              result.push(new AttributePresentExpression(attrPath));
               attrPath = null;
               sb.setLength(0);
             } catch (IllegalArgumentException e) {
@@ -127,9 +127,9 @@ public class SCIMFilterParser {
             sb.append(c);
           } else if (state == SCIMParserState.afterAttributeExpression) {
             if (sb.toString().equals("true")) {
-              expressions.push(new AttributeBooleanComparisonExpression(attrPath, attrOp, true));
+              result.push(new AttributeBooleanComparisonExpression(attrPath, attrOp, true));
             } else if (sb.toString().equals("false")) {
-              expressions.push(new AttributeBooleanComparisonExpression(attrPath, attrOp, false));
+              result.push(new AttributeBooleanComparisonExpression(attrPath, attrOp, false));
             } else {
               throw new ComparisonValueException("[" + sb + "] is not a valid comparison value");
             }
@@ -145,7 +145,7 @@ public class SCIMFilterParser {
             sb.append(c);
           } else if (state == SCIMParserState.afterAttributeExpression) {
             if (sb.toString().equals("null")) {
-              expressions.push(new AttributeNullComparisonExpression(attrPath, attrOp));
+              result.push(new AttributeNullComparisonExpression(attrPath, attrOp));
               sb.setLength(0);
             } else {
               throw new ComparisonValueException("[" + sb + "] is not a valid comparison value");
@@ -167,7 +167,7 @@ public class SCIMFilterParser {
             sb.append(c);
           } else if (state == SCIMParserState.afterAttributeExpression) {
             try {
-              expressions.push(new AttributeNumberComparisonExpression(attrPath, attrOp, Double.parseDouble(sb.toString())));
+              result.push(new AttributeNumberComparisonExpression(attrPath, attrOp, Double.parseDouble(sb.toString())));
               sb.setLength(0);
             } catch (NumberFormatException e) {
               throw new ComparisonValueException("[" + sb + "] is not a valid comparison value");
@@ -180,7 +180,7 @@ public class SCIMFilterParser {
             sb.append(c);
           } else if (state == SCIMParserState.afterAttributeExpression) {
             try {
-              expressions.push(new AttributeNumberComparisonExpression(attrPath, attrOp, Double.parseDouble(sb.toString())));
+              result.push(new AttributeNumberComparisonExpression(attrPath, attrOp, Double.parseDouble(sb.toString())));
               sb.setLength(0);
             } catch (NumberFormatException e) {
               throw new ComparisonValueException("[" + sb + "] is not a valid comparison value");
@@ -199,7 +199,7 @@ public class SCIMFilterParser {
             sb.append(c);
           } else if (state == SCIMParserState.afterAttributeExpression) {
             try {
-              expressions.push(new AttributeNumberComparisonExpression(attrPath, attrOp, Double.parseDouble(sb.toString())));
+              result.push(new AttributeNumberComparisonExpression(attrPath, attrOp, Double.parseDouble(sb.toString())));
               sb.setLength(0);
             } catch (NumberFormatException e) {
               throw new ComparisonValueException("[" + sb + "] is not a valid comparison value");
@@ -213,10 +213,10 @@ public class SCIMFilterParser {
           } else if (state == SCIMParserState.afterAttributeExpression) {
             try {
               // Try to parse as Date...
-              expressions.push(new AttributeDateComparisonExpression(attrPath, attrOp, ZonedDateTime.from(DateTimeFormatter.ISO_DATE_TIME.parse(sb.toString())).toEpochSecond()));
+              result.push(new AttributeDateComparisonExpression(attrPath, attrOp, ZonedDateTime.from(DateTimeFormatter.ISO_DATE_TIME.parse(sb.toString())).toEpochSecond()));
             } catch (DateTimeParseException e) {
               // ...otherwise treat as text
-              expressions.push(new AttributeTextComparisonExpression(attrPath, attrOp, sb.toString()));
+              result.push(new AttributeTextComparisonExpression(attrPath, attrOp, sb.toString()));
             }
             sb.setLength(0);
           }
@@ -255,8 +255,17 @@ public class SCIMFilterParser {
             sb.append(c);
           } else if (state == SCIMParserState.filterStart) {
             try {
-              assert pendingLogicalExpression == null;
-              pendingLogicalExpression = new LogicalLinkExpression(LogicalOperator.valueOf(sb.toString()));
+              LogicalLinkExpression newLogicalExpression = new LogicalLinkExpression(LogicalOperator.valueOf(sb.toString()));
+              if (hold.isEmpty() || precedence(newLogicalExpression.linkOperator) >= precedence(hold.peek().linkOperator)) {
+                hold.push(newLogicalExpression);
+              } else {
+                while (!hold.isEmpty() &&
+                       precedence(hold.peek().linkOperator) >= precedence(newLogicalExpression.linkOperator)
+                ) {
+                  result.push(hold.pop());
+                }
+                hold.push(newLogicalExpression);
+              }
               sb.setLength(0);
             } catch (IllegalArgumentException e) {
               throw new LogicalOperatorException("No logical operator for [" + sb + "]");
@@ -265,33 +274,48 @@ public class SCIMFilterParser {
           break;
       }
 
-      if (state == SCIMParserState.afterAttributeExpression && pendingLogicalExpression != null) {
-        // Add pending logical expression to stack
-        expressions.push(pendingLogicalExpression);
-        pendingLogicalExpression = null;
-      }
-
       if (state == SCIMParserState.invalidState) {
         throw new InvalidStateException("Invalid state transition at [" + filter.substring(0, Math.min(i + 1, filter.length())) + "]");
       }
     }
 
-    Expression result = expressions.peek();
-    while (!expressions.isEmpty()) {
-      Expression exp = expressions.pop();
+    while (!hold.isEmpty()) {
+      result.push(hold.pop());
+    }
+
+    Deque<Expression> operands = new ArrayDeque<>();
+    while (!result.isEmpty()) {
+      // Now we work through postfix expressions as a queue
+      // removeLast() will take from the bottom of the stack
+      Expression exp = result.removeLast();
       if (exp instanceof LogicalLinkExpression) {
-        // The next two items on the stack must be operands for a logical operator
+        // Logical operators are processed immediately by grabbing the top two operands from the stack
         LogicalLinkExpression logExp = (LogicalLinkExpression) exp;
-        logExp.right = expressions.pop();
-        logExp.left = expressions.pop();
-        if (logExp.left instanceof LogicalLinkExpression) {
-          // This logical expression needs its operands. Back to the stack!
-          expressions.push(logExp.left);
-        }
+        logExp.right = operands.pop();
+        logExp.left = operands.pop();
+        // After it has its left and right populated, the LogicalLinkExpression is just another operand
+        operands.push(logExp);
+      } else {
+        // Operands are pushed to a stack
+        operands.push(exp);
       }
     }
 
-    return result;
+    assert operands.size() == 1;
+
+    return operands.pop();
+  }
+
+  @SuppressWarnings("EnhancedSwitchMigration")
+  private int precedence(LogicalOperator op) {
+    switch (op) {
+      case and:
+        return 2;
+      case or:
+        return 1;
+      default:
+        return -1;
+    }
   }
 
   /**

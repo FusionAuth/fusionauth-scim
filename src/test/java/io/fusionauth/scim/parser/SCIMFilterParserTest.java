@@ -159,33 +159,33 @@ public class SCIMFilterParserTest {
         {
             "A pr and B pr and C pr and D pr",
             new LogicalLinkExpression(
-                new LogicalLinkExpression(
-                    new LogicalLinkExpression(
-                        new AttributePresentExpression("A"),
-                        LogicalOperator.and,
-                        new AttributePresentExpression("B")
-                    ),
-                    LogicalOperator.and,
-                    new AttributePresentExpression("C")
-                ),
+                new AttributePresentExpression("A"),
                 LogicalOperator.and,
-                new AttributePresentExpression("D")
+                new LogicalLinkExpression(
+                    new AttributePresentExpression("B"),
+                    LogicalOperator.and,
+                    new LogicalLinkExpression(
+                        new AttributePresentExpression("C"),
+                        LogicalOperator.and,
+                        new AttributePresentExpression("D")
+                    )
+                )
             )
         },
         {
             "A pr or B pr or C pr or D pr",
             new LogicalLinkExpression(
-                new LogicalLinkExpression(
-                    new LogicalLinkExpression(
-                        new AttributePresentExpression("A"),
-                        LogicalOperator.or,
-                        new AttributePresentExpression("B")
-                    ),
-                    LogicalOperator.or,
-                    new AttributePresentExpression("C")
-                ),
+                new AttributePresentExpression("A"),
                 LogicalOperator.or,
-                new AttributePresentExpression("D")
+                new LogicalLinkExpression(
+                    new AttributePresentExpression("B"),
+                    LogicalOperator.or,
+                    new LogicalLinkExpression(
+                        new AttributePresentExpression("C"),
+                        LogicalOperator.or,
+                        new AttributePresentExpression("D")
+                    )
+                )
             )
         },
         {
@@ -203,6 +203,55 @@ public class SCIMFilterParserTest {
                 LogicalOperator.or,
                 new AttributePresentExpression("D")
             )
+        },
+        {
+            "A pr and B pr or C pr and D pr or E pr or F pr",
+            new LogicalLinkExpression(
+                new LogicalLinkExpression(
+                    new LogicalLinkExpression(
+                        new AttributePresentExpression("A"),
+                        LogicalOperator.and,
+                        new AttributePresentExpression("B")
+                    ),
+                    LogicalOperator.or,
+                    new LogicalLinkExpression(
+                        new AttributePresentExpression("C"),
+                        LogicalOperator.and,
+                        new AttributePresentExpression("D")
+                    )
+                ),
+                LogicalOperator.or,
+                new LogicalLinkExpression(
+                    new AttributePresentExpression("E"),
+                    LogicalOperator.or,
+                    new AttributePresentExpression("F")
+                )
+            )
+        },
+        {
+            "A pr and B pr and C pr or D pr and E pr or F pr",
+            new LogicalLinkExpression(
+                new LogicalLinkExpression(
+                    new LogicalLinkExpression(
+                        new AttributePresentExpression("A"),
+                        LogicalOperator.and,
+                        new LogicalLinkExpression(
+                            new AttributePresentExpression("B"),
+                            LogicalOperator.and,
+                            new AttributePresentExpression("C")
+                        )
+                    ),
+                    LogicalOperator.or,
+                    new LogicalLinkExpression(
+                        new AttributePresentExpression("D"),
+                        LogicalOperator.and,
+                        new AttributePresentExpression("E")
+                    )
+                ),
+                LogicalOperator.or,
+                new AttributePresentExpression("F")
+            )
+
         },
 //    filter=userType eq "Employee" and (emails co "example.com" or
 //                                       emails.value co "example.org")
