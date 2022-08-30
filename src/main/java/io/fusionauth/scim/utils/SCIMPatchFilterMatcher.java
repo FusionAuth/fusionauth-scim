@@ -36,7 +36,7 @@ import io.fusionauth.scim.parser.expression.Expression;
 /**
  * @author Daniel DeGroff
  */
-public class PatchFilterMatcher {
+public class SCIMPatchFilterMatcher {
   public static final DateTimeFormatter SCIMDateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
 
   /**

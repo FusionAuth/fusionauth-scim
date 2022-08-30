@@ -27,8 +27,6 @@ import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.node.TextNode;
 import io.fusionauth.scim.domain.SCIMPatchOperation;
-import io.fusionauth.scim.parser.Filter;
-import io.fusionauth.scim.parser.FilterGroup;
 import io.fusionauth.scim.parser.SCIMFilterParser;
 import io.fusionauth.scim.parser.expression.Expression;
 
@@ -90,7 +88,7 @@ public class SCIMPatchTools {
           JsonNode attributeNode = source.at(attrPathPointer);
           if (attributeNode instanceof ArrayNode array) {
             for (int i = 0; i < array.size(); i++) {
-              if (PatchFilterMatcher.matches(expression, array.get(i))) {
+              if (SCIMPatchFilterMatcher.matches(expression, array.get(i))) {
                 // Make a copy since we may create more than one of these from the initial SCIM op
                 // - Add a new op to the result for each matching node. It is plausible we'll match more than one node.
                 ObjectNode copy = operation.deepCopy();
