@@ -30,6 +30,7 @@ import io.fusionauth.scim.parser.expression.AttributeNumberComparisonExpression;
 import io.fusionauth.scim.parser.expression.AttributePresentExpression;
 import io.fusionauth.scim.parser.expression.AttributeTextComparisonExpression;
 import io.fusionauth.scim.parser.expression.Expression;
+import io.fusionauth.scim.parser.expression.LogicalLinkExpression;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 import static org.testng.AssertJUnit.assertEquals;
@@ -132,12 +133,77 @@ public class SCIMFilterParserTest {
             new AttributeTextComparisonExpression("urn:ietf:params:scim:schemas:core:2.0:User:name.firstName", ComparisonOperator.sw, "J")
         },
         {
+            "schemas eq \"urn:ietf:params:scim:schemas:extension:enterprise:2.0:User\"",
+            new AttributeTextComparisonExpression("schemas", ComparisonOperator.eq, "urn:ietf:params:scim:schemas:extension:enterprise:2.0:User")
+        },
+        {
             "title pr",
             new AttributePresentExpression("title")
         },
-//    filter=title pr and userType eq "Employee"
-//    filter=title pr or userType eq "Intern"
-//    filter=schemas eq "urn:ietf:params:scim:schemas:extension:enterprise:2.0:User"
+        {
+            "title pr and userType eq \"Employee\"",
+            new LogicalLinkExpression(
+                new AttributePresentExpression("title"),
+                LogicalOperator.and,
+                new AttributeTextComparisonExpression("userType", ComparisonOperator.eq, "Employee")
+            )
+        },
+        {
+            "title pr or userType eq \"Intern\"",
+            new LogicalLinkExpression(
+                new AttributePresentExpression("title"),
+                LogicalOperator.or,
+                new AttributeTextComparisonExpression("userType", ComparisonOperator.eq, "Intern")
+            )
+        },
+        {
+            "A pr and B pr and C pr and D pr",
+            new LogicalLinkExpression(
+                new LogicalLinkExpression(
+                    new LogicalLinkExpression(
+                        new AttributePresentExpression("A"),
+                        LogicalOperator.and,
+                        new AttributePresentExpression("B")
+                    ),
+                    LogicalOperator.and,
+                    new AttributePresentExpression("C")
+                ),
+                LogicalOperator.and,
+                new AttributePresentExpression("D")
+            )
+        },
+        {
+            "A pr or B pr or C pr or D pr",
+            new LogicalLinkExpression(
+                new LogicalLinkExpression(
+                    new LogicalLinkExpression(
+                        new AttributePresentExpression("A"),
+                        LogicalOperator.or,
+                        new AttributePresentExpression("B")
+                    ),
+                    LogicalOperator.or,
+                    new AttributePresentExpression("C")
+                ),
+                LogicalOperator.or,
+                new AttributePresentExpression("D")
+            )
+        },
+        {
+            "A pr or B pr and C pr or D pr",
+            new LogicalLinkExpression(
+                new LogicalLinkExpression(
+                    new AttributePresentExpression("A"),
+                    LogicalOperator.or,
+                    new LogicalLinkExpression(
+                        new AttributePresentExpression("B"),
+                        LogicalOperator.and,
+                        new AttributePresentExpression("C")
+                    )
+                ),
+                LogicalOperator.or,
+                new AttributePresentExpression("D")
+            )
+        },
 //    filter=userType eq "Employee" and (emails co "example.com" or
 //                                       emails.value co "example.org")
 //    filter=userType ne "Employee" and not (emails co "example.com" or

@@ -33,10 +33,12 @@ import io.fusionauth.scim.parser.expression.AttributeNumberComparisonExpression;
 import io.fusionauth.scim.parser.expression.AttributePresentExpression;
 import io.fusionauth.scim.parser.expression.AttributeTextComparisonExpression;
 import io.fusionauth.scim.parser.expression.Expression;
+import io.fusionauth.scim.parser.expression.LogicalLinkExpression;
 
 /**
  * @author Spencer Witt
  */
+@SuppressWarnings("PatternVariableCanBeUsed")
 public class SCIMFilterParser {
 
   public Expression parse(String filter)
@@ -48,7 +50,7 @@ public class SCIMFilterParser {
     SCIMParserState state = SCIMParserState.filterStart;
     String attrPath = null;
     ComparisonOperator attrOp = null;
-    LogicalOperator logOp = null;
+    LogicalLinkExpression pendingLogicalExpression = null;
     Deque<Expression> expressions = new ArrayDeque<>();
     StringBuilder sb = new StringBuilder();
 
@@ -253,7 +255,8 @@ public class SCIMFilterParser {
             sb.append(c);
           } else if (state == SCIMParserState.filterStart) {
             try {
-              logOp = LogicalOperator.valueOf(sb.toString());
+              assert pendingLogicalExpression == null;
+              pendingLogicalExpression = new LogicalLinkExpression(LogicalOperator.valueOf(sb.toString()));
               sb.setLength(0);
             } catch (IllegalArgumentException e) {
               throw new LogicalOperatorException("No logical operator for [" + sb + "]");
@@ -262,14 +265,33 @@ public class SCIMFilterParser {
           break;
       }
 
+      if (state == SCIMParserState.afterAttributeExpression && pendingLogicalExpression != null) {
+        // Add pending logical expression to stack
+        expressions.push(pendingLogicalExpression);
+        pendingLogicalExpression = null;
+      }
+
       if (state == SCIMParserState.invalidState) {
         throw new InvalidStateException("Invalid state transition at [" + filter.substring(0, Math.min(i + 1, filter.length())) + "]");
       }
     }
 
-    assert expressions.size() == 1;
+    Expression result = expressions.peek();
+    while (!expressions.isEmpty()) {
+      Expression exp = expressions.pop();
+      if (exp instanceof LogicalLinkExpression) {
+        // The next two items on the stack must be operands for a logical operator
+        LogicalLinkExpression logExp = (LogicalLinkExpression) exp;
+        logExp.right = expressions.pop();
+        logExp.left = expressions.pop();
+        if (logExp.left instanceof LogicalLinkExpression) {
+          // This logical expression needs its operands. Back to the stack!
+          expressions.push(logExp.left);
+        }
+      }
+    }
 
-    return expressions.pop();
+    return result;
   }
 
   /**
