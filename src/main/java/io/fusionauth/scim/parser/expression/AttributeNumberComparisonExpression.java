@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.util.Objects;
 
 import io.fusionauth.scim.parser.ComparisonOperator;
+import io.fusionauth.scim.parser.ValueType;
 import io.fusionauth.scim.utils.ToString;
 
 public class AttributeNumberComparisonExpression extends AttributeComparisonExpression<BigDecimal> {
@@ -42,5 +43,10 @@ public class AttributeNumberComparisonExpression extends AttributeComparisonExpr
   @Override
   public BigDecimal value() {
     return comparisonValue;
+  }
+
+  @Override
+  public ValueType valueType() {
+    return ValueType.number;
   }
 }

@@ -19,10 +19,8 @@ package io.fusionauth.scim.parser;
  * @author Spencer Witt
  */
 public enum ValueType {
-  none,
   number,
   text,
   date,
-  bool,
-  nul
+  bool
 }

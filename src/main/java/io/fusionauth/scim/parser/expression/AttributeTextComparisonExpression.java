@@ -3,6 +3,7 @@ package io.fusionauth.scim.parser.expression;
 import java.util.Objects;
 
 import io.fusionauth.scim.parser.ComparisonOperator;
+import io.fusionauth.scim.parser.ValueType;
 import io.fusionauth.scim.utils.ToString;
 
 public class AttributeTextComparisonExpression extends AttributeComparisonExpression<String> {
@@ -41,5 +42,10 @@ public class AttributeTextComparisonExpression extends AttributeComparisonExpres
   @Override
   public String value() {
     return comparisonValue;
+  }
+
+  @Override
+  public ValueType valueType() {
+    return ValueType.text;
   }
 }
