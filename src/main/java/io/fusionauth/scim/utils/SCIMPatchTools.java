@@ -27,8 +27,8 @@ import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.node.TextNode;
 import io.fusionauth.scim.domain.SCIMPatchOperation;
-import io.fusionauth.scim.parser.Filter;
-import io.fusionauth.scim.parser.FilterGroup;
+import io.fusionauth.scim.parser.SCIMFilterParser;
+import io.fusionauth.scim.parser.expression.Expression;
 
 /**
  * @author Daniel DeGroff
@@ -82,15 +82,13 @@ public class SCIMPatchTools {
           String valFilter = matcher.group(2);
           String subAttrPointer = matcher.group(3).replace(".", "/");
 
-//          FilterGroup filteringGroup = new SCIMFilterParser().parse(valFilter);
-          FilterGroup filteringGroup = new FilterGroup();
-          Filter filter = filteringGroup.filters.get(0);
+          Expression expression = new SCIMFilterParser().parse(valFilter);
 
           // emails[type eq work].value
           JsonNode attributeNode = source.at(attrPathPointer);
           if (attributeNode instanceof ArrayNode array) {
             for (int i = 0; i < array.size(); i++) {
-              if (FilterMatcher.matches(filter, array.get(i))) {
+              if (SCIMPatchFilterMatcher.matches(expression, array.get(i))) {
                 // Make a copy since we may create more than one of these from the initial SCIM op
                 // - Add a new op to the result for each matching node. It is plausible we'll match more than one node.
                 ObjectNode copy = operation.deepCopy();
