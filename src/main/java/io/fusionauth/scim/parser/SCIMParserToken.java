@@ -19,8 +19,10 @@ package io.fusionauth.scim.parser;
  * @author Spencer Witt
  */
 public class SCIMParserToken {
-  public SCIMParserState state;
   public String remaining;
+
+  public SCIMParserState state;
+
   public String value;
 
   public SCIMParserToken(SCIMParserState state, String remaining, String value) {
