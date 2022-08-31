@@ -1,3 +1,19 @@
+/*
+ * Copyright (c) 2022, FusionAuth, All Rights Reserved
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
+ * either express or implied. See the License for the specific
+ * language governing permissions and limitations under the License.
+ */
+
 package io.fusionauth.scim.transform;
 
 import io.fusionauth.scim.parser.ComparisonOperator;
@@ -34,6 +50,13 @@ public class ElasticsearchTransformer {
 
   private static String transformComparisonExpression(AttributeComparisonExpression exp) {
     String value = exp.value().toString();
+    if (exp.operator == ComparisonOperator.sw) {
+      // Add wildcard to end of comparison for "starts with"
+      value += "*";
+    } else if (exp.operator == ComparisonOperator.ew) {
+      // Add wildcard to start of comparison for "ends with"
+      value = "*" + value;
+    }
     if (exp.valueType() == ValueType.text) {
       value = "\"" + value + "\"";
     }
@@ -48,8 +71,9 @@ public class ElasticsearchTransformer {
     switch (op) {
       case eq:
       case ne:
-        return ":=";
       case co:
+      case sw:
+      case ew:
         return ":";
       case gt:
         return ":>";
@@ -59,8 +83,6 @@ public class ElasticsearchTransformer {
         return ":<";
       case le:
         return ":<=";
-      case sw:
-      case ew:
       case pr:
       default:
         return "";

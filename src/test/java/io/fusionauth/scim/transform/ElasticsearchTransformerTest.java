@@ -36,15 +36,15 @@ public class ElasticsearchTransformerTest {
         },
         {
             "A eq null",
-            "A:=null"
+            "A:null"
         },
         {
             "A eq 12.5",
-            "A:=12.5"
+            "A:12.5"
         },
         {
             "A ne 12.5",
-            "!(A:=12.5)"
+            "!(A:12.5)"
         },
         {
             "A gt \"2011-05-13T04:42:34Z\"",
@@ -65,6 +65,14 @@ public class ElasticsearchTransformerTest {
         {
             "A co \"cat\"",
             "A:\"cat\""
+        },
+        {
+            "A sw \"cat\"",
+            "A:\"cat*\""
+        },
+        {
+            "A ew \"cat\"",
+            "A:\"*cat\""
         },
         {
             "A lt 12.5 and B gt 3",
