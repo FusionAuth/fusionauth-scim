@@ -53,12 +53,11 @@ public class SCIMPatchFilterMatcher {
     }
 
     if (expression instanceof AttributeNullTestExpression nullTest) {
-      // null can only be used with equal and not equal operations
-      if (nullTest.operator != ComparisonOperator.eq && nullTest.operator != ComparisonOperator.ne) {
-        throw new InvalidFilterExpressionException(String.format("The %s operator cannot be used with a null type value.", nullTest.operator));
-      }
-
-      return node.isNull();
+      // null can only be used with equal and not equal operations, but the parser will have failed, so just assume it is correct.
+      //noinspection SimplifiableConditionalExpression
+      return nullTest.operator == ComparisonOperator.eq
+          ? node.isNull()
+          : !node.isNull();
     }
 
     if (expression instanceof AttributeComparisonExpression attributeExpression) {
