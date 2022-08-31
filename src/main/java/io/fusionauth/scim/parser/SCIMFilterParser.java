@@ -43,8 +43,7 @@ import io.fusionauth.scim.parser.expression.LogicalLinkExpression;
  */
 @SuppressWarnings("PatternVariableCanBeUsed")
 public class SCIMFilterParser {
-  public Expression parse(String filter)
-      throws InvalidStateException, ComparisonOperatorException, ComparisonValueException, AttributePathException, LogicalOperatorException, GroupingException {
+  public Expression parse(String filter) {
     // Add a trailing space to ensure all tokens are parsed
     char[] source = new char[filter.length() + 1];
     filter.getChars(0, filter.length(), source, 0);

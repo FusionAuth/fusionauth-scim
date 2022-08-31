@@ -1,6 +1,6 @@
 package io.fusionauth.scim.parser.exception;
 
-public class InvalidStateException extends Exception {
+public class InvalidStateException extends SCIMParserException {
   public InvalidStateException(String message) {
     super(message);
   }
