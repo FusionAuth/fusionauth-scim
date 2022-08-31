@@ -140,8 +140,6 @@ public class SCIMPatchFilterMatcherTest {
     // d.i lt 1.00000000000009|1.00000000000008
     noMatch(new AttributeNumberComparisonExpression("d.i", ComparisonOperator.lt, new BigDecimal("1.00000000000009")));
     noMatch(new AttributeNumberComparisonExpression("d.i", ComparisonOperator.lt, new BigDecimal("1.00000000000008")));
-
-
   }
 
   @Test
