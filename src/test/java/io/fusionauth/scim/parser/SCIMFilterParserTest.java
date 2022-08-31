@@ -257,13 +257,28 @@ public class SCIMFilterParserTest {
                 LogicalOperator.or,
                 new AttributePresentTestExpression("F")
             )
-
         },
-//    filter=userType eq "Employee" and (emails co "example.com" or
-//                                       emails.value co "example.org")
-//    filter=userType ne "Employee" and not (emails co "example.com" or
-//    emails.value co "example.org")
-//    filter=userType eq "Employee" and (emails.type eq "work")
+        {
+            "userType eq \"Employee\" and (emails co \"example.com\" or emails.value co \"example.org\")",
+            new LogicalLinkExpression(
+                new AttributeTextComparisonExpression("userType", ComparisonOperator.eq, "Employee"),
+                LogicalOperator.and,
+                new LogicalLinkExpression(
+                    new AttributeTextComparisonExpression("emails", ComparisonOperator.co, "example.com"),
+                    LogicalOperator.or,
+                    new AttributeTextComparisonExpression("emails.value", ComparisonOperator.co, "example.org")
+                )
+            )
+        },
+        {
+            "userType eq \"Employee\" and (emails.type eq \"work\")",
+            new LogicalLinkExpression(
+                new AttributeTextComparisonExpression("userType", ComparisonOperator.eq, "Employee"),
+                LogicalOperator.and,
+                new AttributeTextComparisonExpression("emails.type", ComparisonOperator.eq, "work")
+            )
+        }
+//    filter=userType ne "Employee" and not (emails co "example.com" or emails.value co "example.org")
 //    filter=userType eq "Employee" and emails[type eq "work" and
 //    value co "@example.com"]
 //    filter=emails[type eq "work" and value co "@example.com"] or

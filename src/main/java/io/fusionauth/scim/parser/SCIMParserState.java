@@ -30,6 +30,8 @@ public enum SCIMParserState {
         return afterAttributeExpression;
       } else if (c == 'a' || c == 'o') {
         return logicalOperator;
+      } else if (c == ')') {
+        return closeParen;
       }
       return invalidState;
     }
@@ -91,6 +93,17 @@ public enum SCIMParserState {
       return invalidState;
     }
   },
+  closeParen {
+    @Override
+    public SCIMParserState next(char c) {
+      if (c == ' ') {
+        return afterAttributeExpression;
+      } else if (c == ')') {
+        return closeParen;
+      }
+      return invalidState;
+    }
+  },
   comparisonOperator {
     @Override
     public SCIMParserState next(char c) {
@@ -128,6 +141,8 @@ public enum SCIMParserState {
     public SCIMParserState next(char c) {
       if (Character.isAlphabetic(c)) {
         return attributePath;
+      } else if (c == '(') {
+        return openParen;
       }
       return invalidState;
     }
@@ -181,6 +196,17 @@ public enum SCIMParserState {
         return exponentSign;
       } else if (c == ' ') {
         return afterAttributeExpression;
+      }
+      return invalidState;
+    }
+  },
+  openParen {
+    @Override
+    public SCIMParserState next(char c) {
+      if (Character.isAlphabetic(c) || c == ' ') {
+        return attributePath;
+      } else if (c == '(') {
+        return openParen;
       }
       return invalidState;
     }

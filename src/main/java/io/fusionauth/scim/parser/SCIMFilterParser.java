@@ -25,6 +25,7 @@ import java.util.Deque;
 import io.fusionauth.scim.parser.exception.AttributePathException;
 import io.fusionauth.scim.parser.exception.ComparisonOperatorException;
 import io.fusionauth.scim.parser.exception.ComparisonValueException;
+import io.fusionauth.scim.parser.exception.GroupingException;
 import io.fusionauth.scim.parser.exception.InvalidStateException;
 import io.fusionauth.scim.parser.exception.LogicalOperatorException;
 import io.fusionauth.scim.parser.expression.AttributeBooleanComparisonExpression;
@@ -34,6 +35,7 @@ import io.fusionauth.scim.parser.expression.AttributeNumberComparisonExpression;
 import io.fusionauth.scim.parser.expression.AttributePresentTestExpression;
 import io.fusionauth.scim.parser.expression.AttributeTextComparisonExpression;
 import io.fusionauth.scim.parser.expression.Expression;
+import io.fusionauth.scim.parser.expression.GroupingExpression;
 import io.fusionauth.scim.parser.expression.LogicalLinkExpression;
 
 /**
@@ -42,7 +44,7 @@ import io.fusionauth.scim.parser.expression.LogicalLinkExpression;
 @SuppressWarnings("PatternVariableCanBeUsed")
 public class SCIMFilterParser {
   public Expression parse(String filter)
-      throws InvalidStateException, ComparisonOperatorException, ComparisonValueException, AttributePathException, LogicalOperatorException {
+      throws InvalidStateException, ComparisonOperatorException, ComparisonValueException, AttributePathException, LogicalOperatorException, GroupingException {
     // Add a trailing space to ensure all tokens are parsed
     char[] source = new char[filter.length() + 1];
     filter.getChars(0, filter.length(), source, 0);
@@ -51,7 +53,7 @@ public class SCIMFilterParser {
     String attrPath = null;
     ComparisonOperator attrOp = null;
     Deque<Expression> result = new ArrayDeque<>();
-    Deque<LogicalLinkExpression> hold = new ArrayDeque<>();
+    Deque<Expression> hold = new ArrayDeque<>();
     StringBuilder sb = new StringBuilder();
 
     for (int i = 0; i < source.length; i++) {
@@ -62,6 +64,8 @@ public class SCIMFilterParser {
           state = state.next(c);
           if (state == SCIMParserState.attributePath) {
             sb.append(c);
+          } else if (state == SCIMParserState.openParen) {
+            hold.push(new GroupingExpression());
           }
           break;
         case attributePath:
@@ -248,6 +252,11 @@ public class SCIMFilterParser {
           state = state.next(c);
           if (state == SCIMParserState.logicalOperator) {
             sb.append(c);
+          } else if (state == SCIMParserState.closeParen) {
+            boolean success = handleCloseParen(hold, result);
+            if (!success) {
+              throw new GroupingException("Extra closed parenthesis at [" + filter.substring(0, i) + "]");
+            }
           }
           break;
         case logicalOperator:
@@ -257,11 +266,19 @@ public class SCIMFilterParser {
           } else if (state == SCIMParserState.filterStart) {
             try {
               LogicalLinkExpression newLogicalExpression = new LogicalLinkExpression(LogicalOperator.valueOf(sb.toString()));
-              if (hold.isEmpty() || precedence(newLogicalExpression.logicalOperator) >= precedence(hold.peek().logicalOperator)) {
+              // hold.peek() cannot return null here because of the hold.isEmpty() check
+              //noinspection ConstantConditions
+              if (hold.isEmpty() ||
+                  hold.peek().type() == ExpressionType.grouping ||
+                  precedence(newLogicalExpression.logicalOperator) >= precedence(((LogicalLinkExpression) hold.peek()).logicalOperator)
+              ) {
                 hold.push(newLogicalExpression);
               } else {
+                // hold.peek() cannot return null here because of !hold.isEmpty() check
+                //noinspection ConstantConditions
                 while (!hold.isEmpty() &&
-                       precedence(hold.peek().logicalOperator) >= precedence(newLogicalExpression.logicalOperator)
+                       hold.peek().type() != ExpressionType.grouping &&
+                       precedence(((LogicalLinkExpression) hold.peek()).logicalOperator) >= precedence(newLogicalExpression.logicalOperator)
                 ) {
                   result.push(hold.pop());
                 }
@@ -273,6 +290,25 @@ public class SCIMFilterParser {
             }
           }
           break;
+        case openParen:
+          state = state.next(c);
+          if (state == SCIMParserState.openParen) {
+            hold.push(new GroupingExpression());
+          } else if (state == SCIMParserState.attributePath) {
+            if (c != ' ') {
+              sb.append(c);
+            }
+          }
+          break;
+        case closeParen:
+          state = state.next(c);
+          if (state == SCIMParserState.closeParen) {
+            boolean success = handleCloseParen(hold, result);
+            if (!success) {
+              throw new GroupingException("Extra closed parenthesis at [" + filter.substring(0, i) + "]");
+            }
+          }
+          break;
       }
 
       if (state == SCIMParserState.invalidState) {
@@ -281,7 +317,11 @@ public class SCIMFilterParser {
     }
 
     while (!hold.isEmpty()) {
-      result.push(hold.pop());
+      Expression exp = hold.pop();
+      if (exp.type() == ExpressionType.grouping) {
+        throw new GroupingException("Unclosed parenthesis in filter [" + filter + "]");
+      }
+      result.push(exp);
     }
 
     Deque<Expression> operands = new ArrayDeque<>();
@@ -305,6 +345,21 @@ public class SCIMFilterParser {
     assert operands.size() == 1;
 
     return operands.pop();
+  }
+
+  private boolean handleCloseParen(Deque<Expression> hold, Deque<Expression> result) {
+    while (!hold.isEmpty() &&
+           hold.peek().type() != ExpressionType.grouping
+    ) {
+      result.push(hold.pop());
+    }
+    if (hold.isEmpty() || hold.peek().type() != ExpressionType.grouping) {
+      return false;
+    } else {
+      // Remove the GroupExpression
+      hold.pop();
+      return true;
+    }
   }
 
   @SuppressWarnings("EnhancedSwitchMigration")
