@@ -175,6 +175,17 @@ public enum SCIMParserState {
       return invalidState;
     }
   },
+  negationOperator {
+    @Override
+    public SCIMParserState next(char c) {
+      if (c == ' ') {
+        return negationOperator;
+      } else if (c == '(') {
+        return openParen;
+      }
+      return invalidState;
+    }
+  },
   nullValue {
     @Override
     public SCIMParserState next(char c) {

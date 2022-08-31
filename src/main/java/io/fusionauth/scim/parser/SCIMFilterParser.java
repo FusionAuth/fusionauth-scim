@@ -37,12 +37,36 @@ import io.fusionauth.scim.parser.expression.AttributeTextComparisonExpression;
 import io.fusionauth.scim.parser.expression.Expression;
 import io.fusionauth.scim.parser.expression.GroupingExpression;
 import io.fusionauth.scim.parser.expression.LogicalLinkExpression;
+import io.fusionauth.scim.parser.expression.LogicalNegationExpression;
 
 /**
  * @author Spencer Witt
  */
 @SuppressWarnings("PatternVariableCanBeUsed")
 public class SCIMFilterParser {
+  private static Expression processExpressionStack(Deque<Expression> result) {
+    Deque<Expression> operands = new ArrayDeque<>();
+    while (!result.isEmpty()) {
+      // Now we work through postfix expressions as a queue
+      // removeLast() will take from the bottom of the stack
+      Expression exp = result.removeLast();
+      if (exp instanceof LogicalLinkExpression) {
+        // Logical operators are processed immediately by grabbing the top two operands from the stack
+        LogicalLinkExpression logExp = (LogicalLinkExpression) exp;
+        logExp.right = operands.pop();
+        logExp.left = operands.pop();
+        // After it has its left and right populated, the LogicalLinkExpression is just another operand
+        operands.push(logExp);
+      } else {
+        // Operands are pushed to a stack
+        operands.push(exp);
+      }
+    }
+    assert operands.size() == 1;
+
+    return operands.pop();
+  }
+
   public Expression parse(String filter) {
     // Add a trailing space to ensure all tokens are parsed
     char[] source = new char[filter.length() + 1];
@@ -51,6 +75,8 @@ public class SCIMFilterParser {
     SCIMParserState state = SCIMParserState.filterStart;
     String attrPath = null;
     ComparisonOperator attrOp = null;
+    boolean negateNextGroup = false;
+    Deque<Boolean> negationStack = new ArrayDeque<>();
     Deque<Expression> result = new ArrayDeque<>();
     Deque<Expression> hold = new ArrayDeque<>();
     StringBuilder sb = new StringBuilder();
@@ -65,6 +91,8 @@ public class SCIMFilterParser {
             sb.append(c);
           } else if (state == SCIMParserState.openParen) {
             hold.push(new GroupingExpression());
+            negationStack.push(negateNextGroup);
+            negateNextGroup = false;
           }
           break;
         case attributePath:
@@ -73,7 +101,12 @@ public class SCIMFilterParser {
             sb.append(c);
           } else if (state == SCIMParserState.beforeOperator) {
             attrPath = sb.toString();
-            if (!validateAttributePath(attrPath)) {
+            if (attrPath.equals("not")) {
+              // This was actually a logical negation. Cannot know until the token is parsed
+              attrPath = null;
+              negateNextGroup = true;
+              state = SCIMParserState.negationOperator;
+            } else if (!validateAttributePath(attrPath)) {
               throw new AttributePathException("The attribute path [" + attrPath + "] is not valid");
             }
             sb.setLength(0);
@@ -252,10 +285,10 @@ public class SCIMFilterParser {
           if (state == SCIMParserState.logicalOperator) {
             sb.append(c);
           } else if (state == SCIMParserState.closeParen) {
-            boolean success = handleCloseParen(hold, result);
-            if (!success) {
+            if (negationStack.isEmpty()) {
               throw new GroupingException("Extra closed parenthesis at [" + filterAtParsedLocation(filter, i) + "]");
             }
+            handleCloseParen(hold, result, negationStack.pop());
           }
           break;
         case logicalOperator:
@@ -289,10 +322,20 @@ public class SCIMFilterParser {
             }
           }
           break;
+        case negationOperator:
+          state = state.next(c);
+          if (state == SCIMParserState.openParen) {
+            hold.push(new GroupingExpression());
+            negationStack.push(negateNextGroup);
+            negateNextGroup = false;
+          }
+          break;
         case openParen:
           state = state.next(c);
           if (state == SCIMParserState.openParen) {
             hold.push(new GroupingExpression());
+            negationStack.push(negateNextGroup);
+            negateNextGroup = false;
           } else if (state == SCIMParserState.attributePath) {
             if (c != ' ') {
               sb.append(c);
@@ -302,10 +345,10 @@ public class SCIMFilterParser {
         case closeParen:
           state = state.next(c);
           if (state == SCIMParserState.closeParen) {
-            boolean success = handleCloseParen(hold, result);
-            if (!success) {
+            if (negationStack.isEmpty()) {
               throw new GroupingException("Extra closed parenthesis at [" + filterAtParsedLocation(filter, i) + "]");
             }
+            handleCloseParen(hold, result, negationStack.pop());
           }
           break;
       }
@@ -323,45 +366,30 @@ public class SCIMFilterParser {
       result.push(exp);
     }
 
-    Deque<Expression> operands = new ArrayDeque<>();
-    while (!result.isEmpty()) {
-      // Now we work through postfix expressions as a queue
-      // removeLast() will take from the bottom of the stack
-      Expression exp = result.removeLast();
-      if (exp instanceof LogicalLinkExpression) {
-        // Logical operators are processed immediately by grabbing the top two operands from the stack
-        LogicalLinkExpression logExp = (LogicalLinkExpression) exp;
-        logExp.right = operands.pop();
-        logExp.left = operands.pop();
-        // After it has its left and right populated, the LogicalLinkExpression is just another operand
-        operands.push(logExp);
-      } else {
-        // Operands are pushed to a stack
-        operands.push(exp);
-      }
-    }
-
-    assert operands.size() == 1;
-
-    return operands.pop();
+    return processExpressionStack(result);
   }
 
   private String filterAtParsedLocation(String filter, int i) {
     return filter.substring(0, Math.min(i + 1, filter.length()));
   }
 
-  private boolean handleCloseParen(Deque<Expression> hold, Deque<Expression> result) {
+  private void handleCloseParen(Deque<Expression> hold, Deque<Expression> result, boolean negated) {
+    Deque<Expression> temp = new ArrayDeque<>();
     while (!hold.isEmpty() &&
            hold.peek().type() != ExpressionType.grouping
     ) {
-      result.push(hold.pop());
+      if (negated) {
+        // If the group is negated, hold the expressions temporarily to be negated later
+        temp.push(hold.pop());
+      } else {
+        result.push(hold.pop());
+      }
     }
-    if (hold.isEmpty() || hold.peek().type() != ExpressionType.grouping) {
-      return false;
-    } else {
-      // Remove the GroupExpression
-      hold.pop();
-      return true;
+    // Remove the GroupExpression
+    hold.pop();
+    if (negated) {
+      // Process temp stack as if getting final output tree
+      result.push(new LogicalNegationExpression(processExpressionStack(temp)));
     }
   }
 
