@@ -255,7 +255,7 @@ public class SCIMFilterParser {
           } else if (state == SCIMParserState.closeParen) {
             boolean success = handleCloseParen(hold, result);
             if (!success) {
-              throw new GroupingException("Extra closed parenthesis at [" + filter.substring(0, i) + "]");
+              throw new GroupingException("Extra closed parenthesis at [" + filterAtParsedLocation(filter, i) + "]");
             }
           }
           break;
@@ -305,14 +305,14 @@ public class SCIMFilterParser {
           if (state == SCIMParserState.closeParen) {
             boolean success = handleCloseParen(hold, result);
             if (!success) {
-              throw new GroupingException("Extra closed parenthesis at [" + filter.substring(0, i) + "]");
+              throw new GroupingException("Extra closed parenthesis at [" + filterAtParsedLocation(filter, i) + "]");
             }
           }
           break;
       }
 
       if (state == SCIMParserState.invalidState) {
-        throw new InvalidStateException("Invalid state transition at [" + filter.substring(0, Math.min(i + 1, filter.length())) + "]");
+        throw new InvalidStateException("Invalid state transition at [" + filterAtParsedLocation(filter, i) + "]");
       }
     }
 
@@ -345,6 +345,10 @@ public class SCIMFilterParser {
     assert operands.size() == 1;
 
     return operands.pop();
+  }
+
+  private String filterAtParsedLocation(String filter, int i) {
+    return filter.substring(0, Math.min(i + 1, filter.length()));
   }
 
   private boolean handleCloseParen(Deque<Expression> hold, Deque<Expression> result) {

@@ -143,6 +143,8 @@ public enum SCIMParserState {
         return attributePath;
       } else if (c == '(') {
         return openParen;
+      } else if (c == ' ') {
+        return filterStart;
       }
       return invalidState;
     }
@@ -203,8 +205,10 @@ public enum SCIMParserState {
   openParen {
     @Override
     public SCIMParserState next(char c) {
-      if (Character.isAlphabetic(c) || c == ' ') {
+      if (Character.isAlphabetic(c)) {
         return attributePath;
+      } else if (c == ' ') {
+        return filterStart;
       } else if (c == '(') {
         return openParen;
       }

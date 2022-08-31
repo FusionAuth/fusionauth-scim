@@ -22,6 +22,7 @@ import java.time.ZonedDateTime;
 import io.fusionauth.scim.parser.exception.AttributePathException;
 import io.fusionauth.scim.parser.exception.ComparisonOperatorException;
 import io.fusionauth.scim.parser.exception.ComparisonValueException;
+import io.fusionauth.scim.parser.exception.GroupingException;
 import io.fusionauth.scim.parser.exception.InvalidStateException;
 import io.fusionauth.scim.parser.exception.LogicalOperatorException;
 import io.fusionauth.scim.parser.expression.AttributeBooleanComparisonExpression;
@@ -277,12 +278,34 @@ public class SCIMFilterParserTest {
                 LogicalOperator.and,
                 new AttributeTextComparisonExpression("emails.type", ComparisonOperator.eq, "work")
             )
+        },
+        {
+            "(A pr or B pr)",
+            new LogicalLinkExpression(
+                new AttributePresentTestExpression("A"),
+                LogicalOperator.or,
+                new AttributePresentTestExpression("B")
+            )
+        },
+        {
+            " (  ( A pr or B pr ) and   ( C pr and ( D   pr   ) )    ) ",
+            new LogicalLinkExpression(
+                new LogicalLinkExpression(
+                    new AttributePresentTestExpression("A"),
+                    LogicalOperator.or,
+                    new AttributePresentTestExpression("B")
+                ),
+                LogicalOperator.and,
+                new LogicalLinkExpression(
+                    new AttributePresentTestExpression("C"),
+                    LogicalOperator.and,
+                    new AttributePresentTestExpression("D")
+                )
+            )
         }
 //    filter=userType ne "Employee" and not (emails co "example.com" or emails.value co "example.org")
-//    filter=userType eq "Employee" and emails[type eq "work" and
-//    value co "@example.com"]
-//    filter=emails[type eq "work" and value co "@example.com"] or
-//    ims[type eq "xmpp" and value co "@foo.com"]
+//    filter=userType eq "Employee" and emails[type eq "work" and value co "@example.com"]
+//    filter=emails[type eq "work" and value co "@example.com"] or ims[type eq "xmpp" and value co "@foo.com"]
         // TODO : More tests
         //  A eq "(((  D )) "
         //  A eq "\")\"(\")"
@@ -352,6 +375,27 @@ public class SCIMFilterParserTest {
             "A eq nuul",
             "[nuul] is not a valid comparison value"
         },
+    };
+  }
+
+  @DataProvider(name = "invalidGrouping")
+  public Object[][] invalidGrouping() {
+    return new Object[][]{
+        {
+            // Extra opening parenthesis
+            "(A pr and B pr",
+            "Unclosed parenthesis in filter [(A pr and B pr]"
+        },
+        {
+            // Extra closed parenthesis after attribute
+            "(A pr or B pr) and C pr)",
+            "Extra closed parenthesis at [(A pr or B pr) and C pr)]"
+        },
+        {
+            // Extra closed parenthesis after closed parenthesis
+            "(A pr or B pr)) and C pr",
+            "Extra closed parenthesis at [(A pr or B pr))]"
+        }
     };
   }
 
@@ -493,6 +537,16 @@ public class SCIMFilterParserTest {
       parser.parse(filter);
       fail("Expected exception for filter [" + filter + "]");
     } catch (ComparisonValueException e) {
+      assertEquals(expected, e.getMessage());
+    }
+  }
+
+  @Test(dataProvider = "invalidGrouping")
+  public void parseInvalidGrouping(String filter, String expected) throws Exception {
+    try {
+      parser.parse(filter);
+      fail("Expected exception for filter [" + filter + "]");
+    } catch (GroupingException e) {
       assertEquals(expected, e.getMessage());
     }
   }
