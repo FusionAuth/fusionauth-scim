@@ -37,7 +37,7 @@ public class AttributeTextComparisonExpression extends AttributeComparisonExpres
 
   @Override
   public AttributeExpression clone() {
-    return null;
+    return new AttributeTextComparisonExpression(this);
   }
 
   @Override
