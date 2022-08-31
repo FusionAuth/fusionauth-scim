@@ -30,6 +30,16 @@ public class AttributeBooleanComparisonExpression extends AttributeComparisonExp
     this.comparisonValue = comparisonValue;
   }
 
+  public AttributeBooleanComparisonExpression(AttributeBooleanComparisonExpression other) {
+    super(other.attributePath, other.operator);
+    this.comparisonValue = other.comparisonValue;
+  }
+
+  @Override
+  public AttributeExpression clone() {
+    return new AttributeBooleanComparisonExpression(this);
+  }
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {

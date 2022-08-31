@@ -25,6 +25,15 @@ public class AttributeNullTestExpression extends AttributeExpression {
     super(attributePath, operator);
   }
 
+  public AttributeNullTestExpression(AttributeNullTestExpression other) {
+    super(other.attributePath, other.operator);
+  }
+
+  @Override
+  public AttributeExpression clone() {
+    return new AttributeNullTestExpression(this);
+  }
+
   @Override
   public String toString() {
     return ToString.toString(this);

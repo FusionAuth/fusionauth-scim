@@ -25,9 +25,19 @@ import io.fusionauth.scim.utils.ToString;
 public class AttributeTextComparisonExpression extends AttributeComparisonExpression {
   public String comparisonValue;
 
-  public AttributeTextComparisonExpression(String attributePath, ComparisonOperator operation, String comparisonValue) {
-    super(attributePath, operation);
+  public AttributeTextComparisonExpression(String attributePath, ComparisonOperator operator, String comparisonValue) {
+    super(attributePath, operator);
     this.comparisonValue = comparisonValue;
+  }
+
+  public AttributeTextComparisonExpression(AttributeTextComparisonExpression other) {
+    super(other.attributePath, other.operator);
+    this.comparisonValue = other.comparisonValue;
+  }
+
+  @Override
+  public AttributeExpression clone() {
+    return null;
   }
 
   @Override

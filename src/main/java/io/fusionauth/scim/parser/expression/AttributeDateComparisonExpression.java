@@ -26,9 +26,19 @@ import io.fusionauth.scim.utils.ToString;
 public class AttributeDateComparisonExpression extends AttributeComparisonExpression {
   public ZonedDateTime comparisonValue;
 
-  public AttributeDateComparisonExpression(String attributePath, ComparisonOperator operation, ZonedDateTime comparisonValue) {
-    super(attributePath, operation);
+  public AttributeDateComparisonExpression(String attributePath, ComparisonOperator operator, ZonedDateTime comparisonValue) {
+    super(attributePath, operator);
     this.comparisonValue = comparisonValue;
+  }
+
+  public AttributeDateComparisonExpression(AttributeDateComparisonExpression other) {
+    super(other.attributePath, other.operator);
+    this.comparisonValue = other.comparisonValue;
+  }
+
+  @Override
+  public AttributeExpression clone() {
+    return new AttributeDateComparisonExpression(this);
   }
 
   @Override

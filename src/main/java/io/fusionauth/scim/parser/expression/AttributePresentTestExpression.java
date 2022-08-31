@@ -25,6 +25,15 @@ public class AttributePresentTestExpression extends AttributeExpression {
     super(attributePath, ComparisonOperator.pr);
   }
 
+  public AttributePresentTestExpression(AttributePresentTestExpression other) {
+    super(other.attributePath, other.operator);
+  }
+
+  @Override
+  public AttributeExpression clone() {
+    return new AttributePresentTestExpression(this);
+  }
+
   @Override
   public String toString() {
     return ToString.toString(this);

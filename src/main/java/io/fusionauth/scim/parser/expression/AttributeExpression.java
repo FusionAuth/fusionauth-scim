@@ -32,6 +32,8 @@ public abstract class AttributeExpression extends Expression {
     this.operator = operator;
   }
 
+  public abstract AttributeExpression clone();
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
