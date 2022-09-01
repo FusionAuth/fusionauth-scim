@@ -32,6 +32,8 @@ public enum SCIMParserState {
         return logicalOperator;
       } else if (c == ')') {
         return closeParen;
+      } else if (c == ']') {
+        return closeBracket;
       }
       return invalidState;
     }
@@ -93,6 +95,23 @@ public enum SCIMParserState {
         return booleanValue;
       } else if (c == ' ') {
         return afterAttributeExpression;
+      } else if (c == ')') {
+        return closeParen;
+      } else if (c == ']') {
+        return closeBracket;
+      }
+      return invalidState;
+    }
+  },
+  closeBracket {
+    @Override
+    public SCIMParserState next(char c) {
+      if (c == ' ') {
+        return afterAttributeExpression;
+      } else if (c == ')') {
+        return closeParen;
+      } else if (c == ']') {
+        return closeBracket;
       }
       return invalidState;
     }
@@ -104,6 +123,8 @@ public enum SCIMParserState {
         return afterAttributeExpression;
       } else if (c == ')') {
         return closeParen;
+      } else if (c == ']') {
+        return closeBracket;
       }
       return invalidState;
     }
@@ -198,6 +219,10 @@ public enum SCIMParserState {
         return nullValue;
       } else if (c == ' ') {
         return afterAttributeExpression;
+      } else if (c == ')') {
+        return closeParen;
+      } else if (c == ']') {
+        return closeBracket;
       }
       return invalidState;
     }
@@ -213,6 +238,10 @@ public enum SCIMParserState {
         return exponentSign;
       } else if (c == ' ') {
         return afterAttributeExpression;
+      } else if (c == ')') {
+        return closeParen;
+      } else if (c == ']') {
+        return closeBracket;
       }
       return invalidState;
     }
@@ -257,6 +286,10 @@ public enum SCIMParserState {
         return exponentValue;
       } else if (c == ' ') {
         return afterAttributeExpression;
+      } else if (c == ')') {
+        return closeParen;
+      } else if (c == ']') {
+        return closeBracket;
       }
       return invalidState;
     }
@@ -270,6 +303,10 @@ public enum SCIMParserState {
         return exponentSign;
       } else if (c == ' ') {
         return afterAttributeExpression;
+      } else if (c == ')') {
+        return closeParen;
+      } else if (c == ']') {
+        return closeBracket;
       }
       return invalidState;
     }
