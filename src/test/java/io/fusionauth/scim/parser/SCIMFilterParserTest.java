@@ -165,16 +165,6 @@ public class SCIMFilterParserTest {
             )
         },
         {
-            "not (A pr and B pr)",
-            new LogicalNegationExpression(
-                new LogicalLinkExpression(
-                    new AttributePresentTestExpression("A"),
-                    LogicalOperator.and,
-                    new AttributePresentTestExpression("B")
-                )
-            )
-        },
-        {
             "A pr and B pr and C pr and D pr",
             new LogicalLinkExpression(
                 new AttributePresentTestExpression("A"),
@@ -313,13 +303,53 @@ public class SCIMFilterParserTest {
                     new AttributePresentTestExpression("D")
                 )
             )
+        },
+        {
+            "not (A pr and B pr)",
+            new LogicalNegationExpression(
+                new LogicalLinkExpression(
+                    new AttributePresentTestExpression("A"),
+                    LogicalOperator.and,
+                    new AttributePresentTestExpression("B")
+                )
+            )
+        },
+        {
+            " (  ( not (A pr) or B pr ) and  not   ( C pr and ( D   pr   ) )    ) ",
+            new LogicalLinkExpression(
+                new LogicalLinkExpression(
+                    new LogicalNegationExpression(
+                        new AttributePresentTestExpression("A")
+                    ),
+                    LogicalOperator.or,
+                    new AttributePresentTestExpression("B")
+                ),
+                LogicalOperator.and,
+                new LogicalNegationExpression(
+                    new LogicalLinkExpression(
+                        new AttributePresentTestExpression("C"),
+                        LogicalOperator.and,
+                        new AttributePresentTestExpression("D")
+                    )
+                )
+            )
+        },
+        {
+            "userType ne \"Employee\" and not (emails co \"example.com\" or emails.value co \"example.org\")",
+            new LogicalLinkExpression(
+                new AttributeTextComparisonExpression("userType", ComparisonOperator.ne, "Employee"),
+                LogicalOperator.and,
+                new LogicalNegationExpression(
+                    new LogicalLinkExpression(
+                        new AttributeTextComparisonExpression("emails", ComparisonOperator.co, "example.com"),
+                        LogicalOperator.or,
+                        new AttributeTextComparisonExpression("emails.value", ComparisonOperator.co, "example.org")
+                    )
+                )
+            )
         }
-//    filter=userType ne "Employee" and not (emails co "example.com" or emails.value co "example.org")
 //    filter=userType eq "Employee" and emails[type eq "work" and value co "@example.com"]
 //    filter=emails[type eq "work" and value co "@example.com"] or ims[type eq "xmpp" and value co "@foo.com"]
-        // TODO : More tests
-        //  A eq "(((  D )) "
-        //  A eq "\")\"(\")"
     };
   }
 
