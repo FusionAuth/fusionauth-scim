@@ -16,12 +16,13 @@
 
 package io.fusionauth.scim.parser.expression;
 
-import io.fusionauth.scim.parser.ComparisonOperator;
-
-public abstract class AttributeComparisonExpression<T, V> extends AttributeExpression<T> {
-  public AttributeComparisonExpression(String attributePath, ComparisonOperator operator) {
-    super(attributePath, operator);
-  }
-
-  public abstract V value();
+/**
+ * @param <T>
+ * @author Daniel DeGroff
+ */
+public interface Copyable<T> {
+  /**
+   * @return a deep copy of the object.
+   */
+  T copy();
 }

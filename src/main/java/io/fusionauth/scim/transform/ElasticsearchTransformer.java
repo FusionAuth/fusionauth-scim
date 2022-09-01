@@ -24,31 +24,29 @@ import io.fusionauth.scim.parser.expression.AttributeExpression;
 import io.fusionauth.scim.parser.expression.Expression;
 import io.fusionauth.scim.parser.expression.LogicalLinkExpression;
 
-@SuppressWarnings("EnhancedSwitchMigration")
 public class ElasticsearchTransformer {
   public static String transform(Expression exp) {
-    switch (exp.type()) {
-      case attribute:
-        return transformAttributeExpression((AttributeExpression) exp);
-      case logicalLink:
-        return transformLogicalExpression((LogicalLinkExpression) exp);
-      case logicalNegation:
-      default:
-        return "";
-    }
+    return switch (exp.type()) {
+      case attribute -> transformAttributeExpression((AttributeExpression<?>) exp);
+      case logicalLink -> transformLogicalExpression((LogicalLinkExpression) exp);
+      case logicalNegation, grouping, attributeFilterGrouping -> "";
+    };
   }
 
-  private static String transformAttributeExpression(AttributeExpression exp) {
+  private static String transformAttributeExpression(AttributeExpression<?> exp) {
     if (exp.valueType() == ValueType.none) {
       return "_exists_:" + exp.attributePath;
     } else if (exp.valueType() == ValueType.nul) {
       return exp.attributePath + transformComparisonOperator(exp.operator) + "null";
     } else {
-      return transformComparisonExpression((AttributeComparisonExpression) exp);
+      return transformComparisonExpression((AttributeComparisonExpression<?, ?>) exp);
     }
   }
 
-  private static String transformComparisonExpression(AttributeComparisonExpression exp) {
+  private static String transformComparisonExpression(AttributeComparisonExpression<?, ?> exp) {
+    // TODO : Question: Is calling toString() safe enough? What if the value is a ZonedDateTime?
+    //        - We may need to add a getStringValue() or something like that so the expression can return something
+    //          equivalent to what we expect to serialize.
     String value = exp.value().toString();
     if (exp.operator == ComparisonOperator.sw) {
       // Add wildcard to end of comparison for "starts with"
@@ -68,6 +66,7 @@ public class ElasticsearchTransformer {
   }
 
   private static String transformComparisonOperator(ComparisonOperator op) {
+    //noinspection EnhancedSwitchMigration
     switch (op) {
       case eq:
       case ne:

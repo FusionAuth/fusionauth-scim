@@ -23,7 +23,7 @@ import io.fusionauth.scim.parser.ComparisonOperator;
 import io.fusionauth.scim.parser.ValueType;
 import io.fusionauth.scim.utils.ToString;
 
-public class AttributeDateComparisonExpression extends AttributeComparisonExpression {
+public class AttributeDateComparisonExpression extends AttributeComparisonExpression<AttributeDateComparisonExpression, ZonedDateTime> {
   public ZonedDateTime comparisonValue;
 
   public AttributeDateComparisonExpression(String attributePath, ComparisonOperator operator, ZonedDateTime comparisonValue) {
@@ -37,7 +37,7 @@ public class AttributeDateComparisonExpression extends AttributeComparisonExpres
   }
 
   @Override
-  public AttributeExpression clone() {
+  public AttributeDateComparisonExpression copy() {
     return new AttributeDateComparisonExpression(this);
   }
 

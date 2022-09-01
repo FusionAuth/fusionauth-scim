@@ -23,7 +23,7 @@ import io.fusionauth.scim.parser.ComparisonOperator;
 import io.fusionauth.scim.parser.ValueType;
 import io.fusionauth.scim.utils.ToString;
 
-public class AttributeNumberComparisonExpression extends AttributeComparisonExpression {
+public class AttributeNumberComparisonExpression extends AttributeComparisonExpression<AttributeNumberComparisonExpression, BigDecimal> {
   public BigDecimal comparisonValue;
 
   public AttributeNumberComparisonExpression(String attributePath, ComparisonOperator operator, BigDecimal comparisonValue) {
@@ -37,7 +37,7 @@ public class AttributeNumberComparisonExpression extends AttributeComparisonExpr
   }
 
   @Override
-  public AttributeExpression clone() {
+  public AttributeNumberComparisonExpression copy() {
     return new AttributeNumberComparisonExpression(this);
   }
 

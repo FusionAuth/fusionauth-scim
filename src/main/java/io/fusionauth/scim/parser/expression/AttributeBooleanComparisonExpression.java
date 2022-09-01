@@ -22,7 +22,7 @@ import io.fusionauth.scim.parser.ComparisonOperator;
 import io.fusionauth.scim.parser.ValueType;
 import io.fusionauth.scim.utils.ToString;
 
-public class AttributeBooleanComparisonExpression extends AttributeComparisonExpression {
+public class AttributeBooleanComparisonExpression extends AttributeComparisonExpression<AttributeBooleanComparisonExpression, Boolean> {
   public Boolean comparisonValue;
 
   public AttributeBooleanComparisonExpression(String attributePath, ComparisonOperator operator, Boolean comparisonValue) {
@@ -36,7 +36,7 @@ public class AttributeBooleanComparisonExpression extends AttributeComparisonExp
   }
 
   @Override
-  public AttributeExpression clone() {
+  public AttributeBooleanComparisonExpression copy() {
     return new AttributeBooleanComparisonExpression(this);
   }
 

@@ -22,7 +22,7 @@ import io.fusionauth.scim.parser.ComparisonOperator;
 import io.fusionauth.scim.parser.ExpressionType;
 import io.fusionauth.scim.parser.ValueType;
 
-public abstract class AttributeExpression extends Expression {
+public abstract class AttributeExpression<T> extends Expression implements Copyable<T> {
   public String attributePath;
 
   public ComparisonOperator operator;
@@ -32,8 +32,6 @@ public abstract class AttributeExpression extends Expression {
     this.operator = operator;
   }
 
-  public abstract AttributeExpression clone();
-
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -42,7 +40,7 @@ public abstract class AttributeExpression extends Expression {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    AttributeExpression that = (AttributeExpression) o;
+    AttributeExpression<?> that = (AttributeExpression<?>) o;
     return Objects.equals(attributePath, that.attributePath) && operator == that.operator;
   }
 

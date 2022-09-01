@@ -20,7 +20,7 @@ import io.fusionauth.scim.parser.ComparisonOperator;
 import io.fusionauth.scim.parser.ValueType;
 import io.fusionauth.scim.utils.ToString;
 
-public class AttributeNullTestExpression extends AttributeExpression {
+public class AttributeNullTestExpression extends AttributeExpression<AttributeNullTestExpression> {
   public AttributeNullTestExpression(String attributePath, ComparisonOperator operator) {
     super(attributePath, operator);
   }
@@ -30,7 +30,7 @@ public class AttributeNullTestExpression extends AttributeExpression {
   }
 
   @Override
-  public AttributeExpression clone() {
+  public AttributeNullTestExpression copy() {
     return new AttributeNullTestExpression(this);
   }
 
