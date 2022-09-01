@@ -20,5 +20,6 @@ public enum ExpressionType {
   attribute,
   logicalLink,
   logicalNegation,
-  grouping
+  grouping,
+  attributeFilterGrouping
 }
