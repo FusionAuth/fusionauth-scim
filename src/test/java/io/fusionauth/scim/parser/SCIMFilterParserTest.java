@@ -435,6 +435,89 @@ public class SCIMFilterParserTest {
                     )
                 )
             )
+        },
+        {
+            "emails  [   type  eq      \"work\" and value co \"@example.com\"   ]     or ims [type eq \"xmpp\"    and    value co   \"@foo.com\" ]  ",
+            new LogicalLinkExpression(
+                new AttributeFilterGroupingExpression(
+                    "emails",
+                    new LogicalLinkExpression(
+                        new AttributeTextComparisonExpression("type", ComparisonOperator.eq, "work"),
+                        LogicalOperator.and,
+                        new AttributeTextComparisonExpression("value", ComparisonOperator.co, "@example.com")
+                    )
+                ),
+                LogicalOperator.or,
+                new AttributeFilterGroupingExpression(
+                    "ims",
+                    new LogicalLinkExpression(
+                        new AttributeTextComparisonExpression("type", ComparisonOperator.eq, "xmpp"),
+                        LogicalOperator.and,
+                        new AttributeTextComparisonExpression("value", ComparisonOperator.co, "@foo.com")
+                    )
+                )
+            )
+        },
+        {
+            "A[B eq 12 and ( C gt 5 or D[E ne -3 and F le 41])] and (G[(H eq null or H eq \"12\") and I co \"@foo.com\"] or J pr)",
+            new LogicalLinkExpression(
+                new AttributeFilterGroupingExpression(
+                    "A",
+                    new LogicalLinkExpression(
+                        new AttributeNumberComparisonExpression("B", ComparisonOperator.eq, new BigDecimal(12)),
+                        LogicalOperator.and,
+                        new LogicalLinkExpression(
+                            new AttributeNumberComparisonExpression("C", ComparisonOperator.gt, new BigDecimal(5)),
+                            LogicalOperator.or,
+                            new AttributeFilterGroupingExpression(
+                                "D",
+                                new LogicalLinkExpression(
+                                    new AttributeNumberComparisonExpression("E", ComparisonOperator.ne, new BigDecimal(-3)),
+                                    LogicalOperator.and,
+                                    new AttributeNumberComparisonExpression("F", ComparisonOperator.le, new BigDecimal(41))
+                                )
+                            )
+                        )
+                    )
+                ),
+                LogicalOperator.and,
+                new LogicalLinkExpression(
+                    new AttributeFilterGroupingExpression(
+                        "G",
+                        new LogicalLinkExpression(
+                            new LogicalLinkExpression(
+                                new AttributeNullTestExpression("H", ComparisonOperator.eq),
+                                LogicalOperator.or,
+                                new AttributeTextComparisonExpression("H", ComparisonOperator.eq, "12")
+                            ),
+                            LogicalOperator.and,
+                            new AttributeTextComparisonExpression("I", ComparisonOperator.co, "@foo.com")
+                        )
+                    ),
+                    LogicalOperator.or,
+                    new AttributePresentTestExpression("J")
+                )
+            )
+        },
+        {
+            "A[B[C[(D eq \"text\" or E [F ne \"blob\"])]]]",
+            new AttributeFilterGroupingExpression(
+                "A",
+                new AttributeFilterGroupingExpression(
+                    "B",
+                    new AttributeFilterGroupingExpression(
+                        "C",
+                        new LogicalLinkExpression(
+                            new AttributeTextComparisonExpression("D", ComparisonOperator.eq, "text"),
+                            LogicalOperator.or,
+                            new AttributeFilterGroupingExpression(
+                                "E",
+                                new AttributeTextComparisonExpression("F", ComparisonOperator.ne, "blob")
+                            )
+                        )
+                    )
+                )
+            )
         }
     };
   }
