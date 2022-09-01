@@ -19,12 +19,18 @@ package io.fusionauth.scim.parser.expression;
 import java.util.Objects;
 
 import io.fusionauth.scim.parser.ExpressionType;
+import io.fusionauth.scim.parser.LogicalOperator;
 import io.fusionauth.scim.utils.ToString;
 
-public class LogicalNegationExpression extends Expression {
+public class LogicalNegationExpression extends LogicalExpression {
   public Expression subExpression;
 
+  public LogicalNegationExpression() {
+    super(LogicalOperator.not);
+  }
+
   public LogicalNegationExpression(Expression subExpression) {
+    super(LogicalOperator.not);
     this.subExpression = subExpression;
   }
 
@@ -36,13 +42,16 @@ public class LogicalNegationExpression extends Expression {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
+    if (!super.equals(o)) {
+      return false;
+    }
     LogicalNegationExpression that = (LogicalNegationExpression) o;
     return Objects.equals(subExpression, that.subExpression);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(subExpression);
+    return Objects.hash(super.hashCode(), subExpression);
   }
 
   @Override

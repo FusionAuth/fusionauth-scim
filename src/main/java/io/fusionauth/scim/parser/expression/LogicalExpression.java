@@ -18,23 +18,13 @@ package io.fusionauth.scim.parser.expression;
 
 import java.util.Objects;
 
-import io.fusionauth.scim.parser.ExpressionType;
 import io.fusionauth.scim.parser.LogicalOperator;
-import io.fusionauth.scim.utils.ToString;
 
-public class LogicalLinkExpression extends LogicalExpression {
-  public Expression left;
+public abstract class LogicalExpression extends Expression {
+  public LogicalOperator logicalOperator;
 
-  public Expression right;
-
-  public LogicalLinkExpression(LogicalOperator logicalOperator) {
-    super(logicalOperator);
-  }
-
-  public LogicalLinkExpression(Expression left, LogicalOperator logicalOperator, Expression right) {
-    super(logicalOperator);
-    this.left = left;
-    this.right = right;
+  public LogicalExpression(LogicalOperator logicalOperator) {
+    this.logicalOperator = logicalOperator;
   }
 
   @Override
@@ -45,25 +35,12 @@ public class LogicalLinkExpression extends LogicalExpression {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    if (!super.equals(o)) {
-      return false;
-    }
-    LogicalLinkExpression that = (LogicalLinkExpression) o;
-    return Objects.equals(left, that.left) && Objects.equals(right, that.right);
+    LogicalExpression that = (LogicalExpression) o;
+    return logicalOperator == that.logicalOperator;
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(super.hashCode(), left, right);
-  }
-
-  @Override
-  public String toString() {
-    return ToString.toString(this);
-  }
-
-  @Override
-  public ExpressionType type() {
-    return ExpressionType.logicalLink;
+    return Objects.hash(logicalOperator);
   }
 }

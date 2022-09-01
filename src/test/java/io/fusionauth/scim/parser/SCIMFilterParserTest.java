@@ -33,6 +33,7 @@ import io.fusionauth.scim.parser.expression.AttributePresentTestExpression;
 import io.fusionauth.scim.parser.expression.AttributeTextComparisonExpression;
 import io.fusionauth.scim.parser.expression.Expression;
 import io.fusionauth.scim.parser.expression.LogicalLinkExpression;
+import io.fusionauth.scim.parser.expression.LogicalNegationExpression;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 import static org.testng.AssertJUnit.assertEquals;
@@ -161,6 +162,16 @@ public class SCIMFilterParserTest {
                 new AttributePresentTestExpression("title"),
                 LogicalOperator.or,
                 new AttributeTextComparisonExpression("userType", ComparisonOperator.eq, "Intern")
+            )
+        },
+        {
+            "not (A pr and B pr)",
+            new LogicalNegationExpression(
+                new LogicalLinkExpression(
+                    new AttributePresentTestExpression("A"),
+                    LogicalOperator.and,
+                    new AttributePresentTestExpression("B")
+                )
             )
         },
         {
@@ -501,6 +512,11 @@ public class SCIMFilterParserTest {
             // Invalid characters in logical operator
             "A pr anb B pr",
             "Invalid state transition at [A pr anb]"
+        },
+        {
+            // Negation must be followed by (
+            "not A pr",
+            "Invalid state transition at [not A]"
         },
     };
   }
