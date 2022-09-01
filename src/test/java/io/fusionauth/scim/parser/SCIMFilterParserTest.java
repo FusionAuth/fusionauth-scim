@@ -458,6 +458,10 @@ public class SCIMFilterParserTest {
             "A eq nuul",
             "[nuul] is not a valid comparison value"
         },
+        {
+            "A eq 12e+",
+            "[12e+] is not a valid comparison value"
+        },
     };
   }
 
@@ -544,11 +548,6 @@ public class SCIMFilterParserTest {
             "Invalid state transition at [A eq 12.4.]"
         },
         {
-            // Only one decimal allowed
-            "A eq 12.4.2",
-            "Invalid state transition at [A eq 12.4.]"
-        },
-        {
             // Decimal not allowed in exponent
             "A eq 12e1.2",
             "Invalid state transition at [A eq 12e1.]"
@@ -569,6 +568,11 @@ public class SCIMFilterParserTest {
             // No random characters in number values
             "A eq 12.4d3",
             "Invalid state transition at [A eq 12.4d]"
+        },
+        {
+            // Exponent must have value
+            "A eq 12e",
+            "Invalid state transition at [A eq 12e]"
         },
         {
             // Invalid escape
