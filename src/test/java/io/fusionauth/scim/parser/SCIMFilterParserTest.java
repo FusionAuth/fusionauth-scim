@@ -315,7 +315,7 @@ public class SCIMFilterParserTest {
             )
         },
         {
-            " (  ( not (A pr) or B pr ) and  not   ( C pr and ( D   pr   ) )    ) ",
+            " (  ( not (A pr) or B pr ) and  not   ( C pr and not ( D   pr   ) )    ) ",
             new LogicalLinkExpression(
                 new LogicalLinkExpression(
                     new LogicalNegationExpression(
@@ -329,7 +329,9 @@ public class SCIMFilterParserTest {
                     new LogicalLinkExpression(
                         new AttributePresentTestExpression("C"),
                         LogicalOperator.and,
-                        new AttributePresentTestExpression("D")
+                        new LogicalNegationExpression(
+                            new AttributePresentTestExpression("D")
+                        )
                     )
                 )
             )
