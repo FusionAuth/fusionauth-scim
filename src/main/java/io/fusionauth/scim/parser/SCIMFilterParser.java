@@ -152,7 +152,7 @@ public class SCIMFilterParser {
           state = state.next(c);
           if (state == SCIMParserState.booleanValue) {
             sb.append(c);
-          } else if (state == SCIMParserState.afterAttributeExpression || state == SCIMParserState.closeParen) {
+          } else if (state == SCIMParserState.afterAttributeExpression || state == SCIMParserState.closeParen || state == SCIMParserState.closeBracket) {
             if (sb.toString().equals("true")) {
               result.push(new AttributeBooleanComparisonExpression(attrPath, attrOp, true));
             } else if (sb.toString().equals("false")) {
@@ -165,7 +165,13 @@ public class SCIMFilterParser {
               throw new ComparisonOperatorException("[" + attrOp + "] is not a valid operator for a boolean comparison");
             }
             if (state == SCIMParserState.closeParen) {
-              handleCloseParen(hold, result);
+              if (!handleCloseParen(hold, result)) {
+                throw new GroupingException("Extra closed parenthesis at [" + filterAtParsedLocation(filter, i) + "]");
+              }
+            } else if (state == SCIMParserState.closeBracket) {
+              if (!handleCloseBracket(hold, result)) {
+                throw new GroupingException("Extra closed bracket at [" + filterAtParsedLocation(filter, i) + "]");
+              }
             }
           }
           break;
@@ -173,7 +179,7 @@ public class SCIMFilterParser {
           state = state.next(c);
           if (state == SCIMParserState.nullValue) {
             sb.append(c);
-          } else if (state == SCIMParserState.afterAttributeExpression || state == SCIMParserState.closeParen) {
+          } else if (state == SCIMParserState.afterAttributeExpression || state == SCIMParserState.closeParen || state == SCIMParserState.closeBracket) {
             if (sb.toString().equals("null")) {
               result.push(new AttributeNullTestExpression(attrPath, attrOp));
               sb.setLength(0);
@@ -181,7 +187,13 @@ public class SCIMFilterParser {
               throw new ComparisonValueException("[" + sb + "] is not a valid comparison value");
             }
             if (state == SCIMParserState.closeParen) {
-              handleCloseParen(hold, result);
+              if (!handleCloseParen(hold, result)) {
+                throw new GroupingException("Extra closed parenthesis at [" + filterAtParsedLocation(filter, i) + "]");
+              }
+            } else if (state == SCIMParserState.closeBracket) {
+              if (!handleCloseBracket(hold, result)) {
+                throw new GroupingException("Extra closed bracket at [" + filterAtParsedLocation(filter, i) + "]");
+              }
             }
           }
           if (attrOp != ComparisonOperator.eq && attrOp != ComparisonOperator.ne) {
@@ -198,7 +210,7 @@ public class SCIMFilterParser {
           state = state.next(c);
           if (state == SCIMParserState.numberValue || state == SCIMParserState.decimalValue || state == SCIMParserState.exponentSign) {
             sb.append(c);
-          } else if (state == SCIMParserState.afterAttributeExpression || state == SCIMParserState.closeParen) {
+          } else if (state == SCIMParserState.afterAttributeExpression || state == SCIMParserState.closeParen || state == SCIMParserState.closeBracket) {
             try {
               result.push(new AttributeNumberComparisonExpression(attrPath, attrOp, new BigDecimal(sb.toString())));
               sb.setLength(0);
@@ -206,7 +218,13 @@ public class SCIMFilterParser {
               throw new ComparisonValueException("[" + sb + "] is not a valid comparison value");
             }
             if (state == SCIMParserState.closeParen) {
-              handleCloseParen(hold, result);
+              if (!handleCloseParen(hold, result)) {
+                throw new GroupingException("Extra closed parenthesis at [" + filterAtParsedLocation(filter, i) + "]");
+              }
+            } else if (state == SCIMParserState.closeBracket) {
+              if (!handleCloseBracket(hold, result)) {
+                throw new GroupingException("Extra closed bracket at [" + filterAtParsedLocation(filter, i) + "]");
+              }
             }
           }
           break;
@@ -214,7 +232,7 @@ public class SCIMFilterParser {
           state = state.next(c);
           if (state == SCIMParserState.decimalValue || state == SCIMParserState.exponentSign) {
             sb.append(c);
-          } else if (state == SCIMParserState.afterAttributeExpression || state == SCIMParserState.closeParen) {
+          } else if (state == SCIMParserState.afterAttributeExpression || state == SCIMParserState.closeParen || state == SCIMParserState.closeBracket) {
             try {
               result.push(new AttributeNumberComparisonExpression(attrPath, attrOp, new BigDecimal(sb.toString())));
               sb.setLength(0);
@@ -222,7 +240,13 @@ public class SCIMFilterParser {
               throw new ComparisonValueException("[" + sb + "] is not a valid comparison value");
             }
             if (state == SCIMParserState.closeParen) {
-              handleCloseParen(hold, result);
+              if (!handleCloseParen(hold, result)) {
+                throw new GroupingException("Extra closed parenthesis at [" + filterAtParsedLocation(filter, i) + "]");
+              }
+            } else if (state == SCIMParserState.closeBracket) {
+              if (!handleCloseBracket(hold, result)) {
+                throw new GroupingException("Extra closed bracket at [" + filterAtParsedLocation(filter, i) + "]");
+              }
             }
           }
           break;
@@ -236,7 +260,7 @@ public class SCIMFilterParser {
           state = state.next(c);
           if (state == SCIMParserState.exponentValue) {
             sb.append(c);
-          } else if (state == SCIMParserState.afterAttributeExpression || state == SCIMParserState.closeParen) {
+          } else if (state == SCIMParserState.afterAttributeExpression || state == SCIMParserState.closeParen || state == SCIMParserState.closeBracket) {
             try {
               result.push(new AttributeNumberComparisonExpression(attrPath, attrOp, new BigDecimal(sb.toString())));
               sb.setLength(0);
@@ -244,7 +268,13 @@ public class SCIMFilterParser {
               throw new ComparisonValueException("[" + sb + "] is not a valid comparison value");
             }
             if (state == SCIMParserState.closeParen) {
-              handleCloseParen(hold, result);
+              if (!handleCloseParen(hold, result)) {
+                throw new GroupingException("Extra closed parenthesis at [" + filterAtParsedLocation(filter, i) + "]");
+              }
+            } else if (state == SCIMParserState.closeBracket) {
+              if (!handleCloseBracket(hold, result)) {
+                throw new GroupingException("Extra closed bracket at [" + filterAtParsedLocation(filter, i) + "]");
+              }
             }
           }
           break;
@@ -290,9 +320,12 @@ public class SCIMFilterParser {
           if (state == SCIMParserState.logicalOperator) {
             sb.append(c);
           } else if (state == SCIMParserState.closeParen) {
-            boolean success = handleCloseParen(hold, result);
-            if (!success) {
+            if (!handleCloseParen(hold, result)) {
               throw new GroupingException("Extra closed parenthesis at [" + filterAtParsedLocation(filter, i) + "]");
+            }
+          } else if (state == SCIMParserState.closeBracket) {
+            if (!handleCloseBracket(hold, result)) {
+              throw new GroupingException("Extra closed bracket at [" + filterAtParsedLocation(filter, i) + "]");
             }
           }
           break;
@@ -307,6 +340,7 @@ public class SCIMFilterParser {
               //noinspection ConstantConditions
               if (hold.isEmpty() ||
                   hold.peek().type() == ExpressionType.grouping ||
+                  hold.peek().type() == ExpressionType.attributeFilterGrouping ||
                   precedence(newLogicalExpression.logicalOperator) >= precedence(((LogicalExpression) hold.peek()).logicalOperator)
               ) {
                 hold.push(newLogicalExpression);
@@ -315,6 +349,7 @@ public class SCIMFilterParser {
                 //noinspection ConstantConditions
                 while (!hold.isEmpty() &&
                        hold.peek().type() != ExpressionType.grouping &&
+                       hold.peek().type() != ExpressionType.attributeFilterGrouping &&
                        precedence(((LogicalExpression) hold.peek()).logicalOperator) >= precedence(newLogicalExpression.logicalOperator)
                 ) {
                   result.push(hold.pop());
@@ -343,12 +378,24 @@ public class SCIMFilterParser {
             }
           }
           break;
+        case openBracket:
+          state = state.next(c);
+          if (state == SCIMParserState.attributePath) {
+            sb.append(c);
+          } else if (state == SCIMParserState.openParen) {
+            hold.push(new GroupingExpression());
+          }
+          break;
         case closeParen:
+        case closeBracket:
           state = state.next(c);
           if (state == SCIMParserState.closeParen) {
-            boolean success = handleCloseParen(hold, result);
-            if (!success) {
+            if (!handleCloseParen(hold, result)) {
               throw new GroupingException("Extra closed parenthesis at [" + filterAtParsedLocation(filter, i) + "]");
+            }
+          } else if (state == SCIMParserState.closeBracket) {
+            if (!handleCloseBracket(hold, result)) {
+              throw new GroupingException("Extra closed bracket at [" + filterAtParsedLocation(filter, i) + "]");
             }
           }
           break;
@@ -363,6 +410,8 @@ public class SCIMFilterParser {
       Expression exp = hold.pop();
       if (exp.type() == ExpressionType.grouping) {
         throw new GroupingException("Unclosed parenthesis in filter [" + filter + "]");
+      } else if (exp.type() == ExpressionType.attributeFilterGrouping) {
+        throw new GroupingException("Unclosed bracket in filter [" + filter + "]");
       }
       result.push(exp);
     }
@@ -385,6 +434,11 @@ public class SCIMFilterParser {
         negationExpression.subExpression = operands.pop();
         // After its sub-expression is populated, add it to the operand stack
         operands.push(negationExpression);
+      } else if (exp.type() == ExpressionType.attributeFilterGrouping) {
+        // Complex attribute filter grouping is processed by grabbing the top operand from the stack
+        AttributeFilterGroupingExpression groupingExpression = (AttributeFilterGroupingExpression) exp;
+        groupingExpression.filterExpression = operands.pop();
+        operands.push(groupingExpression);
       } else {
         // Operands are pushed to a stack
         operands.push(exp);
@@ -397,6 +451,21 @@ public class SCIMFilterParser {
 
   private String filterAtParsedLocation(String filter, int i) {
     return filter.substring(0, Math.min(i + 1, filter.length()));
+  }
+
+  private boolean handleCloseBracket(Deque<Expression> hold, Deque<Expression> result) {
+    while (!hold.isEmpty() &&
+           hold.peek().type() != ExpressionType.attributeFilterGrouping
+    ) {
+      result.push(hold.pop());
+    }
+    if (hold.isEmpty() || hold.peek().type() != ExpressionType.attributeFilterGrouping) {
+      return false;
+    } else {
+      // Remove the AttributeFilterGroupingExpression and add to result
+      result.push(hold.pop());
+      return true;
+    }
   }
 
   private boolean handleCloseParen(Deque<Expression> hold, Deque<Expression> result) {

@@ -253,6 +253,8 @@ public enum SCIMParserState {
         return attributePath;
       } else if (c == ' ') {
         return filterStart;
+      } else if (c == '(') {
+        return openParen;
       }
       return invalidState;
     }

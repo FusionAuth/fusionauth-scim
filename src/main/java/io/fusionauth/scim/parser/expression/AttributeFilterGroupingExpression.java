@@ -16,6 +16,8 @@
 
 package io.fusionauth.scim.parser.expression;
 
+import java.util.Objects;
+
 import io.fusionauth.scim.parser.ExpressionType;
 
 public class AttributeFilterGroupingExpression extends Expression {
@@ -27,9 +29,26 @@ public class AttributeFilterGroupingExpression extends Expression {
     this.parentAttributePath = parentAttributePath;
   }
 
-  public AttributeFilterGroupingExpression(Expression filterExpression, String parentAttributePath) {
+  public AttributeFilterGroupingExpression(String parentAttributePath, Expression filterExpression) {
     this.filterExpression = filterExpression;
     this.parentAttributePath = parentAttributePath;
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+    AttributeFilterGroupingExpression that = (AttributeFilterGroupingExpression) o;
+    return Objects.equals(filterExpression, that.filterExpression) && Objects.equals(parentAttributePath, that.parentAttributePath);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(filterExpression, parentAttributePath);
   }
 
   @Override

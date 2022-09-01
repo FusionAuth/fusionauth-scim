@@ -19,6 +19,7 @@ import java.math.BigDecimal;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 
+import io.fusionauth.scim.parser.exception.AttributeFilterGroupingException;
 import io.fusionauth.scim.parser.exception.AttributePathException;
 import io.fusionauth.scim.parser.exception.ComparisonOperatorException;
 import io.fusionauth.scim.parser.exception.ComparisonValueException;
@@ -27,6 +28,7 @@ import io.fusionauth.scim.parser.exception.InvalidStateException;
 import io.fusionauth.scim.parser.exception.LogicalOperatorException;
 import io.fusionauth.scim.parser.expression.AttributeBooleanComparisonExpression;
 import io.fusionauth.scim.parser.expression.AttributeDateComparisonExpression;
+import io.fusionauth.scim.parser.expression.AttributeFilterGroupingExpression;
 import io.fusionauth.scim.parser.expression.AttributeNullTestExpression;
 import io.fusionauth.scim.parser.expression.AttributeNumberComparisonExpression;
 import io.fusionauth.scim.parser.expression.AttributePresentTestExpression;
@@ -389,9 +391,61 @@ public class SCIMFilterParserTest {
                     )
                 )
             )
+        },
+        {
+            "emails[type eq \"work\"]",
+            new AttributeFilterGroupingExpression(
+                "emails",
+                new AttributeTextComparisonExpression("type", ComparisonOperator.eq, "work")
+            )
+        },
+        {
+            "userType eq \"Employee\" and emails[type eq \"work\" and value co \"@example.com\"]",
+            new LogicalLinkExpression(
+                new AttributeTextComparisonExpression("userType", ComparisonOperator.eq, "Employee"),
+                LogicalOperator.and,
+                new AttributeFilterGroupingExpression(
+                    "emails",
+                    new LogicalLinkExpression(
+                        new AttributeTextComparisonExpression("type", ComparisonOperator.eq, "work"),
+                        LogicalOperator.and,
+                        new AttributeTextComparisonExpression("value", ComparisonOperator.co, "@example.com")
+                    )
+                )
+            )
+        },
+        {
+            "emails[type eq \"work\" and value co \"@example.com\"] or ims[type eq \"xmpp\" and value co \"@foo.com\"]",
+            new LogicalLinkExpression(
+                new AttributeFilterGroupingExpression(
+                    "emails",
+                    new LogicalLinkExpression(
+                        new AttributeTextComparisonExpression("type", ComparisonOperator.eq, "work"),
+                        LogicalOperator.and,
+                        new AttributeTextComparisonExpression("value", ComparisonOperator.co, "@example.com")
+                    )
+                ),
+                LogicalOperator.or,
+                new AttributeFilterGroupingExpression(
+                    "ims",
+                    new LogicalLinkExpression(
+                        new AttributeTextComparisonExpression("type", ComparisonOperator.eq, "xmpp"),
+                        LogicalOperator.and,
+                        new AttributeTextComparisonExpression("value", ComparisonOperator.co, "@foo.com")
+                    )
+                )
+            )
         }
-//    filter=userType eq "Employee" and emails[type eq "work" and value co "@example.com"]
-//    filter=emails[type eq "work" and value co "@example.com"] or ims[type eq "xmpp" and value co "@foo.com"]
+    };
+  }
+
+  @DataProvider(name = "invalidAttributeFilterGrouping")
+  public Object[][] invalidAttributeFilterGrouping() {
+    return new Object[][]{
+        {
+            "not[type eq \"work\"]",
+            "Attribute filter grouping with [ ] must be preceded by an attribute path, found logical negation operator"
+        },
     };
   }
 
@@ -482,7 +536,22 @@ public class SCIMFilterParserTest {
             // Extra closed parenthesis after closed parenthesis
             "(A pr or B pr)) and C pr",
             "Extra closed parenthesis at [(A pr or B pr))]"
-        }
+        },
+        {
+            // Extra opening bracket
+            "Z[A pr and B pr",
+            "Unclosed bracket in filter [Z[A pr and B pr]"
+        },
+        {
+            // Extra closed bracket after attribute
+            "Z[A pr or B pr] and C pr]",
+            "Extra closed bracket at [Z[A pr or B pr] and C pr]]"
+        },
+        {
+            // Extra closed bracket after closed parenthesis
+            "Z[A pr or B pr]] and C pr",
+            "Extra closed bracket at [Z[A pr or B pr]]]"
+        },
     };
   }
 
@@ -594,6 +663,31 @@ public class SCIMFilterParserTest {
             "not A pr",
             "Invalid state transition at [not A]"
         },
+        {
+            // An open bracket must be followed by an alphabetic character
+            "Z[0A pr]",
+            "Invalid state transition at [Z[0]"
+        },
+        {
+            // An open parenthesis must be followed by an alphabetic character
+            "(0A pr)",
+            "Invalid state transition at [(0]"
+        },
+        {
+            // A closing bracket must be followed by a space or another group closing marker
+            "Z[A pr]and",
+            "Invalid state transition at [Z[A pr]a]"
+        },
+        {
+            // A closing parenthesis must be followed by a space or another group closing marker
+            "(A pr)and",
+            "Invalid state transition at [(A pr)a]"
+        },
+        {
+            // Cannot double-up opening brackets
+            "Z[[A pr]]",
+            "Invalid state transition at [Z[[]"
+        }
     };
   }
 
@@ -601,6 +695,16 @@ public class SCIMFilterParserTest {
   public void parseGood(String filter, Expression expected) throws Exception {
     Expression actual = parser.parse(filter);
     assertEquals(expected, actual);
+  }
+
+  @Test(dataProvider = "invalidAttributeFilterGrouping")
+  public void parseInvalidAttributeFilterGrouping(String filter, String expected) throws Exception {
+    try {
+      parser.parse(filter);
+      fail("Expected exception for filter [" + filter + "]");
+    } catch (AttributeFilterGroupingException e) {
+      assertEquals(expected, e.getMessage());
+    }
   }
 
   @Test(dataProvider = "invalidAttributePath")
