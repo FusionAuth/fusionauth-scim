@@ -299,17 +299,17 @@ public class SCIMFilterParserTest {
         {
             "(A eq 5.0 or B eq 10.0)",
             new LogicalLinkExpression(
-                new AttributeNumberComparisonExpression("A", ComparisonOperator.eq, new BigDecimal(5)),
+                new AttributeNumberComparisonExpression("A", ComparisonOperator.eq, new BigDecimal("5.0")),
                 LogicalOperator.or,
-                new AttributeNumberComparisonExpression("B", ComparisonOperator.eq, new BigDecimal(10))
+                new AttributeNumberComparisonExpression("B", ComparisonOperator.eq, new BigDecimal("10.0"))
             )
         },
         {
             "(A eq 50e-1 or B eq 100e-1)",
             new LogicalLinkExpression(
-                new AttributeNumberComparisonExpression("A", ComparisonOperator.eq, new BigDecimal(5)),
+                new AttributeNumberComparisonExpression("A", ComparisonOperator.eq, new BigDecimal("5.0")),
                 LogicalOperator.or,
-                new AttributeNumberComparisonExpression("B", ComparisonOperator.eq, new BigDecimal(10))
+                new AttributeNumberComparisonExpression("B", ComparisonOperator.eq, new BigDecimal("10.0"))
             )
         },
         {

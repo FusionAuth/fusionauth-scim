@@ -152,7 +152,7 @@ public class SCIMFilterParser {
           state = state.next(c);
           if (state == SCIMParserState.booleanValue) {
             sb.append(c);
-          } else if (state == SCIMParserState.afterAttributeExpression) {
+          } else if (state == SCIMParserState.afterAttributeExpression || state == SCIMParserState.closeParen) {
             if (sb.toString().equals("true")) {
               result.push(new AttributeBooleanComparisonExpression(attrPath, attrOp, true));
             } else if (sb.toString().equals("false")) {
@@ -164,18 +164,24 @@ public class SCIMFilterParser {
             if (attrOp != ComparisonOperator.eq && attrOp != ComparisonOperator.ne) {
               throw new ComparisonOperatorException("[" + attrOp + "] is not a valid operator for a boolean comparison");
             }
+            if (state == SCIMParserState.closeParen) {
+              handleCloseParen(hold, result);
+            }
           }
           break;
         case nullValue:
           state = state.next(c);
           if (state == SCIMParserState.nullValue) {
             sb.append(c);
-          } else if (state == SCIMParserState.afterAttributeExpression) {
+          } else if (state == SCIMParserState.afterAttributeExpression || state == SCIMParserState.closeParen) {
             if (sb.toString().equals("null")) {
               result.push(new AttributeNullTestExpression(attrPath, attrOp));
               sb.setLength(0);
             } else {
               throw new ComparisonValueException("[" + sb + "] is not a valid comparison value");
+            }
+            if (state == SCIMParserState.closeParen) {
+              handleCloseParen(hold, result);
             }
           }
           if (attrOp != ComparisonOperator.eq && attrOp != ComparisonOperator.ne) {
@@ -192,12 +198,15 @@ public class SCIMFilterParser {
           state = state.next(c);
           if (state == SCIMParserState.numberValue || state == SCIMParserState.decimalValue || state == SCIMParserState.exponentSign) {
             sb.append(c);
-          } else if (state == SCIMParserState.afterAttributeExpression) {
+          } else if (state == SCIMParserState.afterAttributeExpression || state == SCIMParserState.closeParen) {
             try {
               result.push(new AttributeNumberComparisonExpression(attrPath, attrOp, new BigDecimal(sb.toString())));
               sb.setLength(0);
             } catch (NumberFormatException e) {
               throw new ComparisonValueException("[" + sb + "] is not a valid comparison value");
+            }
+            if (state == SCIMParserState.closeParen) {
+              handleCloseParen(hold, result);
             }
           }
           break;
@@ -205,12 +214,15 @@ public class SCIMFilterParser {
           state = state.next(c);
           if (state == SCIMParserState.decimalValue || state == SCIMParserState.exponentSign) {
             sb.append(c);
-          } else if (state == SCIMParserState.afterAttributeExpression) {
+          } else if (state == SCIMParserState.afterAttributeExpression || state == SCIMParserState.closeParen) {
             try {
               result.push(new AttributeNumberComparisonExpression(attrPath, attrOp, new BigDecimal(sb.toString())));
               sb.setLength(0);
             } catch (NumberFormatException e) {
               throw new ComparisonValueException("[" + sb + "] is not a valid comparison value");
+            }
+            if (state == SCIMParserState.closeParen) {
+              handleCloseParen(hold, result);
             }
           }
           break;
@@ -224,12 +236,15 @@ public class SCIMFilterParser {
           state = state.next(c);
           if (state == SCIMParserState.exponentValue) {
             sb.append(c);
-          } else if (state == SCIMParserState.afterAttributeExpression) {
+          } else if (state == SCIMParserState.afterAttributeExpression || state == SCIMParserState.closeParen) {
             try {
               result.push(new AttributeNumberComparisonExpression(attrPath, attrOp, new BigDecimal(sb.toString())));
               sb.setLength(0);
             } catch (NumberFormatException e) {
               throw new ComparisonValueException("[" + sb + "] is not a valid comparison value");
+            }
+            if (state == SCIMParserState.closeParen) {
+              handleCloseParen(hold, result);
             }
           }
           break;
