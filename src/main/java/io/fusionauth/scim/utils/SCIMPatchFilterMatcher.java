@@ -60,7 +60,7 @@ public class SCIMPatchFilterMatcher {
           : !node.isNull();
     }
 
-    if (expression instanceof AttributeComparisonExpression attributeExpression) {
+    if (expression instanceof AttributeComparisonExpression<?, ?> attributeExpression) {
       ComparisonOperator operator = attributeExpression.operator;
       JsonNode subAttribute = node.at("/" + attributeExpression.attributePath.replace(".", "/"));
 
@@ -81,7 +81,7 @@ public class SCIMPatchFilterMatcher {
     return false;
   }
 
-  private static boolean contains(AttributeComparisonExpression filter, JsonNode attribute) {
+  private static boolean contains(AttributeComparisonExpression<?, ?> filter, JsonNode attribute) {
     if (filter.valueType() != ValueType.text) {
       return false;
     }
@@ -91,7 +91,7 @@ public class SCIMPatchFilterMatcher {
     return attribute.asText().contains(value);
   }
 
-  private static boolean endsWith(AttributeComparisonExpression filter, JsonNode attribute) {
+  private static boolean endsWith(AttributeComparisonExpression<?, ?> filter, JsonNode attribute) {
     if (filter.valueType() != ValueType.text) {
       return false;
     }
@@ -101,7 +101,7 @@ public class SCIMPatchFilterMatcher {
     return attribute.asText().endsWith(value);
   }
 
-  private static boolean equal(AttributeComparisonExpression expression, JsonNode attribute) {
+  private static boolean equal(AttributeComparisonExpression<?, ?> expression, JsonNode attribute) {
     ValueType valueType = expression.valueType();
 
     if (valueType == ValueType.text) {
@@ -127,7 +127,7 @@ public class SCIMPatchFilterMatcher {
     return false;
   }
 
-  private static boolean greaterThan(AttributeComparisonExpression expression, JsonNode attribute) {
+  private static boolean greaterThan(AttributeComparisonExpression<?, ?> expression, JsonNode attribute) {
     ValueType valueType = expression.valueType();
 
     if (valueType == ValueType.text) {
@@ -152,7 +152,7 @@ public class SCIMPatchFilterMatcher {
     return false;
   }
 
-  private static boolean lessThan(AttributeExpression expression, JsonNode attribute) {
+  private static boolean lessThan(AttributeExpression<?> expression, JsonNode attribute) {
     ValueType valueType = expression.valueType();
 
     if (valueType == ValueType.text) {
@@ -177,7 +177,7 @@ public class SCIMPatchFilterMatcher {
     return false;
   }
 
-  private static boolean startsWith(AttributeExpression filter, JsonNode attribute) {
+  private static boolean startsWith(AttributeExpression<?> filter, JsonNode attribute) {
     if (filter.valueType() != ValueType.text) {
       return false;
     }
