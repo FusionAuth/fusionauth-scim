@@ -279,6 +279,10 @@ public class SCIMFilterParserTest {
             )
         },
         {
+            "((((((A pr))))))",
+            new AttributePresentTestExpression("A")
+        },
+        {
             "userType eq \"Employee\" and (emails co \"example.com\" or emails.value co \"example.org\")",
             new LogicalLinkExpression(
                 new AttributeTextComparisonExpression("userType", ComparisonOperator.eq, "Employee"),
