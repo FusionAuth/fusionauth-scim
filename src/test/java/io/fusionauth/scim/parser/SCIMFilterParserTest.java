@@ -289,6 +289,46 @@ public class SCIMFilterParserTest {
             )
         },
         {
+            "(A eq 5 or B eq 10)",
+            new LogicalLinkExpression(
+                new AttributeNumberComparisonExpression("A", ComparisonOperator.eq, new BigDecimal(5)),
+                LogicalOperator.or,
+                new AttributeNumberComparisonExpression("B", ComparisonOperator.eq, new BigDecimal(10))
+            )
+        },
+        {
+            "(A eq 5.0 or B eq 10.0)",
+            new LogicalLinkExpression(
+                new AttributeNumberComparisonExpression("A", ComparisonOperator.eq, new BigDecimal(5)),
+                LogicalOperator.or,
+                new AttributeNumberComparisonExpression("B", ComparisonOperator.eq, new BigDecimal(10))
+            )
+        },
+        {
+            "(A eq 50e-1 or B eq 100e-1)",
+            new LogicalLinkExpression(
+                new AttributeNumberComparisonExpression("A", ComparisonOperator.eq, new BigDecimal(5)),
+                LogicalOperator.or,
+                new AttributeNumberComparisonExpression("B", ComparisonOperator.eq, new BigDecimal(10))
+            )
+        },
+        {
+            "(A eq true or B eq true)",
+            new LogicalLinkExpression(
+                new AttributeBooleanComparisonExpression("A", ComparisonOperator.eq, true),
+                LogicalOperator.or,
+                new AttributeBooleanComparisonExpression("B", ComparisonOperator.eq, true)
+            )
+        },
+        {
+            "(A eq null or B eq null)",
+            new LogicalLinkExpression(
+                new AttributeNullTestExpression("A", ComparisonOperator.eq),
+                LogicalOperator.or,
+                new AttributeNullTestExpression("B", ComparisonOperator.eq)
+            )
+        },
+        {
             " (  ( A pr or B pr ) and   ( C pr and ( D   pr   ) )    ) ",
             new LogicalLinkExpression(
                 new LogicalLinkExpression(
