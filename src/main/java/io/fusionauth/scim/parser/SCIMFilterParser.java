@@ -22,6 +22,7 @@ import java.time.format.DateTimeParseException;
 import java.util.ArrayDeque;
 import java.util.Deque;
 
+import io.fusionauth.scim.parser.exception.AttributeFilterGroupingException;
 import io.fusionauth.scim.parser.exception.AttributePathException;
 import io.fusionauth.scim.parser.exception.ComparisonOperatorException;
 import io.fusionauth.scim.parser.exception.ComparisonValueException;
@@ -30,6 +31,7 @@ import io.fusionauth.scim.parser.exception.InvalidStateException;
 import io.fusionauth.scim.parser.exception.LogicalOperatorException;
 import io.fusionauth.scim.parser.expression.AttributeBooleanComparisonExpression;
 import io.fusionauth.scim.parser.expression.AttributeDateComparisonExpression;
+import io.fusionauth.scim.parser.expression.AttributeFilterGroupingExpression;
 import io.fusionauth.scim.parser.expression.AttributeNullTestExpression;
 import io.fusionauth.scim.parser.expression.AttributeNumberComparisonExpression;
 import io.fusionauth.scim.parser.expression.AttributePresentTestExpression;
@@ -72,6 +74,17 @@ public class SCIMFilterParser {
           state = state.next(c);
           if (state == SCIMParserState.attributePath) {
             sb.append(c);
+          } else if (state == SCIMParserState.openBracket) {
+            attrPath = sb.toString();
+            if (attrPath.equals("not")) {
+              // This was actually a logical negation which is not allowed immediately before [ ]
+              throw new AttributeFilterGroupingException("Attribute filter grouping with [ ] must be preceded by an attribute path, found logical negation operator");
+            } else if (!validateAttributePath(attrPath)) {
+              throw new AttributePathException("The attribute path [" + attrPath + "] is not valid");
+            }
+            hold.push(new AttributeFilterGroupingExpression(attrPath));
+            attrPath = null;
+            sb.setLength(0);
           } else if (state == SCIMParserState.beforeOperator) {
             attrPath = sb.toString();
             if (attrPath.equals("not")) {
@@ -91,6 +104,10 @@ public class SCIMFilterParser {
               state == SCIMParserState.comparisonOperator
           ) {
             sb.append(c);
+          } else if (state == SCIMParserState.openBracket) {
+            // The held attrPath value is actually parent attribute path for AttributeFilterGroupingExpression
+            hold.push(new AttributeFilterGroupingExpression(attrPath));
+            attrPath = null;
           }
           break;
         case unaryOperator:

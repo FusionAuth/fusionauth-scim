@@ -41,6 +41,8 @@ public enum SCIMParserState {
     public SCIMParserState next(char c) {
       if (Character.isAlphabetic(c) || Character.isDigit(c) || c == '_' || c == '-' || c == ':' || c == '.') {
         return attributePath;
+      } else if (c == '[') {
+        return openBracket;
       } else if (c == ' ') {
         return beforeOperator;
       }
@@ -74,6 +76,8 @@ public enum SCIMParserState {
     public SCIMParserState next(char c) {
       if (c == ' ') {
         return beforeOperator;
+      } else if (c == '[') {
+        return openBracket;
       } else if (c == 'p') {
         return unaryOperator;
       } else if (c == 'n' || c == 's' || c == 'e' || c == 'c' || c == 'g' || c == 'l') {
@@ -209,6 +213,17 @@ public enum SCIMParserState {
         return exponentSign;
       } else if (c == ' ') {
         return afterAttributeExpression;
+      }
+      return invalidState;
+    }
+  },
+  openBracket {
+    @Override
+    public SCIMParserState next(char c) {
+      if (Character.isAlphabetic(c)) {
+        return attributePath;
+      } else if (c == ' ') {
+        return filterStart;
       }
       return invalidState;
     }
