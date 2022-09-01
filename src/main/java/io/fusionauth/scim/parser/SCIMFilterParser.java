@@ -114,14 +114,9 @@ public class SCIMFilterParser {
           state = state.next(c);
           if (state == SCIMParserState.afterAttributeExpression) {
             sb.append(c);
-            try {
-              assert ComparisonOperator.valueOf(sb.toString()) == ComparisonOperator.pr;
-              result.push(new AttributePresentTestExpression(attrPath));
-              attrPath = null;
-              sb.setLength(0);
-            } catch (IllegalArgumentException e) {
-              throw new ComparisonOperatorException("No comparison operator for [" + sb + "]");
-            }
+            result.push(new AttributePresentTestExpression(attrPath));
+            attrPath = null;
+            sb.setLength(0);
           }
           break;
         case comparisonOperator:

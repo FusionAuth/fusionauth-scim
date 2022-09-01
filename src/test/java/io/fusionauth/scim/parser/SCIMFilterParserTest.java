@@ -64,8 +64,20 @@ public class SCIMFilterParserTest {
             new AttributeBooleanComparisonExpression("A", ComparisonOperator.eq, false)
         },
         {
+            "A ne true",
+            new AttributeBooleanComparisonExpression("A", ComparisonOperator.ne, true)
+        },
+        {
+            "A ne false",
+            new AttributeBooleanComparisonExpression("A", ComparisonOperator.ne, false)
+        },
+        {
             "A eq null",
             new AttributeNullTestExpression("A", ComparisonOperator.eq)
+        },
+        {
+            "A ne null",
+            new AttributeNullTestExpression("A", ComparisonOperator.ne)
         },
         {
             "A eq -121.45e+2",
@@ -93,10 +105,10 @@ public class SCIMFilterParserTest {
         {
             // Special characters are ignored in text values
             """
-            A eq "\\'\\"\\"\\t\\b\\n\\r\\f" """,
+            A eq "\\'\\"\\"\\t\\b\\n\\r\\f\\\\" """,
             new AttributeTextComparisonExpression("A", ComparisonOperator.eq, """
                 '""\t\b
-                \r\f""")
+                \r\f\\""")
         },
         {
             "meta.lastModified ge \"2011-05-13T04:42:34Z\"",
@@ -149,6 +161,10 @@ public class SCIMFilterParserTest {
         {
             "title pr",
             new AttributePresentTestExpression("title")
+        },
+        {
+            "attribute-paths_can_have-other_symbols pr",
+            new AttributePresentTestExpression("attribute-paths_can_have-other_symbols")
         },
         {
             "title pr and userType eq \"Employee\"",
@@ -328,6 +344,72 @@ public class SCIMFilterParserTest {
                 new AttributeNullTestExpression("A", ComparisonOperator.eq),
                 LogicalOperator.or,
                 new AttributeNullTestExpression("B", ComparisonOperator.eq)
+            )
+        },
+        {
+            "Z[A pr or B pr]",
+            new AttributeFilterGroupingExpression(
+                "Z",
+                new LogicalLinkExpression(
+                    new AttributePresentTestExpression("A"),
+                    LogicalOperator.or,
+                    new AttributePresentTestExpression("B")
+                )
+            )
+        },
+        {
+            "Z[A eq 5 or B eq 10]",
+            new AttributeFilterGroupingExpression(
+                "Z",
+                new LogicalLinkExpression(
+                    new AttributeNumberComparisonExpression("A", ComparisonOperator.eq, new BigDecimal(5)),
+                    LogicalOperator.or,
+                    new AttributeNumberComparisonExpression("B", ComparisonOperator.eq, new BigDecimal(10))
+                )
+            )
+        },
+        {
+            "Z[A eq 5.0 or B eq 10.0]",
+            new AttributeFilterGroupingExpression(
+                "Z",
+                new LogicalLinkExpression(
+                    new AttributeNumberComparisonExpression("A", ComparisonOperator.eq, new BigDecimal("5.0")),
+                    LogicalOperator.or,
+                    new AttributeNumberComparisonExpression("B", ComparisonOperator.eq, new BigDecimal("10.0"))
+                )
+            )
+        },
+        {
+            "Z[A eq 50e-1 or B eq 100e-1]",
+            new AttributeFilterGroupingExpression(
+                "Z",
+                new LogicalLinkExpression(
+                    new AttributeNumberComparisonExpression("A", ComparisonOperator.eq, new BigDecimal("5.0")),
+                    LogicalOperator.or,
+                    new AttributeNumberComparisonExpression("B", ComparisonOperator.eq, new BigDecimal("10.0"))
+                )
+            )
+        },
+        {
+            "Z[A eq true or B eq true]",
+            new AttributeFilterGroupingExpression(
+                "Z",
+                new LogicalLinkExpression(
+                    new AttributeBooleanComparisonExpression("A", ComparisonOperator.eq, true),
+                    LogicalOperator.or,
+                    new AttributeBooleanComparisonExpression("B", ComparisonOperator.eq, true)
+                )
+            )
+        },
+        {
+            "Z[A eq null or B eq null]",
+            new AttributeFilterGroupingExpression(
+                "Z",
+                new LogicalLinkExpression(
+                    new AttributeNullTestExpression("A", ComparisonOperator.eq),
+                    LogicalOperator.or,
+                    new AttributeNullTestExpression("B", ComparisonOperator.eq)
+                )
             )
         },
         {
@@ -559,6 +641,10 @@ public class SCIMFilterParserTest {
             "urn:ietf:params:scim:schemas:core:2.0:User:name.0th pr",
             "The attribute path [urn:ietf:params:scim:schemas:core:2.0:User:name.0th] is not valid"
         },
+        {
+            "A.b.c[D pr]",
+            "The attribute path [A.b.c] is not valid"
+        },
     };
   }
 
@@ -616,6 +702,36 @@ public class SCIMFilterParserTest {
             "Extra closed parenthesis at [(A pr or B pr) and C pr)]"
         },
         {
+            // Extra closed parenthesis after attribute
+            "(A pr or B pr) and C eq true)",
+            "Extra closed parenthesis at [(A pr or B pr) and C eq true)]"
+        },
+        {
+            // Extra closed parenthesis after attribute
+            "(A pr or B pr) and C eq null)",
+            "Extra closed parenthesis at [(A pr or B pr) and C eq null)]"
+        },
+        {
+            // Extra closed parenthesis after attribute
+            "(A pr or B pr) and C eq \"work\")",
+            "Extra closed parenthesis at [(A pr or B pr) and C eq \"work\")]"
+        },
+        {
+            // Extra closed parenthesis after attribute
+            "(A pr or B pr) and C eq 5)",
+            "Extra closed parenthesis at [(A pr or B pr) and C eq 5)]"
+        },
+        {
+            // Extra closed parenthesis after attribute
+            "(A pr or B pr) and C eq 5.0)",
+            "Extra closed parenthesis at [(A pr or B pr) and C eq 5.0)]"
+        },
+        {
+            // Extra closed parenthesis after attribute
+            "(A pr or B pr) and C eq 50e-1)",
+            "Extra closed parenthesis at [(A pr or B pr) and C eq 50e-1)]"
+        },
+        {
             // Extra closed parenthesis after closed parenthesis
             "(A pr or B pr)) and C pr",
             "Extra closed parenthesis at [(A pr or B pr))]"
@@ -631,7 +747,37 @@ public class SCIMFilterParserTest {
             "Extra closed bracket at [Z[A pr or B pr] and C pr]]"
         },
         {
-            // Extra closed bracket after closed parenthesis
+            // Extra closed bracket after attribute
+            "Z[A pr or B pr] and C eq true]",
+            "Extra closed bracket at [Z[A pr or B pr] and C eq true]]"
+        },
+        {
+            // Extra closed bracket after attribute
+            "Z[A pr or B pr] and C eq null]",
+            "Extra closed bracket at [Z[A pr or B pr] and C eq null]]"
+        },
+        {
+            // Extra closed bracket after attribute
+            "Z[A pr or B pr] and C eq \"work\"]",
+            "Extra closed bracket at [Z[A pr or B pr] and C eq \"work\"]]"
+        },
+        {
+            // Extra closed bracket after attribute
+            "Z[A pr or B pr] and C eq 5]",
+            "Extra closed bracket at [Z[A pr or B pr] and C eq 5]]"
+        },
+        {
+            // Extra closed bracket after attribute
+            "Z[A pr or B pr] and C eq 5.0]",
+            "Extra closed bracket at [Z[A pr or B pr] and C eq 5.0]]"
+        },
+        {
+            // Extra closed bracket after attribute
+            "Z[A pr or B pr] and C eq 50e-1]",
+            "Extra closed bracket at [Z[A pr or B pr] and C eq 50e-1]]"
+        },
+        {
+            // Extra closed bracket after closed bracket
             "Z[A pr or B pr]] and C pr",
             "Extra closed bracket at [Z[A pr or B pr]]]"
         },
