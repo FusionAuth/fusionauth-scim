@@ -16,13 +16,33 @@
 package io.fusionauth.scim.parser;
 
 /**
+ * A type indicator for attribute expression comparison values
+ *
  * @author Spencer Witt
  */
 public enum ValueType {
+  /**
+   * The attribute expression does not contain a comparison value. Used with {@link ComparisonOperator#pr}
+   */
   none,
+  /**
+   * A numeric comparison value
+   */
   number,
+  /**
+   * A text comparison value
+   */
   text,
+  /**
+   * A date comparison value
+   */
   date,
+  /**
+   * A boolean comparison value
+   */
   bool,
+  /**
+   * A {@code null} comparison value
+   */
   nul
 }

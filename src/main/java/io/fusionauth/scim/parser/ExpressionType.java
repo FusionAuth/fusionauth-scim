@@ -16,10 +16,30 @@
 
 package io.fusionauth.scim.parser;
 
+/**
+ * The expression type in SCIM filter language
+ *
+ * @author Spencer Witt
+ */
 public enum ExpressionType {
+  /**
+   * An expression comparing an attribute value to a provided comparison value
+   */
   attribute,
+  /**
+   * A logical linking expression using {@link LogicalOperator#and} or {@link LogicalOperator#or}
+   */
   logicalLink,
+  /**
+   * A logical negation operator using {@link LogicalOperator#not}
+   */
   logicalNegation,
+  /**
+   * A precedence grouping expression using parentheses
+   */
   grouping,
+  /**
+   * A complex attribute filter grouping expression that evaluates sub-attributes
+   */
   attributeFilterGrouping
 }

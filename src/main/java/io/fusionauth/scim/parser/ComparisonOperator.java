@@ -16,6 +16,8 @@
 package io.fusionauth.scim.parser;
 
 /**
+ * Attribute comparison operators for SCIM filtering
+ *
  * @author Spencer Witt
  */
 public enum ComparisonOperator {
@@ -28,15 +30,16 @@ public enum ComparisonOperator {
    */
   ne,
   /**
-   * Contains. Operator value must be a substring of the attribute value
+   * Contains. Operator value must be a substring of the attribute value. Only valid for {@link ValueType#text} comparison values
    */
   co,
   /**
-   * Starts with. Operator value must be a substring of the attribute value starting from the beginning
+   * Starts with. Operator value must be a substring of the attribute value starting from the beginning. Only valid for {@link ValueType#text}
+   * comparison values
    */
   sw,
   /**
-   * Ends with. Operator value must be a substring of the attribute value matching at the end
+   * Ends with. Operator value must be a substring of the attribute value matching at the end. Only valid for {@link ValueType#text} comparison values
    */
   ew,
   /**

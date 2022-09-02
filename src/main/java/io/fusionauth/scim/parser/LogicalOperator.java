@@ -16,10 +16,21 @@
 package io.fusionauth.scim.parser;
 
 /**
+ * Logical operators for attribute filter expressions
+ *
  * @author Spencer Witt
  */
 public enum LogicalOperator {
+  /**
+   * Logical {@code AND}
+   */
   and,
+  /**
+   * Logical {@code OR}
+   */
   or,
+  /**
+   * Logical negation
+   */
   not
 }
