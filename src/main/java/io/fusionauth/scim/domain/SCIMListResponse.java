@@ -32,7 +32,7 @@ public class SCIMListResponse implements SCIMResponse, Buildable<SCIMListRespons
 
   public String schema;
 
-  public List<String> schemas = Arrays.asList(SCIMSchemas.ListResponse);
+  public List<String> schemas = new ArrayList<>(Arrays.asList(SCIMSchemas.ListResponse));
 
   public int startIndex;
 
