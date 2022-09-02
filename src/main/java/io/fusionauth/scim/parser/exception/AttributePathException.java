@@ -16,6 +16,11 @@
 
 package io.fusionauth.scim.parser.exception;
 
+/**
+ * An exception thrown when the parsed attribute path is invalid
+ *
+ * @author Spencer Witt
+ */
 public class AttributePathException extends SCIMParserException {
   public AttributePathException(String message) {
     super(message);

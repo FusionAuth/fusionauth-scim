@@ -16,6 +16,11 @@
 
 package io.fusionauth.scim.parser.exception;
 
+/**
+ * An exception thrown when the string preceding an open square bracket is not a valid attribute path
+ *
+ * @author Spencer Witt
+ */
 public class AttributeFilterGroupingException extends SCIMParserException {
   public AttributeFilterGroupingException(String message) {
     super(message);

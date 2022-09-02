@@ -16,6 +16,11 @@
 
 package io.fusionauth.scim.parser.exception;
 
+/**
+ * An exception thrown when a parsed logical operator is invalid
+ *
+ * @author Spencer Witt
+ */
 public class LogicalOperatorException extends SCIMParserException {
   public LogicalOperatorException(String message) {
     super(message);

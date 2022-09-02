@@ -16,6 +16,11 @@
 
 package io.fusionauth.scim.parser.exception;
 
+/**
+ * A base exception for any SCIM filter parsing issues
+ *
+ * @author Spencer Witt
+ */
 public abstract class SCIMParserException extends RuntimeException {
   protected SCIMParserException(String message) {
     super(message);

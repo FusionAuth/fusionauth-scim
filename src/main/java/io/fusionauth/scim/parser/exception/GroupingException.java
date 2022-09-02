@@ -16,6 +16,11 @@
 
 package io.fusionauth.scim.parser.exception;
 
+/**
+ * An exception thrown when there is a mismatch between open/closed parentheses or square brackets
+ *
+ * @author Spencer Witt
+ */
 public class GroupingException extends SCIMParserException {
   public GroupingException(String message) {
     super(message);

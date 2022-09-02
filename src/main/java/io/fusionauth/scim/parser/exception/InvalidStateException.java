@@ -16,6 +16,11 @@
 
 package io.fusionauth.scim.parser.exception;
 
+/**
+ * An exception thrown when the next character in the SCIM filter string results in an invalid state transition
+ *
+ * @author Spencer Witt
+ */
 public class InvalidStateException extends SCIMParserException {
   public InvalidStateException(String message) {
     super(message);

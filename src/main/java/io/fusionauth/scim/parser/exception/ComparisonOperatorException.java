@@ -16,6 +16,11 @@
 
 package io.fusionauth.scim.parser.exception;
 
+/**
+ * An exception thrown when a parsed comparison operator is invalid
+ *
+ * @author Spencer Witt
+ */
 public class ComparisonOperatorException extends SCIMParserException {
   public ComparisonOperatorException(String message) {
     super(message);
