@@ -43,19 +43,29 @@ import io.fusionauth.scim.parser.expression.LogicalLinkExpression;
 import io.fusionauth.scim.parser.expression.LogicalNegationExpression;
 
 /**
+ * A parser for SCIM filter expressions supporting the filter grammar from RFC 7644
+ *
  * @author Spencer Witt
+ * @see <a href="https://www.rfc-editor.org/rfc/rfc7644">RFC 7644</a>
+ * @see <a href="https://www.rfc-editor.org/rfc/rfc7644#section-3.4.2.2">SCIM Filtering</a>
  */
 public class SCIMFilterParser {
+  /**
+   * Parse SCIM filter string into an {@link Expression} tree that can be used for matching or transformation
+   *
+   * @param filter The SCIM filter string
+   * @return A single {@link Expression} representing the parsed filter string
+   */
   public Expression parse(String filter) {
     // Add a trailing space to ensure all tokens are parsed
     char[] source = new char[filter.length() + 1];
     filter.getChars(0, filter.length(), source, 0);
     source[source.length - 1] = ' ';
     SCIMParserState state = SCIMParserState.filterStart;
-    String attrPath = null;
-    ComparisonOperator attrOp = null;
-    Deque<Expression> result = new ArrayDeque<>();
-    Deque<Expression> hold = new ArrayDeque<>();
+    String attributePath = null;
+    ComparisonOperator comparisonOperator = null;
+    Deque<Expression> postfix = new ArrayDeque<>();
+    Deque<Expression> operators = new ArrayDeque<>();
     StringBuilder sb = new StringBuilder();
 
     for (int i = 0; i < source.length; i++) {
@@ -67,7 +77,7 @@ public class SCIMFilterParser {
           if (state == SCIMParserState.attributePath) {
             sb.append(c);
           } else if (state == SCIMParserState.openParen) {
-            hold.push(new GroupingExpression());
+            operators.push(new GroupingExpression());
           }
           break;
         case attributePath:
@@ -75,25 +85,25 @@ public class SCIMFilterParser {
           if (state == SCIMParserState.attributePath) {
             sb.append(c);
           } else if (state == SCIMParserState.openBracket) {
-            attrPath = sb.toString();
-            if (attrPath.equals("not")) {
+            attributePath = sb.toString();
+            if (attributePath.equals("not")) {
               // This was actually a logical negation which is not allowed immediately before [ ]
               throw new AttributeFilterGroupingException("Attribute filter grouping with [ ] must be preceded by an attribute path, found logical negation operator");
-            } else if (!validateAttributePath(attrPath)) {
-              throw new AttributePathException("The attribute path [" + attrPath + "] is not valid");
+            } else if (!validateAttributePath(attributePath)) {
+              throw new AttributePathException("The attribute path [" + attributePath + "] is not valid");
             }
-            hold.push(new AttributeFilterGroupingExpression(attrPath));
-            attrPath = null;
+            operators.push(new AttributeFilterGroupingExpression(attributePath));
+            attributePath = null;
             sb.setLength(0);
           } else if (state == SCIMParserState.beforeOperator) {
-            attrPath = sb.toString();
-            if (attrPath.equals("not")) {
+            attributePath = sb.toString();
+            if (attributePath.equals("not")) {
               // This was actually a logical negation. Cannot know until the token is parsed
-              attrPath = null;
-              hold.push(new LogicalNegationExpression());
+              attributePath = null;
+              operators.push(new LogicalNegationExpression());
               state = SCIMParserState.negationOperator;
-            } else if (!validateAttributePath(attrPath)) {
-              throw new AttributePathException("The attribute path [" + attrPath + "] is not valid");
+            } else if (!validateAttributePath(attributePath)) {
+              throw new AttributePathException("The attribute path [" + attributePath + "] is not valid");
             }
             sb.setLength(0);
           }
@@ -105,17 +115,17 @@ public class SCIMFilterParser {
           ) {
             sb.append(c);
           } else if (state == SCIMParserState.openBracket) {
-            // The held attrPath value is actually parent attribute path for AttributeFilterGroupingExpression
-            hold.push(new AttributeFilterGroupingExpression(attrPath));
-            attrPath = null;
+            // The held attributePath value is actually parent attribute path for AttributeFilterGroupingExpression
+            operators.push(new AttributeFilterGroupingExpression(attributePath));
+            attributePath = null;
           }
           break;
         case unaryOperator:
           state = state.next(c);
           if (state == SCIMParserState.afterAttributeExpression) {
             sb.append(c);
-            result.push(new AttributePresentTestExpression(attrPath));
-            attrPath = null;
+            postfix.push(new AttributePresentTestExpression(attributePath));
+            attributePath = null;
             sb.setLength(0);
           }
           break;
@@ -124,7 +134,7 @@ public class SCIMFilterParser {
           if (state == SCIMParserState.beforeComparisonValue) {
             sb.append(c);
             try {
-              attrOp = ComparisonOperator.valueOf(sb.toString());
+              comparisonOperator = ComparisonOperator.valueOf(sb.toString());
               sb.setLength(0);
             } catch (IllegalArgumentException e) {
               throw new ComparisonOperatorException("No comparison operator for [" + sb + "]");
@@ -150,22 +160,22 @@ public class SCIMFilterParser {
             sb.append(c);
           } else if (state == SCIMParserState.afterAttributeExpression || state == SCIMParserState.closeParen || state == SCIMParserState.closeBracket) {
             if (sb.toString().equals("true")) {
-              result.push(new AttributeBooleanComparisonExpression(attrPath, attrOp, true));
+              postfix.push(new AttributeBooleanComparisonExpression(attributePath, comparisonOperator, true));
             } else if (sb.toString().equals("false")) {
-              result.push(new AttributeBooleanComparisonExpression(attrPath, attrOp, false));
+              postfix.push(new AttributeBooleanComparisonExpression(attributePath, comparisonOperator, false));
             } else {
               throw new ComparisonValueException("[" + sb + "] is not a valid comparison value");
             }
             sb.setLength(0);
-            if (attrOp != ComparisonOperator.eq && attrOp != ComparisonOperator.ne) {
-              throw new ComparisonOperatorException("[" + attrOp + "] is not a valid operator for a boolean comparison");
+            if (comparisonOperator != ComparisonOperator.eq && comparisonOperator != ComparisonOperator.ne) {
+              throw new ComparisonOperatorException("[" + comparisonOperator + "] is not a valid operator for a boolean comparison");
             }
             if (state == SCIMParserState.closeParen) {
-              if (!handleCloseParen(hold, result)) {
+              if (!handleCloseParen(operators, postfix)) {
                 throw new GroupingException("Extra closed parenthesis at [" + filterAtParsedLocation(filter, i) + "]");
               }
             } else if (state == SCIMParserState.closeBracket) {
-              if (!handleCloseBracket(hold, result)) {
+              if (!handleCloseBracket(operators, postfix)) {
                 throw new GroupingException("Extra closed bracket at [" + filterAtParsedLocation(filter, i) + "]");
               }
             }
@@ -177,23 +187,23 @@ public class SCIMFilterParser {
             sb.append(c);
           } else if (state == SCIMParserState.afterAttributeExpression || state == SCIMParserState.closeParen || state == SCIMParserState.closeBracket) {
             if (sb.toString().equals("null")) {
-              result.push(new AttributeNullTestExpression(attrPath, attrOp));
+              postfix.push(new AttributeNullTestExpression(attributePath, comparisonOperator));
               sb.setLength(0);
             } else {
               throw new ComparisonValueException("[" + sb + "] is not a valid comparison value");
             }
             if (state == SCIMParserState.closeParen) {
-              if (!handleCloseParen(hold, result)) {
+              if (!handleCloseParen(operators, postfix)) {
                 throw new GroupingException("Extra closed parenthesis at [" + filterAtParsedLocation(filter, i) + "]");
               }
             } else if (state == SCIMParserState.closeBracket) {
-              if (!handleCloseBracket(hold, result)) {
+              if (!handleCloseBracket(operators, postfix)) {
                 throw new GroupingException("Extra closed bracket at [" + filterAtParsedLocation(filter, i) + "]");
               }
             }
           }
-          if (attrOp != ComparisonOperator.eq && attrOp != ComparisonOperator.ne) {
-            throw new ComparisonOperatorException("[" + attrOp + "] is not a valid operator for a null comparison");
+          if (comparisonOperator != ComparisonOperator.eq && comparisonOperator != ComparisonOperator.ne) {
+            throw new ComparisonOperatorException("[" + comparisonOperator + "] is not a valid operator for a null comparison");
           }
           break;
         case minus:
@@ -210,17 +220,17 @@ public class SCIMFilterParser {
             sb.append(c);
           } else if (state == SCIMParserState.afterAttributeExpression || state == SCIMParserState.closeParen || state == SCIMParserState.closeBracket) {
             try {
-              result.push(new AttributeNumberComparisonExpression(attrPath, attrOp, new BigDecimal(sb.toString())));
+              postfix.push(new AttributeNumberComparisonExpression(attributePath, comparisonOperator, new BigDecimal(sb.toString())));
               sb.setLength(0);
             } catch (NumberFormatException e) {
               throw new ComparisonValueException("[" + sb + "] is not a valid comparison value");
             }
             if (state == SCIMParserState.closeParen) {
-              if (!handleCloseParen(hold, result)) {
+              if (!handleCloseParen(operators, postfix)) {
                 throw new GroupingException("Extra closed parenthesis at [" + filterAtParsedLocation(filter, i) + "]");
               }
             } else if (state == SCIMParserState.closeBracket) {
-              if (!handleCloseBracket(hold, result)) {
+              if (!handleCloseBracket(operators, postfix)) {
                 throw new GroupingException("Extra closed bracket at [" + filterAtParsedLocation(filter, i) + "]");
               }
             }
@@ -232,17 +242,17 @@ public class SCIMFilterParser {
             sb.append(c);
           } else if (state == SCIMParserState.afterAttributeExpression || state == SCIMParserState.closeParen || state == SCIMParserState.closeBracket) {
             try {
-              result.push(new AttributeNumberComparisonExpression(attrPath, attrOp, new BigDecimal(sb.toString())));
+              postfix.push(new AttributeNumberComparisonExpression(attributePath, comparisonOperator, new BigDecimal(sb.toString())));
               sb.setLength(0);
             } catch (NumberFormatException e) {
               throw new ComparisonValueException("[" + sb + "] is not a valid comparison value");
             }
             if (state == SCIMParserState.closeParen) {
-              if (!handleCloseParen(hold, result)) {
+              if (!handleCloseParen(operators, postfix)) {
                 throw new GroupingException("Extra closed parenthesis at [" + filterAtParsedLocation(filter, i) + "]");
               }
             } else if (state == SCIMParserState.closeBracket) {
-              if (!handleCloseBracket(hold, result)) {
+              if (!handleCloseBracket(operators, postfix)) {
                 throw new GroupingException("Extra closed bracket at [" + filterAtParsedLocation(filter, i) + "]");
               }
             }
@@ -254,17 +264,17 @@ public class SCIMFilterParser {
             sb.append(c);
           } else if (state == SCIMParserState.afterAttributeExpression || state == SCIMParserState.closeParen || state == SCIMParserState.closeBracket) {
             try {
-              result.push(new AttributeNumberComparisonExpression(attrPath, attrOp, new BigDecimal(sb.toString())));
+              postfix.push(new AttributeNumberComparisonExpression(attributePath, comparisonOperator, new BigDecimal(sb.toString())));
               sb.setLength(0);
             } catch (NumberFormatException e) {
               throw new ComparisonValueException("[" + sb + "] is not a valid comparison value");
             }
             if (state == SCIMParserState.closeParen) {
-              if (!handleCloseParen(hold, result)) {
+              if (!handleCloseParen(operators, postfix)) {
                 throw new GroupingException("Extra closed parenthesis at [" + filterAtParsedLocation(filter, i) + "]");
               }
             } else if (state == SCIMParserState.closeBracket) {
-              if (!handleCloseBracket(hold, result)) {
+              if (!handleCloseBracket(operators, postfix)) {
                 throw new GroupingException("Extra closed bracket at [" + filterAtParsedLocation(filter, i) + "]");
               }
             }
@@ -282,17 +292,17 @@ public class SCIMFilterParser {
             sb.append(c);
           } else if (state == SCIMParserState.afterAttributeExpression || state == SCIMParserState.closeParen || state == SCIMParserState.closeBracket) {
             try {
-              result.push(new AttributeNumberComparisonExpression(attrPath, attrOp, new BigDecimal(sb.toString())));
+              postfix.push(new AttributeNumberComparisonExpression(attributePath, comparisonOperator, new BigDecimal(sb.toString())));
               sb.setLength(0);
             } catch (NumberFormatException e) {
               throw new ComparisonValueException("[" + sb + "] is not a valid comparison value");
             }
             if (state == SCIMParserState.closeParen) {
-              if (!handleCloseParen(hold, result)) {
+              if (!handleCloseParen(operators, postfix)) {
                 throw new GroupingException("Extra closed parenthesis at [" + filterAtParsedLocation(filter, i) + "]");
               }
             } else if (state == SCIMParserState.closeBracket) {
-              if (!handleCloseBracket(hold, result)) {
+              if (!handleCloseBracket(operators, postfix)) {
                 throw new GroupingException("Extra closed bracket at [" + filterAtParsedLocation(filter, i) + "]");
               }
             }
@@ -305,10 +315,10 @@ public class SCIMFilterParser {
           } else if (state == SCIMParserState.afterAttributeExpression) {
             try {
               // Try to parse as Date...
-              result.push(new AttributeDateComparisonExpression(attrPath, attrOp, ZonedDateTime.from(DateTimeFormatter.ISO_DATE_TIME.parse(sb.toString()))));
+              postfix.push(new AttributeDateComparisonExpression(attributePath, comparisonOperator, ZonedDateTime.from(DateTimeFormatter.ISO_DATE_TIME.parse(sb.toString()))));
             } catch (DateTimeParseException e) {
               // ...otherwise treat as text
-              result.push(new AttributeTextComparisonExpression(attrPath, attrOp, sb.toString()));
+              postfix.push(new AttributeTextComparisonExpression(attributePath, comparisonOperator, sb.toString()));
             }
             sb.setLength(0);
           }
@@ -340,11 +350,11 @@ public class SCIMFilterParser {
           if (state == SCIMParserState.logicalOperator) {
             sb.append(c);
           } else if (state == SCIMParserState.closeParen) {
-            if (!handleCloseParen(hold, result)) {
+            if (!handleCloseParen(operators, postfix)) {
               throw new GroupingException("Extra closed parenthesis at [" + filterAtParsedLocation(filter, i) + "]");
             }
           } else if (state == SCIMParserState.closeBracket) {
-            if (!handleCloseBracket(hold, result)) {
+            if (!handleCloseBracket(operators, postfix)) {
               throw new GroupingException("Extra closed bracket at [" + filterAtParsedLocation(filter, i) + "]");
             }
           }
@@ -358,23 +368,23 @@ public class SCIMFilterParser {
               LogicalLinkExpression newLogicalExpression = new LogicalLinkExpression(LogicalOperator.valueOf(sb.toString()));
               // hold.peek() cannot return null here because of the hold.isEmpty() check
               //noinspection ConstantConditions
-              if (hold.isEmpty() ||
-                  hold.peek().type() == ExpressionType.grouping ||
-                  hold.peek().type() == ExpressionType.attributeFilterGrouping ||
-                  precedence(newLogicalExpression.logicalOperator) >= precedence(((LogicalExpression) hold.peek()).logicalOperator)
+              if (operators.isEmpty() ||
+                  operators.peek().type() == ExpressionType.grouping ||
+                  operators.peek().type() == ExpressionType.attributeFilterGrouping ||
+                  precedence(newLogicalExpression.logicalOperator) >= precedence(((LogicalExpression) operators.peek()).logicalOperator)
               ) {
-                hold.push(newLogicalExpression);
+                operators.push(newLogicalExpression);
               } else {
                 // hold.peek() cannot return null here because of !hold.isEmpty() check
                 //noinspection ConstantConditions
-                while (!hold.isEmpty() &&
-                       hold.peek().type() != ExpressionType.grouping &&
-                       hold.peek().type() != ExpressionType.attributeFilterGrouping &&
-                       precedence(((LogicalExpression) hold.peek()).logicalOperator) >= precedence(newLogicalExpression.logicalOperator)
+                while (!operators.isEmpty() &&
+                       operators.peek().type() != ExpressionType.grouping &&
+                       operators.peek().type() != ExpressionType.attributeFilterGrouping &&
+                       precedence(((LogicalExpression) operators.peek()).logicalOperator) >= precedence(newLogicalExpression.logicalOperator)
                 ) {
-                  result.push(hold.pop());
+                  postfix.push(operators.pop());
                 }
-                hold.push(newLogicalExpression);
+                operators.push(newLogicalExpression);
               }
               sb.setLength(0);
             } catch (IllegalArgumentException e) {
@@ -385,13 +395,13 @@ public class SCIMFilterParser {
         case negationOperator:
           state = state.next(c);
           if (state == SCIMParserState.openParen) {
-            hold.push(new GroupingExpression());
+            operators.push(new GroupingExpression());
           }
           break;
         case openParen:
           state = state.next(c);
           if (state == SCIMParserState.openParen) {
-            hold.push(new GroupingExpression());
+            operators.push(new GroupingExpression());
           } else if (state == SCIMParserState.attributePath) {
             sb.append(c);
           }
@@ -401,18 +411,18 @@ public class SCIMFilterParser {
           if (state == SCIMParserState.attributePath) {
             sb.append(c);
           } else if (state == SCIMParserState.openParen) {
-            hold.push(new GroupingExpression());
+            operators.push(new GroupingExpression());
           }
           break;
         case closeParen:
         case closeBracket:
           state = state.next(c);
           if (state == SCIMParserState.closeParen) {
-            if (!handleCloseParen(hold, result)) {
+            if (!handleCloseParen(operators, postfix)) {
               throw new GroupingException("Extra closed parenthesis at [" + filterAtParsedLocation(filter, i) + "]");
             }
           } else if (state == SCIMParserState.closeBracket) {
-            if (!handleCloseBracket(hold, result)) {
+            if (!handleCloseBracket(operators, postfix)) {
               throw new GroupingException("Extra closed bracket at [" + filterAtParsedLocation(filter, i) + "]");
             }
           }
@@ -424,120 +434,143 @@ public class SCIMFilterParser {
       }
     }
 
-    while (!hold.isEmpty()) {
-      Expression exp = hold.pop();
+    while (!operators.isEmpty()) {
+      Expression exp = operators.pop();
       if (exp.type() == ExpressionType.grouping) {
         throw new GroupingException("Unclosed parenthesis in filter [" + filter + "]");
       } else if (exp.type() == ExpressionType.attributeFilterGrouping) {
         throw new GroupingException("Unclosed bracket in filter [" + filter + "]");
       }
-      result.push(exp);
+      postfix.push(exp);
     }
 
-    Deque<Expression> operands = new ArrayDeque<>();
-    while (!result.isEmpty()) {
+    Deque<Expression> result = new ArrayDeque<>();
+    while (!postfix.isEmpty()) {
       // Now we work through postfix expressions as a queue
       // removeLast() will take from the bottom of the stack
-      Expression exp = result.removeLast();
+      Expression exp = postfix.removeLast();
       if (exp.type() == ExpressionType.logicalLink) {
         // Logical link operators are processed immediately by grabbing the top two operands from the stack
         LogicalLinkExpression linkExpression = (LogicalLinkExpression) exp;
-        linkExpression.right = operands.pop();
-        linkExpression.left = operands.pop();
+        linkExpression.right = result.pop();
+        linkExpression.left = result.pop();
         // After it has its left and right populated, the LogicalLinkExpression is just another operand
-        operands.push(linkExpression);
+        result.push(linkExpression);
       } else if (exp.type() == ExpressionType.logicalNegation) {
         // Logical negation operators are processed immediately by grabbing the top operand from the stack
         LogicalNegationExpression negationExpression = (LogicalNegationExpression) exp;
-        negationExpression.subExpression = operands.pop();
+        negationExpression.subExpression = result.pop();
         // After its sub-expression is populated, add it to the operand stack
-        operands.push(negationExpression);
+        result.push(negationExpression);
       } else if (exp.type() == ExpressionType.attributeFilterGrouping) {
         // Complex attribute filter grouping is processed by grabbing the top operand from the stack
         AttributeFilterGroupingExpression groupingExpression = (AttributeFilterGroupingExpression) exp;
-        groupingExpression.filterExpression = operands.pop();
-        operands.push(groupingExpression);
+        groupingExpression.filterExpression = result.pop();
+        result.push(groupingExpression);
       } else {
         // Operands are pushed to a stack
-        operands.push(exp);
+        result.push(exp);
       }
     }
-    assert operands.size() == 1;
+    assert result.size() == 1;
 
-    return operands.pop();
+    return result.pop();
   }
 
+  /**
+   * Helper to display SCIM filter substring at the parsed location
+   *
+   * @param filter The full SCIM filter string
+   * @param i      The current character index for parsing
+   * @return A substring of the filter that stops at the current character being parsed
+   */
   private String filterAtParsedLocation(String filter, int i) {
     return filter.substring(0, Math.min(i + 1, filter.length()));
   }
 
-  private boolean handleCloseBracket(Deque<Expression> hold, Deque<Expression> result) {
-    while (!hold.isEmpty() &&
-           hold.peek().type() != ExpressionType.attributeFilterGrouping
+  /**
+   * Handle a closing square bracket by moving operators to the postfix expression
+   * until the matching opening square bracket is found.
+   *
+   * @param operators A stack containing operators encountered while parsing the filter
+   * @param postfix   A work in progress stack for building a postfix representation of the filter
+   * @return {@code true} if the closing square bracket was handled successfully, {@code false} otherwise
+   */
+  private boolean handleCloseBracket(Deque<Expression> operators, Deque<Expression> postfix) {
+    while (!operators.isEmpty() &&
+           operators.peek().type() != ExpressionType.attributeFilterGrouping
     ) {
-      result.push(hold.pop());
+      postfix.push(operators.pop());
     }
-    if (hold.isEmpty() || hold.peek().type() != ExpressionType.attributeFilterGrouping) {
+    if (operators.isEmpty() || operators.peek().type() != ExpressionType.attributeFilterGrouping) {
       return false;
     } else {
       // Remove the AttributeFilterGroupingExpression and add to result
-      result.push(hold.pop());
+      postfix.push(operators.pop());
       return true;
     }
   }
 
-  private boolean handleCloseParen(Deque<Expression> hold, Deque<Expression> result) {
-    while (!hold.isEmpty() &&
-           hold.peek().type() != ExpressionType.grouping
+  /**
+   * Handle a closing parenthesis by moving operators to the postfix expression
+   * until the matching opening parenthesis is found.
+   *
+   * @param operators A stack containing operators encountered while parsing the filter
+   * @param postfix   A work in progress stack for building a postfix representation of the filter
+   * @return {@code true} if the closing parenthesis was handled successfully, {@code false} otherwise
+   */
+  private boolean handleCloseParen(Deque<Expression> operators, Deque<Expression> postfix) {
+    while (!operators.isEmpty() &&
+           operators.peek().type() != ExpressionType.grouping
     ) {
-      result.push(hold.pop());
+      postfix.push(operators.pop());
     }
-    if (hold.isEmpty() || hold.peek().type() != ExpressionType.grouping) {
+    if (operators.isEmpty() || operators.peek().type() != ExpressionType.grouping) {
       return false;
     } else {
       // Remove the GroupExpression
-      hold.pop();
+      operators.pop();
       return true;
     }
   }
 
-  @SuppressWarnings("EnhancedSwitchMigration")
+  /**
+   * Retrieve a numeric representation of logical operator precedence
+   *
+   * @param op The logical operator
+   * @return An integer representation of operator precedence. A higher value means higher precedence
+   */
   private int precedence(LogicalOperator op) {
-    switch (op) {
-      case not:
-        return 3;
-      case and:
-        return 2;
-      case or:
-        return 1;
-      default:
-        return -1;
-    }
+    return switch (op) {
+      case not -> 3;
+      case and -> 2;
+      case or -> 1;
+    };
   }
 
   /**
    * Validate an attribute path's optional sub-attribute
    *
-   * @param attrPath The attribute path to validate
-   * @return {@code true} if {@code attrPath} is valid, {@code false} otherwise
+   * @param attributePath The attribute path to validate
+   * @return {@code true} if {@code attributePath} is valid, {@code false} otherwise
    */
-  private boolean validateAttributePath(String attrPath) {
+  private boolean validateAttributePath(String attributePath) {
     // TODO : Does this need more URI validation for schema URIs?
-    int lastColon = attrPath.lastIndexOf(':');
-    String lastSegment = lastColon != -1 ? attrPath.substring(lastColon) : attrPath;
+    int lastColon = attributePath.lastIndexOf(':');
+    String lastSegment = lastColon != -1 ? attributePath.substring(lastColon) : attributePath;
     if (lastSegment.chars().filter(c -> c == '.').count() > 1) {
       // Last segment can have at most one period
       return false;
     }
-    int lastPeriod = attrPath.lastIndexOf('.');
+    int lastPeriod = attributePath.lastIndexOf('.');
     if (lastPeriod > lastColon) {
       // A period after the last colon (or absent a colon) indicates the period is the start of a sub-attribute
-      if (attrPath.length() == lastPeriod + 1) {
+      if (attributePath.length() == lastPeriod + 1) {
         // Cannot end with a period
         return false;
       } else {
         // A sub-attribute must start with a letter
-        return Character.isAlphabetic(attrPath.codePointAt(lastPeriod + 1));
+        return Character.isAlphabetic(attributePath.codePointAt(lastPeriod + 1));
       }
     }
     return true;
