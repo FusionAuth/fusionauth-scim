@@ -94,7 +94,7 @@ public class ElasticsearchTransformerTest {
   }
 
   @Test(dataProvider = "data")
-  public void transformGood(String scimFilter, String expected) throws Exception {
+  public void transformGood(String scimFilter, String expected) {
     Expression expression = parser.parse(scimFilter);
     String actual = ElasticsearchTransformer.transform(expression);
     assertEquals(expected, actual);
