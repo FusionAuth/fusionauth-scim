@@ -56,6 +56,9 @@ public class SCIMFilterParser {
    * @param filter The SCIM filter string
    * @return A single {@link Expression} representing the parsed filter string
    */
+  // The duplicated branches and code fragments were intentionally left in place to make parsing logic
+  // and state transitions more clear
+  @SuppressWarnings({"DuplicateBranchesInSwitch", "DuplicatedCode"})
   public Expression parse(String filter) {
     // Add a trailing space to ensure all tokens are parsed
     char[] source = new char[filter.length() + 1];
