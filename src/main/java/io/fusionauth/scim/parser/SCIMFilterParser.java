@@ -208,6 +208,9 @@ public class SCIMFilterParser {
             try {
               postfix.push(new AttributeNumberComparisonExpression(attributePath, comparisonOperator, new BigDecimal(sb.toString())));
               sb.setLength(0);
+              if (comparisonOperator == ComparisonOperator.co || comparisonOperator == ComparisonOperator.sw || comparisonOperator == ComparisonOperator.ew) {
+                throw new ComparisonOperatorException("[" + comparisonOperator + "] is not a valid operator for a number comparison");
+              }
             } catch (NumberFormatException e) {
               throw new ComparisonValueException("[" + sb + "] is not a valid comparison value");
             }
@@ -222,6 +225,9 @@ public class SCIMFilterParser {
             try {
               postfix.push(new AttributeNumberComparisonExpression(attributePath, comparisonOperator, new BigDecimal(sb.toString())));
               sb.setLength(0);
+              if (comparisonOperator == ComparisonOperator.co || comparisonOperator == ComparisonOperator.sw || comparisonOperator == ComparisonOperator.ew) {
+                throw new ComparisonOperatorException("[" + comparisonOperator + "] is not a valid operator for a number comparison");
+              }
             } catch (NumberFormatException e) {
               throw new ComparisonValueException("[" + sb + "] is not a valid comparison value");
             }
@@ -236,6 +242,9 @@ public class SCIMFilterParser {
             try {
               postfix.push(new AttributeNumberComparisonExpression(attributePath, comparisonOperator, new BigDecimal(sb.toString())));
               sb.setLength(0);
+              if (comparisonOperator == ComparisonOperator.co || comparisonOperator == ComparisonOperator.sw || comparisonOperator == ComparisonOperator.ew) {
+                throw new ComparisonOperatorException("[" + comparisonOperator + "] is not a valid operator for a number comparison");
+              }
             } catch (NumberFormatException e) {
               throw new ComparisonValueException("[" + sb + "] is not a valid comparison value");
             }
@@ -256,6 +265,9 @@ public class SCIMFilterParser {
             try {
               postfix.push(new AttributeNumberComparisonExpression(attributePath, comparisonOperator, new BigDecimal(sb.toString())));
               sb.setLength(0);
+              if (comparisonOperator == ComparisonOperator.co || comparisonOperator == ComparisonOperator.sw || comparisonOperator == ComparisonOperator.ew) {
+                throw new ComparisonOperatorException("[" + comparisonOperator + "] is not a valid operator for a number comparison");
+              }
             } catch (NumberFormatException e) {
               throw new ComparisonValueException("[" + sb + "] is not a valid comparison value");
             }
@@ -270,6 +282,9 @@ public class SCIMFilterParser {
             try {
               // Try to parse as Date...
               postfix.push(new AttributeDateComparisonExpression(attributePath, comparisonOperator, SCIMDateTools.parse(sb.toString())));
+              if (comparisonOperator == ComparisonOperator.co || comparisonOperator == ComparisonOperator.sw || comparisonOperator == ComparisonOperator.ew) {
+                throw new ComparisonOperatorException("[" + comparisonOperator + "] is not a valid operator for a date comparison");
+              }
             } catch (DateTimeException e) {
               // ...otherwise treat as text
               postfix.push(new AttributeTextComparisonExpression(attributePath, comparisonOperator, sb.toString()));

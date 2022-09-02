@@ -781,6 +781,66 @@ public class SCIMFilterParserTest {
             "A lt null",
             "[lt] is not a valid operator for a null comparison"
         },
+        {
+            "A co \"2013-04-16T09:14:02Z\"",
+            "[co] is not a valid operator for a date comparison"
+        },
+        {
+            "A sw \"2013-04-16T09:14:02Z\"",
+            "[sw] is not a valid operator for a date comparison"
+        },
+        {
+            "A ew \"2013-04-16T09:14:02Z\"",
+            "[ew] is not a valid operator for a date comparison"
+        },
+        {
+            "A co 0",
+            "[co] is not a valid operator for a number comparison"
+        },
+        {
+            "A sw 0",
+            "[sw] is not a valid operator for a number comparison"
+        },
+        {
+            "A ew 0",
+            "[ew] is not a valid operator for a number comparison"
+        },
+        {
+            "A co 5",
+            "[co] is not a valid operator for a number comparison"
+        },
+        {
+            "A sw 5",
+            "[sw] is not a valid operator for a number comparison"
+        },
+        {
+            "A ew 5",
+            "[ew] is not a valid operator for a number comparison"
+        },
+        {
+            "A co 12.3",
+            "[co] is not a valid operator for a number comparison"
+        },
+        {
+            "A sw 12.3",
+            "[sw] is not a valid operator for a number comparison"
+        },
+        {
+            "A ew 12.3",
+            "[ew] is not a valid operator for a number comparison"
+        },
+        {
+            "A co 12e3",
+            "[co] is not a valid operator for a number comparison"
+        },
+        {
+            "A sw 12e3",
+            "[sw] is not a valid operator for a number comparison"
+        },
+        {
+            "A ew 12e3",
+            "[ew] is not a valid operator for a number comparison"
+        },
     };
   }
 
