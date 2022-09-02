@@ -54,7 +54,11 @@ public class ElasticsearchTransformer {
     if (exp.valueType() == ValueType.none) {
       return "_exists_:" + prependParentAttributePath(parentAttributePath, exp.attributePath);
     } else if (exp.valueType() == ValueType.nul) {
-      return prependParentAttributePath(parentAttributePath, exp.attributePath) + transformComparisonOperator(exp.operator) + "null";
+      String nullComparison = prependParentAttributePath(parentAttributePath, exp.attributePath) + transformComparisonOperator(exp.operator) + "null";
+      if (exp.operator == ComparisonOperator.ne) {
+        nullComparison = "!(" + nullComparison + ")";
+      }
+      return nullComparison;
     } else {
       return transformComparisonExpression((AttributeComparisonExpression<?, ?>) exp, parentAttributePath);
     }
