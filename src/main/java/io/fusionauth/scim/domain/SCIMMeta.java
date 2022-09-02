@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021, FusionAuth, All Rights Reserved
+ * Copyright (c) 2021-2022, FusionAuth, All Rights Reserved
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,8 +15,10 @@
  */
 package io.fusionauth.scim.domain;
 
+import java.time.ZonedDateTime;
 import java.util.Objects;
 
+import io.fusionauth.scim.utils.SCIMDateTools;
 import io.fusionauth.scim.utils.ToString;
 
 /**
@@ -25,9 +27,9 @@ import io.fusionauth.scim.utils.ToString;
  * @author Brett Pontarelli
  */
 public class SCIMMeta implements Buildable<SCIMMeta> {
-  public String created;
+  public ZonedDateTime created;
 
-  public String lastModified;
+  public ZonedDateTime lastModified;
 
   public String location;
 
@@ -49,6 +51,22 @@ public class SCIMMeta implements Buildable<SCIMMeta> {
            Objects.equals(location, scimMeta.location) &&
            Objects.equals(resourceType, scimMeta.resourceType) &&
            Objects.equals(version, scimMeta.version);
+  }
+
+  public String getCreated() {
+    return created != null ? SCIMDateTools.format(created) : null;
+  }
+
+  public void setCreated(String created) {
+    this.created = SCIMDateTools.parse(created);
+  }
+
+  public String getLastModified() {
+    return lastModified != null ? SCIMDateTools.format(lastModified) : null;
+  }
+
+  public void setLastModified(String lastModified) {
+    this.lastModified = SCIMDateTools.parse(lastModified);
   }
 
   @Override
