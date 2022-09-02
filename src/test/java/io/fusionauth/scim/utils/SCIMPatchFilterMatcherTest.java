@@ -17,8 +17,6 @@ package io.fusionauth.scim.utils;
 
 import java.io.IOException;
 import java.math.BigDecimal;
-import java.time.Instant;
-import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
@@ -31,7 +29,14 @@ import io.fusionauth.scim.parser.expression.AttributeNumberComparisonExpression;
 import io.fusionauth.scim.parser.expression.AttributePresentTestExpression;
 import io.fusionauth.scim.parser.expression.AttributeTextComparisonExpression;
 import org.testng.annotations.BeforeTest;
+import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
+import static io.fusionauth.scim.parser.ComparisonOperator.eq;
+import static io.fusionauth.scim.parser.ComparisonOperator.ge;
+import static io.fusionauth.scim.parser.ComparisonOperator.gt;
+import static io.fusionauth.scim.parser.ComparisonOperator.lt;
+import static io.fusionauth.scim.parser.ComparisonOperator.ne;
+import static io.fusionauth.scim.parser.ComparisonOperator.pr;
 import static org.testng.FileAssert.fail;
 
 /**
@@ -69,106 +74,97 @@ public class SCIMPatchFilterMatcherTest {
     source = objectMapper.readTree(json);
   }
 
-  @Test
-  public void equal() {
-    // -----------------------------------------------------------------------------------------------------------------------
-    // Text
-    // -----------------------------------------------------------------------------------------------------------------------
+  @Test(dataProvider = "equalNotEqualData")
+  public void equalNotEqual(String type, String path, ComparisonOperator op, Object value) {
+    if ("date".equals(type)) {
+      ZonedDateTime zonedDateTime = SCIMDateTools.parse((String) value);
+      matches(new AttributeDateComparisonExpression(path, op, zonedDateTime));
 
-    // a eq b
-    matches(new AttributeTextComparisonExpression("a", ComparisonOperator.eq, "bbb"));
+      // Run the same test inverted
+      if (op == ComparisonOperator.eq) {
+        noMatch(new AttributeDateComparisonExpression(path, ne, zonedDateTime));
+      } else if (op == ComparisonOperator.ne) {
+        noMatch(new AttributeDateComparisonExpression(path, eq, zonedDateTime));
+      } else if (op == ComparisonOperator.lt) {
+        noMatch(new AttributeDateComparisonExpression(path, gt, zonedDateTime));
+      } else if (op == ComparisonOperator.gt) {
+        noMatch(new AttributeDateComparisonExpression(path, lt, zonedDateTime));
+      }
+    } else if ("text".equals(type)) {
+      String string = (String) value;
+      matches(new AttributeTextComparisonExpression(path, op, string));
 
-    // b.b1 eq d
-    matches(new AttributeTextComparisonExpression("b.b1", ComparisonOperator.eq, "ddd"));
+      // Run the same test inverted
+      if (op == ComparisonOperator.eq) {
+        noMatch(new AttributeTextComparisonExpression(path, ne, string));
+      } else if (op == ComparisonOperator.ne) {
+        noMatch(new AttributeTextComparisonExpression(path, eq, string));
+      }
+    } else if ("number".equals(type)) {
+      BigDecimal bigDecimal = (BigDecimal) value;
+      matches(new AttributeNumberComparisonExpression(path, op, bigDecimal));
 
-    // a eq c
-    noMatch(new AttributeTextComparisonExpression("a", ComparisonOperator.eq, "ccc"));
+      // Run the same test inverted
+      if (op == ComparisonOperator.eq) {
+        noMatch(new AttributeNumberComparisonExpression(path, ne, bigDecimal));
+      } else if (op == ComparisonOperator.ne) {
+        noMatch(new AttributeNumberComparisonExpression(path, eq, bigDecimal));
+      } else if (op == ComparisonOperator.lt) {
+        noMatch(new AttributeNumberComparisonExpression(path, gt, bigDecimal));
+      } else if (op == ComparisonOperator.gt) {
+        noMatch(new AttributeNumberComparisonExpression(path, lt, bigDecimal));
+      }
+    }
+  }
 
-    // b.b1 eq a
-    noMatch(new AttributeTextComparisonExpression("b.b1", ComparisonOperator.eq, "aaaa"));
+  @DataProvider(name = "equalNotEqualData")
+  public Object[][] equalNotEqualData() {
+    return new Object[][]{
+        // @formatter:off
 
-    // -----------------------------------------------------------------------------------------------------------------------
-    // Numbers
-    // -----------------------------------------------------------------------------------------------------------------------
+          // Attribute type    Path     Operator   Value
 
-    // c eq 42
-    matches(new AttributeNumberComparisonExpression("c", ComparisonOperator.eq, new BigDecimal(42)));
+          {"date",             "f.f1",  lt,        "2022-09-02T15:14:46.061Z"            },
 
-    // d.d1 eq 42
-    matches(new AttributeNumberComparisonExpression("d.d1", ComparisonOperator.eq, new BigDecimal((42))));
+          {"text",             "a",     eq,        "bbb"                                 },
+          {"text",             "b.b1",  eq,        "ddd"                                 },
 
-    // d.d2 eq 42.42
-    matches(new AttributeNumberComparisonExpression("d.d2", ComparisonOperator.eq, new BigDecimal("42.42")));
+          {"text",             "a",     lt,        "aaa"                                 },
+          {"text",             "b.b1",  lt,        "ccc"                                 },
 
-    // d.d3 eq 42e13
-    matches(new AttributeNumberComparisonExpression("d.d3", ComparisonOperator.eq, new BigDecimal("42e13")));
+          {"text",             "b.b1",  ge,        "ddd"                                 },
+          {"text",             "b.b1",  gt,        "eee"                                 },
 
-    // d.d4 eq 42e-1
-    matches(new AttributeNumberComparisonExpression("d.d4", ComparisonOperator.eq, new BigDecimal("42e-1")));
+          {"text",             "a",     ne,        "ccc"                                 },
+          {"text",             "b.b1",  ne,        "aaaa"                                },
 
-    // d.d5 eq 1.00000000000009
-    matches(new AttributeNumberComparisonExpression("d.d5", ComparisonOperator.eq, new BigDecimal("1.00000000000009")));
+          {"text",             "a",     pr,        null                                  },
+          {"text",             "b",     pr,        null                                  },
+          {"text",             "b.b1",  pr,        null                                  },
+
+          {"number",           "c",     eq,        new BigDecimal(42)                },
+          {"number",           "d.d1",  eq,        new BigDecimal(42)                },
+          {"number",           "d.d2",  eq,        new BigDecimal("42.42")           },
+          {"number",           "d.d3",  eq,        new BigDecimal("42e13")           },
+          {"number",           "d.d4",  eq,        new BigDecimal("42e-1")           },
+          {"number",           "d.d5",  eq,        new BigDecimal("1.00000000000009")},
+
+          {"number",           "c",     lt,        new BigDecimal(43)                },
+          {"number",           "d.d1",  lt,        new BigDecimal(43)                },
+          {"number",           "d.d2",  lt,        new BigDecimal("42.43")           },
+          {"number",           "d.d5",  lt,        new BigDecimal("1.0000000000001") },
+
+          {"number",           "d.d5",  ge,        new BigDecimal("1.00000000000009")},
+
+          {"number",           "d.d2",  gt,        new BigDecimal("42.41")           },
+          {"number",           "d.d5",  gt,        new BigDecimal("1.00000000000008")},
+
+      };
+    // @formatter:on
   }
 
   @Test
-  public void lessThan() {
-    // -----------------------------------------------------------------------------------------------------------------------
-    // Date
-    // -----------------------------------------------------------------------------------------------------------------------
-
-    // f.f1 lt "2022-09-02T15:14:46.061Z"
-    matches(new AttributeDateComparisonExpression("f.f1", ComparisonOperator.lt, scimDate("2022-09-02T15:14:46.061Z")));
-
-    // -----------------------------------------------------------------------------------------------------------------------
-    // Text
-    // -----------------------------------------------------------------------------------------------------------------------
-
-    // a lt a
-    matches(new AttributeTextComparisonExpression("a", ComparisonOperator.lt, "aaa"));
-
-    // b.b1 lt c
-    matches(new AttributeTextComparisonExpression("b.b1", ComparisonOperator.lt, "ccc"));
-
-    // b.b1 lt d|e
-    noMatch(new AttributeTextComparisonExpression("b.b1", ComparisonOperator.lt, "ddd"));
-    noMatch(new AttributeTextComparisonExpression("b.b1", ComparisonOperator.lt, "eee"));
-
-    // -----------------------------------------------------------------------------------------------------------------------
-    // Numbers
-    // -----------------------------------------------------------------------------------------------------------------------
-
-    // c lt 43
-    matches(new AttributeNumberComparisonExpression("c", ComparisonOperator.lt, new BigDecimal(43)));
-
-    // d.d1 lt 43
-    matches(new AttributeNumberComparisonExpression("d.d1", ComparisonOperator.lt, new BigDecimal(43)));
-
-    // d.d2 lt 42.43
-    matches(new AttributeNumberComparisonExpression("d.d2", ComparisonOperator.lt, new BigDecimal("42.43")));
-
-    // d.d5 lt 1.0000000000001
-    matches(new AttributeNumberComparisonExpression("d.d5", ComparisonOperator.lt, new BigDecimal("1.0000000000001")));
-
-    // d.d2 lt 42.42|42.41
-    noMatch(new AttributeNumberComparisonExpression("d.d2", ComparisonOperator.lt, new BigDecimal("42.42")));
-    noMatch(new AttributeNumberComparisonExpression("d.d2", ComparisonOperator.lt, new BigDecimal("42.41")));
-
-    // d.d5 lt 1.00000000000009|1.00000000000008
-    noMatch(new AttributeNumberComparisonExpression("d.d5", ComparisonOperator.lt, new BigDecimal("1.00000000000009")));
-    noMatch(new AttributeNumberComparisonExpression("d.d5", ComparisonOperator.lt, new BigDecimal("1.00000000000008")));
-  }
-
-  @Test
-  public void present() throws Exception {
-    // a pr
-    matches(new AttributePresentTestExpression("a"));
-
-    // b pr
-    matches(new AttributePresentTestExpression("b"));
-
-    // b.b1 pr
-    matches(new AttributePresentTestExpression("b.b1"));
-
+  public void notPresent() throws Exception {
     // z pr
     noMatch(new AttributePresentTestExpression("z"));
 
@@ -190,9 +186,5 @@ public class SCIMPatchFilterMatcherTest {
     if (result) {
       fail("Did not expected a match.");
     }
-  }
-
-  private ZonedDateTime scimDate(String s) {
-    return ZonedDateTime.ofInstant(Instant.parse(s), ZoneOffset.UTC);
   }
 }
