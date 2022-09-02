@@ -84,8 +84,12 @@ public class SCIMFilterParserTest {
             new AttributeNumberComparisonExpression("A", ComparisonOperator.eq, new BigDecimal(-12145))
         },
         {
+            "A eq 5.0E-0",
+            new AttributeNumberComparisonExpression("A", ComparisonOperator.eq, new BigDecimal("5.0"))
+        },
+        {
             "A eq 5E-0",
-            new AttributeNumberComparisonExpression("A", ComparisonOperator.eq, new BigDecimal(5))
+            new AttributeNumberComparisonExpression("A", ComparisonOperator.eq, new BigDecimal("5"))
         },
         {
             // Extra spaces are fine
@@ -413,6 +417,36 @@ public class SCIMFilterParserTest {
                     new AttributeNullTestExpression("A", ComparisonOperator.eq),
                     LogicalOperator.or,
                     new AttributeNullTestExpression("B", ComparisonOperator.eq)
+                )
+            )
+        },
+        {
+            "Z[A pr and B pr or C pr]",
+            new AttributeFilterGroupingExpression(
+                "Z",
+                new LogicalLinkExpression(
+                    new LogicalLinkExpression(
+                        new AttributePresentTestExpression("A"),
+                        LogicalOperator.and,
+                        new AttributePresentTestExpression("B")
+                    ),
+                    LogicalOperator.or,
+                    new AttributePresentTestExpression("C")
+                )
+            )
+        },
+        {
+            "Z[A pr or B pr and C pr]",
+            new AttributeFilterGroupingExpression(
+                "Z",
+                new LogicalLinkExpression(
+                    new AttributePresentTestExpression("A"),
+                    LogicalOperator.or,
+                    new LogicalLinkExpression(
+                        new AttributePresentTestExpression("B"),
+                        LogicalOperator.and,
+                        new AttributePresentTestExpression("C")
+                    )
                 )
             )
         },
@@ -840,6 +874,21 @@ public class SCIMFilterParserTest {
             "Invalid state transition at [A eq ni]"
         },
         {
+            // Minus sign means a non-zero number should be next
+            "A eq -01",
+            "Invalid state transition at [A eq -0]"
+        },
+        {
+            // Minus sign means a number should be next
+            "A eq -B",
+            "Invalid state transition at [A eq -B]"
+        },
+        {
+            // Mixing number and letter
+            "A eq 45B",
+            "Invalid state transition at [A eq 45B]"
+        },
+        {
             // No leading zeroes on number
             "A eq 001",
             "Invalid state transition at [A eq 0]"
@@ -895,6 +944,11 @@ public class SCIMFilterParserTest {
             // Negation must be followed by (
             "not A pr",
             "Invalid state transition at [not A]"
+        },
+        {
+            // This case should use []
+            "Z(A pr)",
+            "Invalid state transition at [Z(]"
         },
         {
             // An open bracket must be followed by an alphabetic character

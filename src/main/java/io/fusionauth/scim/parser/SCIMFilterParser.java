@@ -368,9 +368,7 @@ public class SCIMFilterParser {
           if (state == SCIMParserState.openParen) {
             hold.push(new GroupingExpression());
           } else if (state == SCIMParserState.attributePath) {
-            if (c != ' ') {
-              sb.append(c);
-            }
+            sb.append(c);
           }
           break;
         case openBracket:
