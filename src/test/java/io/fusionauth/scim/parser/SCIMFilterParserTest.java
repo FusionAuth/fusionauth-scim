@@ -16,11 +16,9 @@
 package io.fusionauth.scim.parser;
 
 import java.math.BigDecimal;
-import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 
 import io.fusionauth.scim.parser.exception.AttributeFilterGroupingException;
@@ -40,6 +38,7 @@ import io.fusionauth.scim.parser.expression.AttributeTextComparisonExpression;
 import io.fusionauth.scim.parser.expression.Expression;
 import io.fusionauth.scim.parser.expression.LogicalLinkExpression;
 import io.fusionauth.scim.parser.expression.LogicalNegationExpression;
+import io.fusionauth.scim.utils.SCIMDateTools;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 import static org.testng.AssertJUnit.assertEquals;
@@ -53,9 +52,28 @@ public class SCIMFilterParserTest {
 
   @Test
   public void dateConverter() {
+    // Ensure we can convert all valid formats
+    // - yyyy-MM-dd'T'HH:mm:ssXX
+    // - yyyy-MM-dd'T'HH:mm:ssXXX
+    // - yyyy-MM-dd'T'HH:mm:ss.SSSXX
+    // - yyyy-MM-dd'T'HH:mm:ss.SSSXXX
+
+    // All 'Z' (UTC)
     assertDateEquals("2013-04-16T09:14:02Z", ZonedDateTime.of(2013, 4, 16, 9, 14, 2, 0, ZoneOffset.UTC));
     assertDateEquals("2013-04-16T09:14:02.123Z", ZonedDateTime.of(2013, 4, 16, 9, 14, 2, 0, ZoneOffset.UTC).plus(123, ChronoUnit.MILLIS));
     assertDateEquals("2022-09-02T15:14:46.061Z", ZonedDateTime.of(2022, 9, 2, 15, 14, 46, 0, ZoneOffset.UTC).plus(61, ChronoUnit.MILLIS));
+
+    // Various version of the same time, UTC, and offsets
+    ZonedDateTime actual = ZonedDateTime.of(2013, 4, 16, 9, 14, 2, 0, ZoneOffset.UTC);
+    assertDateEquals("2013-04-16T09:14:02Z", actual);
+    assertDateEquals("2013-04-16T11:14:02+0200", actual);
+    assertDateEquals("2013-04-16T11:14:02.000+02:00", actual);
+
+    // Various version of the same time, UTC, and offsets with ms
+    actual = ZonedDateTime.of(2022, 9, 2, 15, 14, 46, 0, ZoneOffset.UTC).plus(61, ChronoUnit.MILLIS);
+    assertDateEquals("2022-09-02T15:14:46.061Z", actual);
+    assertDateEquals("2022-09-02T22:14:46.061+0700", actual);
+    assertDateEquals("2022-09-02T22:14:46.061+07:00", actual);
   }
 
   @DataProvider(name = "goodData")
@@ -1127,13 +1145,11 @@ public class SCIMFilterParserTest {
   }
 
   private void assertDateEquals(String s, ZonedDateTime z) {
-    ZonedDateTime actual = parseSCIMDate(s);
-    if (!z.equals(actual)) {
-      fail("Expected [" + s + "] but found [" + DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss[.SSS]'Z'").format(z) + "]");
+    ZonedDateTime actual = SCIMDateTools.parse(s);
+    long ms1 = z.toInstant().toEpochMilli();
+    long ms2 = actual.toInstant().toEpochMilli();
+    if (ms1 != ms2) {
+      fail("Expected [" + ms1 + "] but found [" + ms2 + "]");
     }
-  }
-
-  private ZonedDateTime parseSCIMDate(String s) {
-    return ZonedDateTime.ofInstant(Instant.parse(s), ZoneOffset.UTC);
   }
 }

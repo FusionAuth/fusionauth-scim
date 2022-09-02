@@ -36,6 +36,9 @@ import io.fusionauth.scim.parser.expression.Expression;
 public class SCIMPatchTools {
   private final static Pattern JSONPointerFilter = Pattern.compile("(.*)\\[(.*)](.*)");
 
+  private SCIMPatchTools() {
+  }
+
   /**
    * Convert SCIM Patch Operations to be compatible with RFC 6902 JSON Patch (application/json+patch+json).
    * <p>

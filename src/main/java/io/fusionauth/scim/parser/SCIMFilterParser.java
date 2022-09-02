@@ -17,9 +17,6 @@ package io.fusionauth.scim.parser;
 
 import java.math.BigDecimal;
 import java.time.DateTimeException;
-import java.time.Instant;
-import java.time.ZoneOffset;
-import java.time.ZonedDateTime;
 import java.util.ArrayDeque;
 import java.util.Deque;
 
@@ -42,6 +39,7 @@ import io.fusionauth.scim.parser.expression.GroupingExpression;
 import io.fusionauth.scim.parser.expression.LogicalExpression;
 import io.fusionauth.scim.parser.expression.LogicalLinkExpression;
 import io.fusionauth.scim.parser.expression.LogicalNegationExpression;
+import io.fusionauth.scim.utils.SCIMDateTools;
 
 /**
  * A parser for SCIM filter expressions supporting the filter grammar from RFC 7644
@@ -271,7 +269,7 @@ public class SCIMFilterParser {
           } else if (state == SCIMParserState.afterAttributeExpression) {
             try {
               // Try to parse as Date...
-              postfix.push(new AttributeDateComparisonExpression(attributePath, comparisonOperator, ZonedDateTime.ofInstant(Instant.parse(sb.toString()), ZoneOffset.UTC)));
+              postfix.push(new AttributeDateComparisonExpression(attributePath, comparisonOperator, SCIMDateTools.parse(sb.toString())));
             } catch (DateTimeException e) {
               // ...otherwise treat as text
               postfix.push(new AttributeTextComparisonExpression(attributePath, comparisonOperator, sb.toString()));
