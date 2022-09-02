@@ -89,8 +89,8 @@ public class SCIMFilterParser {
             if (attributePath.equals("not")) {
               // This was actually a logical negation which is not allowed immediately before [ ]
               throw new AttributeFilterGroupingException("Attribute filter grouping with [ ] must be preceded by an attribute path, found logical negation operator");
-            } else if (!validateAttributePath(attributePath)) {
-              throw new AttributePathException("The attribute path [" + attributePath + "] is not valid");
+            } else {
+              validateAttributePath(attributePath);
             }
             operators.push(new AttributeFilterGroupingExpression(attributePath));
             attributePath = null;
@@ -102,8 +102,8 @@ public class SCIMFilterParser {
               attributePath = null;
               operators.push(new LogicalNegationExpression());
               state = SCIMParserState.negationOperator;
-            } else if (!validateAttributePath(attributePath)) {
-              throw new AttributePathException("The attribute path [" + attributePath + "] is not valid");
+            } else {
+              validateAttributePath(attributePath);
             }
             sb.setLength(0);
           }
@@ -512,27 +512,27 @@ public class SCIMFilterParser {
    * Validate an attribute path's optional sub-attribute
    *
    * @param attributePath The attribute path to validate
-   * @return {@code true} if {@code attributePath} is valid, {@code false} otherwise
    */
-  private boolean validateAttributePath(String attributePath) {
+  private void validateAttributePath(String attributePath) {
     // TODO : Does this need more URI validation for schema URIs?
     int lastColon = attributePath.lastIndexOf(':');
     String lastSegment = lastColon != -1 ? attributePath.substring(lastColon) : attributePath;
     if (lastSegment.chars().filter(c -> c == '.').count() > 1) {
       // Last segment can have at most one period
-      return false;
+      throw new AttributePathException("The attribute path [" + attributePath + "] is not valid. Attribute paths can have at most one sub-attribute.");
     }
     int lastPeriod = attributePath.lastIndexOf('.');
     if (lastPeriod > lastColon) {
       // A period after the last colon (or absent a colon) indicates the period is the start of a sub-attribute
       if (attributePath.length() == lastPeriod + 1) {
         // Cannot end with a period
-        return false;
+        throw new AttributePathException("The attribute path [" + attributePath + "] is not valid. A sub-attribute must be provided after the period.");
       } else {
         // A sub-attribute must start with a letter
-        return Character.isAlphabetic(attributePath.codePointAt(lastPeriod + 1));
+        if (!Character.isAlphabetic(attributePath.codePointAt(lastPeriod + 1))) {
+          throw new AttributePathException("The attribute path [" + attributePath + "] is not valid. A sub-attribute must start with an alphabetic character.");
+        }
       }
     }
-    return true;
   }
 }

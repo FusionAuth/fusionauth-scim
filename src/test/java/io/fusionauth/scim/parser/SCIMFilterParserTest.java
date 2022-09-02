@@ -704,31 +704,31 @@ public class SCIMFilterParserTest {
     return new Object[][]{
         {
             "A.0a pr",
-            "The attribute path [A.0a] is not valid"
+            "The attribute path [A.0a] is not valid. A sub-attribute must start with an alphabetic character."
         },
         {
             "A.b.c pr",
-            "The attribute path [A.b.c] is not valid"
+            "The attribute path [A.b.c] is not valid. Attribute paths can have at most one sub-attribute."
         },
         {
             "A. pr",
-            "The attribute path [A.] is not valid"
+            "The attribute path [A.] is not valid. A sub-attribute must be provided after the period."
         },
         {
             "urn:ietf:params:scim:schemas:core:2.0:User:name. pr",
-            "The attribute path [urn:ietf:params:scim:schemas:core:2.0:User:name.] is not valid"
+            "The attribute path [urn:ietf:params:scim:schemas:core:2.0:User:name.] is not valid. A sub-attribute must be provided after the period."
         },
         {
             "urn:ietf:params:scim:schemas:core:2.0:User:name.firstName.initial pr",
-            "The attribute path [urn:ietf:params:scim:schemas:core:2.0:User:name.firstName.initial] is not valid"
+            "The attribute path [urn:ietf:params:scim:schemas:core:2.0:User:name.firstName.initial] is not valid. Attribute paths can have at most one sub-attribute."
         },
         {
             "urn:ietf:params:scim:schemas:core:2.0:User:name.0th pr",
-            "The attribute path [urn:ietf:params:scim:schemas:core:2.0:User:name.0th] is not valid"
+            "The attribute path [urn:ietf:params:scim:schemas:core:2.0:User:name.0th] is not valid. A sub-attribute must start with an alphabetic character."
         },
         {
             "A.b.c[D pr]",
-            "The attribute path [A.b.c] is not valid"
+            "The attribute path [A.b.c] is not valid. Attribute paths can have at most one sub-attribute."
         },
     };
   }
