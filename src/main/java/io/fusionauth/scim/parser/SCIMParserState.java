@@ -180,6 +180,7 @@ public enum SCIMParserState {
       return invalidState;
     }
   },
+  @SuppressWarnings("DuplicatedCode")
   leadingZero {
     @Override
     public SCIMParserState next(char c) {
@@ -249,6 +250,7 @@ public enum SCIMParserState {
     }
   },
   numberValue {
+    @SuppressWarnings("DuplicatedCode")
     @Override
     public SCIMParserState next(char c) {
       if (Character.isDigit(c)) {
