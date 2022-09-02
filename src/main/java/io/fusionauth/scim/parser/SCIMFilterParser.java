@@ -170,15 +170,7 @@ public class SCIMFilterParser {
             if (comparisonOperator != ComparisonOperator.eq && comparisonOperator != ComparisonOperator.ne) {
               throw new ComparisonOperatorException("[" + comparisonOperator + "] is not a valid operator for a boolean comparison");
             }
-            if (state == SCIMParserState.closeParen) {
-              if (!handleCloseParen(operators, postfix)) {
-                throw new GroupingException("Extra closed parenthesis at [" + filterAtParsedLocation(filter, i) + "]");
-              }
-            } else if (state == SCIMParserState.closeBracket) {
-              if (!handleCloseBracket(operators, postfix)) {
-                throw new GroupingException("Extra closed bracket at [" + filterAtParsedLocation(filter, i) + "]");
-              }
-            }
+            handleOptionalGroupClose(filter, i, state, operators, postfix);
           }
           break;
         case nullValue:
@@ -192,15 +184,7 @@ public class SCIMFilterParser {
             } else {
               throw new ComparisonValueException("[" + sb + "] is not a valid comparison value");
             }
-            if (state == SCIMParserState.closeParen) {
-              if (!handleCloseParen(operators, postfix)) {
-                throw new GroupingException("Extra closed parenthesis at [" + filterAtParsedLocation(filter, i) + "]");
-              }
-            } else if (state == SCIMParserState.closeBracket) {
-              if (!handleCloseBracket(operators, postfix)) {
-                throw new GroupingException("Extra closed bracket at [" + filterAtParsedLocation(filter, i) + "]");
-              }
-            }
+            handleOptionalGroupClose(filter, i, state, operators, postfix);
           }
           if (comparisonOperator != ComparisonOperator.eq && comparisonOperator != ComparisonOperator.ne) {
             throw new ComparisonOperatorException("[" + comparisonOperator + "] is not a valid operator for a null comparison");
@@ -225,15 +209,7 @@ public class SCIMFilterParser {
             } catch (NumberFormatException e) {
               throw new ComparisonValueException("[" + sb + "] is not a valid comparison value");
             }
-            if (state == SCIMParserState.closeParen) {
-              if (!handleCloseParen(operators, postfix)) {
-                throw new GroupingException("Extra closed parenthesis at [" + filterAtParsedLocation(filter, i) + "]");
-              }
-            } else if (state == SCIMParserState.closeBracket) {
-              if (!handleCloseBracket(operators, postfix)) {
-                throw new GroupingException("Extra closed bracket at [" + filterAtParsedLocation(filter, i) + "]");
-              }
-            }
+            handleOptionalGroupClose(filter, i, state, operators, postfix);
           }
           break;
         case numberValue:
@@ -247,15 +223,7 @@ public class SCIMFilterParser {
             } catch (NumberFormatException e) {
               throw new ComparisonValueException("[" + sb + "] is not a valid comparison value");
             }
-            if (state == SCIMParserState.closeParen) {
-              if (!handleCloseParen(operators, postfix)) {
-                throw new GroupingException("Extra closed parenthesis at [" + filterAtParsedLocation(filter, i) + "]");
-              }
-            } else if (state == SCIMParserState.closeBracket) {
-              if (!handleCloseBracket(operators, postfix)) {
-                throw new GroupingException("Extra closed bracket at [" + filterAtParsedLocation(filter, i) + "]");
-              }
-            }
+            handleOptionalGroupClose(filter, i, state, operators, postfix);
           }
           break;
         case decimalValue:
@@ -269,15 +237,7 @@ public class SCIMFilterParser {
             } catch (NumberFormatException e) {
               throw new ComparisonValueException("[" + sb + "] is not a valid comparison value");
             }
-            if (state == SCIMParserState.closeParen) {
-              if (!handleCloseParen(operators, postfix)) {
-                throw new GroupingException("Extra closed parenthesis at [" + filterAtParsedLocation(filter, i) + "]");
-              }
-            } else if (state == SCIMParserState.closeBracket) {
-              if (!handleCloseBracket(operators, postfix)) {
-                throw new GroupingException("Extra closed bracket at [" + filterAtParsedLocation(filter, i) + "]");
-              }
-            }
+            handleOptionalGroupClose(filter, i, state, operators, postfix);
           }
           break;
         case exponentSign:
@@ -297,15 +257,7 @@ public class SCIMFilterParser {
             } catch (NumberFormatException e) {
               throw new ComparisonValueException("[" + sb + "] is not a valid comparison value");
             }
-            if (state == SCIMParserState.closeParen) {
-              if (!handleCloseParen(operators, postfix)) {
-                throw new GroupingException("Extra closed parenthesis at [" + filterAtParsedLocation(filter, i) + "]");
-              }
-            } else if (state == SCIMParserState.closeBracket) {
-              if (!handleCloseBracket(operators, postfix)) {
-                throw new GroupingException("Extra closed bracket at [" + filterAtParsedLocation(filter, i) + "]");
-              }
-            }
+            handleOptionalGroupClose(filter, i, state, operators, postfix);
           }
           break;
         case textValue:
@@ -349,14 +301,8 @@ public class SCIMFilterParser {
           state = state.next(c);
           if (state == SCIMParserState.logicalOperator) {
             sb.append(c);
-          } else if (state == SCIMParserState.closeParen) {
-            if (!handleCloseParen(operators, postfix)) {
-              throw new GroupingException("Extra closed parenthesis at [" + filterAtParsedLocation(filter, i) + "]");
-            }
-          } else if (state == SCIMParserState.closeBracket) {
-            if (!handleCloseBracket(operators, postfix)) {
-              throw new GroupingException("Extra closed bracket at [" + filterAtParsedLocation(filter, i) + "]");
-            }
+          } else {
+            handleOptionalGroupClose(filter, i, state, operators, postfix);
           }
           break;
         case logicalOperator:
@@ -417,15 +363,7 @@ public class SCIMFilterParser {
         case closeParen:
         case closeBracket:
           state = state.next(c);
-          if (state == SCIMParserState.closeParen) {
-            if (!handleCloseParen(operators, postfix)) {
-              throw new GroupingException("Extra closed parenthesis at [" + filterAtParsedLocation(filter, i) + "]");
-            }
-          } else if (state == SCIMParserState.closeBracket) {
-            if (!handleCloseBracket(operators, postfix)) {
-              throw new GroupingException("Extra closed bracket at [" + filterAtParsedLocation(filter, i) + "]");
-            }
-          }
+          handleOptionalGroupClose(filter, i, state, operators, postfix);
           break;
       }
 
@@ -480,34 +418,34 @@ public class SCIMFilterParser {
   /**
    * Helper to display SCIM filter substring at the parsed location
    *
-   * @param filter The full SCIM filter string
-   * @param i      The current character index for parsing
+   * @param filter     The SCIM filter string
+   * @param parseIndex Current character index in filter parsing
    * @return A substring of the filter that stops at the current character being parsed
    */
-  private String filterAtParsedLocation(String filter, int i) {
-    return filter.substring(0, Math.min(i + 1, filter.length()));
+  private String filterAtParsedLocation(String filter, int parseIndex) {
+    return filter.substring(0, Math.min(parseIndex + 1, filter.length()));
   }
 
   /**
    * Handle a closing square bracket by moving operators to the postfix expression
    * until the matching opening square bracket is found.
    *
-   * @param operators A stack containing operators encountered while parsing the filter
-   * @param postfix   A work in progress stack for building a postfix representation of the filter
-   * @return {@code true} if the closing square bracket was handled successfully, {@code false} otherwise
+   * @param filter     The SCIM filter string
+   * @param parseIndex Current character index in filter parsing
+   * @param operators  A stack containing operators encountered while parsing the filter
+   * @param postfix    A work in progress stack for building a postfix representation of the filter
    */
-  private boolean handleCloseBracket(Deque<Expression> operators, Deque<Expression> postfix) {
+  private void handleCloseBracket(String filter, int parseIndex, Deque<Expression> operators, Deque<Expression> postfix) {
     while (!operators.isEmpty() &&
            operators.peek().type() != ExpressionType.attributeFilterGrouping
     ) {
       postfix.push(operators.pop());
     }
     if (operators.isEmpty() || operators.peek().type() != ExpressionType.attributeFilterGrouping) {
-      return false;
+      throw new GroupingException("Extra closed bracket at [" + filterAtParsedLocation(filter, parseIndex) + "]");
     } else {
-      // Remove the AttributeFilterGroupingExpression and add to result
+      // Remove the AttributeFilterGroupingExpression from operators stack and add to postfix stack
       postfix.push(operators.pop());
-      return true;
     }
   }
 
@@ -515,22 +453,44 @@ public class SCIMFilterParser {
    * Handle a closing parenthesis by moving operators to the postfix expression
    * until the matching opening parenthesis is found.
    *
-   * @param operators A stack containing operators encountered while parsing the filter
-   * @param postfix   A work in progress stack for building a postfix representation of the filter
-   * @return {@code true} if the closing parenthesis was handled successfully, {@code false} otherwise
+   * @param filter     The SCIM filter string
+   * @param parseIndex Current character index in filter parsing
+   * @param operators  A stack containing operators encountered while parsing the filter
+   * @param postfix    A work in progress stack for building a postfix representation of the filter
    */
-  private boolean handleCloseParen(Deque<Expression> operators, Deque<Expression> postfix) {
+  private void handleCloseParen(String filter, int parseIndex, Deque<Expression> operators, Deque<Expression> postfix) {
     while (!operators.isEmpty() &&
            operators.peek().type() != ExpressionType.grouping
     ) {
       postfix.push(operators.pop());
     }
     if (operators.isEmpty() || operators.peek().type() != ExpressionType.grouping) {
-      return false;
+      throw new GroupingException("Extra closed parenthesis at [" + filterAtParsedLocation(filter, parseIndex) + "]");
     } else {
-      // Remove the GroupExpression
+      // Remove the GroupExpression from the operators stack
       operators.pop();
-      return true;
+    }
+  }
+
+  /**
+   * Optionally handles a group closing with parenthesis or square bracket when moving into one of those states.
+   * <p>
+   * This is a convenience method to cut down on code duplication in parser state change handling. It is safe to
+   * call this method in places where the state could have transitioned to a group close state without first checking
+   * the current state.
+   *
+   * @param filter     The SCIM filter string
+   * @param parseIndex Current character index in filter parsing
+   * @param state      The current state of the parser
+   * @param operators  A stack containing operators encountered while parsing the filter
+   * @param postfix    A work in progress stack for building a postfix representation of the filter
+   */
+  private void handleOptionalGroupClose(String filter, int parseIndex, SCIMParserState state, Deque<Expression> operators,
+                                        Deque<Expression> postfix) {
+    if (state == SCIMParserState.closeParen) {
+      handleCloseParen(filter, parseIndex, operators, postfix);
+    } else if (state == SCIMParserState.closeBracket) {
+      handleCloseBracket(filter, parseIndex, operators, postfix);
     }
   }
 
