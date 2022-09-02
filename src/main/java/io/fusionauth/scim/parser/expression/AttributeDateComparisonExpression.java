@@ -23,7 +23,15 @@ import io.fusionauth.scim.parser.ComparisonOperator;
 import io.fusionauth.scim.parser.ValueType;
 import io.fusionauth.scim.utils.ToString;
 
+/**
+ * An expression comparing an attribute's value to a given date value.
+ *
+ * @author Spencer Witt
+ */
 public class AttributeDateComparisonExpression extends AttributeComparisonExpression<AttributeDateComparisonExpression, ZonedDateTime> {
+  /**
+   * The date value the attribute will be compared to
+   */
   public ZonedDateTime comparisonValue;
 
   public AttributeDateComparisonExpression(String attributePath, ComparisonOperator operator, ZonedDateTime comparisonValue) {

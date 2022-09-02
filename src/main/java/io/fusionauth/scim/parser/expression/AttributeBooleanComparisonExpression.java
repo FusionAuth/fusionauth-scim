@@ -22,7 +22,16 @@ import io.fusionauth.scim.parser.ComparisonOperator;
 import io.fusionauth.scim.parser.ValueType;
 import io.fusionauth.scim.utils.ToString;
 
+/**
+ * An expression comparing an attribute's value to a given boolean value. This expression only works with the {@link ComparisonOperator#eq} and
+ * {@link ComparisonOperator#ne} operators
+ *
+ * @author Spencer Witt
+ */
 public class AttributeBooleanComparisonExpression extends AttributeComparisonExpression<AttributeBooleanComparisonExpression, Boolean> {
+  /**
+   * The boolean value the attribute will be compared to
+   */
   public Boolean comparisonValue;
 
   public AttributeBooleanComparisonExpression(String attributePath, ComparisonOperator operator, Boolean comparisonValue) {

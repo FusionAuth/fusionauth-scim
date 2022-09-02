@@ -22,6 +22,8 @@ package io.fusionauth.scim.parser.expression;
  */
 public interface Copyable<T> {
   /**
+   * Create a deep copy of the object
+   *
    * @return a deep copy of the object.
    */
   T copy();

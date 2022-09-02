@@ -20,6 +20,12 @@ import io.fusionauth.scim.parser.ComparisonOperator;
 import io.fusionauth.scim.parser.ValueType;
 import io.fusionauth.scim.utils.ToString;
 
+/**
+ * An expression that compares the given attribute to {@code null}. This expression only works with the {@link ComparisonOperator#eq} and
+ * {@link ComparisonOperator#ne} operators
+ *
+ * @author Spencer Witt
+ */
 public class AttributeNullTestExpression extends AttributeExpression<AttributeNullTestExpression> {
   public AttributeNullTestExpression(String attributePath, ComparisonOperator operator) {
     super(attributePath, operator);

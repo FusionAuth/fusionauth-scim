@@ -20,6 +20,12 @@ import io.fusionauth.scim.parser.ComparisonOperator;
 import io.fusionauth.scim.parser.ValueType;
 import io.fusionauth.scim.utils.ToString;
 
+/**
+ * An expression that checks whether a given attribute is present (i.e. it is not null or empty). This {@link AttributeExpression} does not have a
+ * comparison value.
+ *
+ * @author Spencer Witt
+ */
 public class AttributePresentTestExpression extends AttributeExpression<AttributePresentTestExpression> {
   public AttributePresentTestExpression(String attributePath) {
     super(attributePath, ComparisonOperator.pr);

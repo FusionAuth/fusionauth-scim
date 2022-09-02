@@ -18,6 +18,16 @@ package io.fusionauth.scim.parser.expression;
 
 import io.fusionauth.scim.parser.ExpressionType;
 
+/**
+ * A generic filtering expression
+ *
+ * @author Spencer Witt
+ */
 public abstract class Expression {
+  /**
+   * Retrieve the expression type
+   *
+   * @return the {@link ExpressionType}
+   */
   public abstract ExpressionType type();
 }

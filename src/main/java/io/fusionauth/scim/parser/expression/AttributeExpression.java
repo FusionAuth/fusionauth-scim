@@ -22,9 +22,21 @@ import io.fusionauth.scim.parser.ComparisonOperator;
 import io.fusionauth.scim.parser.ExpressionType;
 import io.fusionauth.scim.parser.ValueType;
 
+/**
+ * An expression that performs some check against the given attribute
+ *
+ * @param <T> The concrete {@code AttributeExpression} subclass
+ * @author Spencer Witt
+ */
 public abstract class AttributeExpression<T> extends Expression implements Copyable<T> {
+  /**
+   * Path to the attribute to compare
+   */
   public String attributePath;
 
+  /**
+   * The operator indicating which comparison or check should be performed
+   */
   public ComparisonOperator operator;
 
   public AttributeExpression(String attributePath, ComparisonOperator operator) {
@@ -54,5 +66,10 @@ public abstract class AttributeExpression<T> extends Expression implements Copya
     return ExpressionType.attribute;
   }
 
+  /**
+   * The type of the comparison value for this expression
+   *
+   * @return The comparison value's type
+   */
   public abstract ValueType valueType();
 }

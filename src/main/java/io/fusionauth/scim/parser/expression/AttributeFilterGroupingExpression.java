@@ -20,9 +20,21 @@ import java.util.Objects;
 
 import io.fusionauth.scim.parser.ExpressionType;
 
+/**
+ * A complex attribute filter grouping where attribute paths in the contained {@link AttributeFilterGroupingExpression#filterExpression} refer to
+ * sub-attributes of {@link AttributeFilterGroupingExpression#parentAttributePath}
+ *
+ * @author Spencer Witt
+ */
 public class AttributeFilterGroupingExpression extends Expression {
+  /**
+   * Sub-expressions for this grouping
+   */
   public Expression filterExpression;
 
+  /**
+   * The attribute path that all filters contained in {@link AttributeFilterGroupingExpression#filterExpression} will extend from
+   */
   public String parentAttributePath;
 
   public AttributeFilterGroupingExpression(String parentAttributePath) {

@@ -22,9 +22,20 @@ import io.fusionauth.scim.parser.ExpressionType;
 import io.fusionauth.scim.parser.LogicalOperator;
 import io.fusionauth.scim.utils.ToString;
 
+/**
+ * An expression linking two sub-expressions with a logical operator (e.g. {@code A and B})
+ *
+ * @author Spencer Witt
+ */
 public class LogicalLinkExpression extends LogicalExpression {
+  /**
+   * The left sub-expression for the logical operator
+   */
   public Expression left;
 
+  /**
+   * The right sub-expression for the logical operator
+   */
   public Expression right;
 
   public LogicalLinkExpression(LogicalOperator logicalOperator) {

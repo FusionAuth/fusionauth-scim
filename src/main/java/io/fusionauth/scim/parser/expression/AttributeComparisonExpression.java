@@ -18,10 +18,22 @@ package io.fusionauth.scim.parser.expression;
 
 import io.fusionauth.scim.parser.ComparisonOperator;
 
+/**
+ * An expression comparing an attribute's value to a given comparison value
+ *
+ * @param <T> The concrete {@code AttributeExpression} subclass
+ * @param <V> The type of the comparison value
+ * @author Spencer Witt
+ */
 public abstract class AttributeComparisonExpression<T, V> extends AttributeExpression<T> {
   public AttributeComparisonExpression(String attributePath, ComparisonOperator operator) {
     super(attributePath, operator);
   }
 
+  /**
+   * Retrieves the comparison value for the expression
+   *
+   * @return The comparison value
+   */
   public abstract V value();
 }

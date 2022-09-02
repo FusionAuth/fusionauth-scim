@@ -18,6 +18,11 @@ package io.fusionauth.scim.parser.expression;
 
 import io.fusionauth.scim.parser.ExpressionType;
 
+/**
+ * An expression used during parsing to indicate the beginning of logical grouping using parentheses
+ *
+ * @author Spencer Witt
+ */
 public class GroupingExpression extends Expression {
   @Override
   public ExpressionType type() {

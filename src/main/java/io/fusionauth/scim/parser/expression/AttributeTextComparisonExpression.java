@@ -22,7 +22,15 @@ import io.fusionauth.scim.parser.ComparisonOperator;
 import io.fusionauth.scim.parser.ValueType;
 import io.fusionauth.scim.utils.ToString;
 
+/**
+ * An expression comparing an attribute's value to a given string value.
+ *
+ * @author Spencer Witt
+ */
 public class AttributeTextComparisonExpression extends AttributeComparisonExpression<AttributeTextComparisonExpression, String> {
+  /**
+   * The string value the attribute will be compared to
+   */
   public String comparisonValue;
 
   public AttributeTextComparisonExpression(String attributePath, ComparisonOperator operator, String comparisonValue) {

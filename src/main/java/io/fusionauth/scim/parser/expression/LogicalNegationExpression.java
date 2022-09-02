@@ -22,7 +22,15 @@ import io.fusionauth.scim.parser.ExpressionType;
 import io.fusionauth.scim.parser.LogicalOperator;
 import io.fusionauth.scim.utils.ToString;
 
+/**
+ * An expression that performs a logical negation of its {@link LogicalNegationExpression#subExpression}
+ *
+ * @author Spencer Witt
+ */
 public class LogicalNegationExpression extends LogicalExpression {
+  /**
+   * The expression to be negated
+   */
   public Expression subExpression;
 
   public LogicalNegationExpression() {

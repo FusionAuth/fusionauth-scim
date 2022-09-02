@@ -20,7 +20,15 @@ import java.util.Objects;
 
 import io.fusionauth.scim.parser.LogicalOperator;
 
+/**
+ * An expression applying a logical operator to one or more sub-expressions
+ *
+ * @author Spencer Witt
+ */
 public abstract class LogicalExpression extends Expression {
+  /**
+   * The logical operator for this expression
+   */
   public LogicalOperator logicalOperator;
 
   public LogicalExpression(LogicalOperator logicalOperator) {
