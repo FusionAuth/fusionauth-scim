@@ -16,8 +16,12 @@
 package io.fusionauth.scim.parser;
 
 import java.math.BigDecimal;
+import java.time.Instant;
 import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 
 import io.fusionauth.scim.parser.exception.AttributeFilterGroupingException;
 import io.fusionauth.scim.parser.exception.AttributePathException;
@@ -46,6 +50,13 @@ import static org.testng.AssertJUnit.fail;
  */
 public class SCIMFilterParserTest {
   private final SCIMFilterParser parser = new SCIMFilterParser();
+
+  @Test
+  public void dateConverter() {
+    assertDateEquals("2013-04-16T09:14:02Z", ZonedDateTime.of(2013, 4, 16, 9, 14, 2, 0, ZoneOffset.UTC));
+    assertDateEquals("2013-04-16T09:14:02.123Z", ZonedDateTime.of(2013, 4, 16, 9, 14, 2, 0, ZoneOffset.UTC).plus(123, ChronoUnit.MILLIS));
+    assertDateEquals("2022-09-02T15:14:46.061Z", ZonedDateTime.of(2022, 9, 2, 15, 14, 46, 0, ZoneOffset.UTC).plus(61, ChronoUnit.MILLIS));
+  }
 
   @DataProvider(name = "goodData")
   public Object[][] goodData() {
@@ -157,6 +168,10 @@ public class SCIMFilterParserTest {
         {
             "meta.lastModified lt \"2011-05-13T04:42:34Z\"",
             new AttributeDateComparisonExpression("meta.lastModified", ComparisonOperator.lt, ZonedDateTime.of(2011, 5, 13, 4, 42, 34, 0, ZoneId.of("Z")))
+        },
+        {
+            "meta.lastModified lt \"2011-05-13T04:42:34.061Z\"",
+            new AttributeDateComparisonExpression("meta.lastModified", ComparisonOperator.lt, ZonedDateTime.of(2011, 5, 13, 4, 42, 34, 0, ZoneId.of("Z")).plus(61, ChronoUnit.MILLIS))
         },
         {
             "userName eq \"bjensen\"",
@@ -1036,7 +1051,7 @@ public class SCIMFilterParserTest {
   }
 
   @Test(dataProvider = "goodData")
-  public void parseGood(String filter, Expression expected) throws Exception {
+  public void parseGood(String filter, Expression expected) {
     Expression actual = parser.parse(filter);
     assertEquals(expected, actual);
   }
@@ -1109,5 +1124,16 @@ public class SCIMFilterParserTest {
     } catch (InvalidStateException e) {
       assertEquals(expected, e.getMessage());
     }
+  }
+
+  private void assertDateEquals(String s, ZonedDateTime z) {
+    ZonedDateTime actual = parseSCIMDate(s);
+    if (!z.equals(actual)) {
+      fail("Expected [" + s + "] but found [" + DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss[.SSS]'Z'").format(z) + "]");
+    }
+  }
+
+  private ZonedDateTime parseSCIMDate(String s) {
+    return ZonedDateTime.ofInstant(Instant.parse(s), ZoneOffset.UTC);
   }
 }

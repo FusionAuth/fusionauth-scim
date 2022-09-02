@@ -17,11 +17,15 @@ package io.fusionauth.scim.utils;
 
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.time.Instant;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.fusionauth.scim.parser.ComparisonOperator;
+import io.fusionauth.scim.parser.expression.AttributeDateComparisonExpression;
 import io.fusionauth.scim.parser.expression.AttributeExpression;
 import io.fusionauth.scim.parser.expression.AttributeNumberComparisonExpression;
 import io.fusionauth.scim.parser.expression.AttributePresentTestExpression;
@@ -42,17 +46,23 @@ public class SCIMPatchFilterMatcherTest {
   public void beforeTest() throws IOException {
     String json = """
         {
-          "a": "b",
+          "a": "bbb",
           "b": {
-            "c": "d"
+            "b1": "ddd"
           },
           "c": 42,
           "d": {
-            "e": 42,
-            "f": 42.42,
-            "g": 42e13,
-            "h": 42e-1,
-            "i": 1.00000000000009
+            "d1": 42,
+            "d2": 42.42,
+            "d3": 42e13,
+            "d4": 42e-1,
+            "d5": 1.00000000000009
+          },
+          "e": "2022-09-02T15:14:45.061Z",
+          "f": {
+            "f1": "2022-09-02T15:14:44Z",
+            "f2": "2022-09-02T15:14:45Z",
+            "f3": "2022-09-02T15:14:46Z"
           }
         }
         """;
@@ -66,16 +76,16 @@ public class SCIMPatchFilterMatcherTest {
     // -----------------------------------------------------------------------------------------------------------------------
 
     // a eq b
-    matches(new AttributeTextComparisonExpression("a", ComparisonOperator.eq, "b"));
+    matches(new AttributeTextComparisonExpression("a", ComparisonOperator.eq, "bbb"));
 
-    // b.c eq d
-    matches(new AttributeTextComparisonExpression("b.c", ComparisonOperator.eq, "d"));
+    // b.b1 eq d
+    matches(new AttributeTextComparisonExpression("b.b1", ComparisonOperator.eq, "ddd"));
 
     // a eq c
-    noMatch(new AttributeTextComparisonExpression("a", ComparisonOperator.eq, "c"));
+    noMatch(new AttributeTextComparisonExpression("a", ComparisonOperator.eq, "ccc"));
 
-    // b.c eq a
-    noMatch(new AttributeTextComparisonExpression("b.c", ComparisonOperator.eq, "a"));
+    // b.b1 eq a
+    noMatch(new AttributeTextComparisonExpression("b.b1", ComparisonOperator.eq, "aaaa"));
 
     // -----------------------------------------------------------------------------------------------------------------------
     // Numbers
@@ -84,38 +94,44 @@ public class SCIMPatchFilterMatcherTest {
     // c eq 42
     matches(new AttributeNumberComparisonExpression("c", ComparisonOperator.eq, new BigDecimal(42)));
 
-    // d.e eq 42
-    matches(new AttributeNumberComparisonExpression("d.e", ComparisonOperator.eq, new BigDecimal((42))));
+    // d.d1 eq 42
+    matches(new AttributeNumberComparisonExpression("d.d1", ComparisonOperator.eq, new BigDecimal((42))));
 
-    // d.f eq 42.42
-    matches(new AttributeNumberComparisonExpression("d.f", ComparisonOperator.eq, new BigDecimal("42.42")));
+    // d.d2 eq 42.42
+    matches(new AttributeNumberComparisonExpression("d.d2", ComparisonOperator.eq, new BigDecimal("42.42")));
 
-    // d.g eq 42e13
-    matches(new AttributeNumberComparisonExpression("d.g", ComparisonOperator.eq, new BigDecimal("42e13")));
+    // d.d3 eq 42e13
+    matches(new AttributeNumberComparisonExpression("d.d3", ComparisonOperator.eq, new BigDecimal("42e13")));
 
-    // d.h eq 42e-1
-    matches(new AttributeNumberComparisonExpression("d.h", ComparisonOperator.eq, new BigDecimal("42e-1")));
+    // d.d4 eq 42e-1
+    matches(new AttributeNumberComparisonExpression("d.d4", ComparisonOperator.eq, new BigDecimal("42e-1")));
 
-    // d.i eq 1.00000000000009
-    matches(new AttributeNumberComparisonExpression("d.i", ComparisonOperator.eq, new BigDecimal("1.00000000000009")));
-
+    // d.d5 eq 1.00000000000009
+    matches(new AttributeNumberComparisonExpression("d.d5", ComparisonOperator.eq, new BigDecimal("1.00000000000009")));
   }
 
   @Test
   public void lessThan() {
     // -----------------------------------------------------------------------------------------------------------------------
+    // Date
+    // -----------------------------------------------------------------------------------------------------------------------
+
+    // f.f1 lt "2022-09-02T15:14:46.061Z"
+    matches(new AttributeDateComparisonExpression("f.f1", ComparisonOperator.lt, scimDate("2022-09-02T15:14:46.061Z")));
+
+    // -----------------------------------------------------------------------------------------------------------------------
     // Text
     // -----------------------------------------------------------------------------------------------------------------------
 
     // a lt a
-    matches(new AttributeTextComparisonExpression("a", ComparisonOperator.lt, "a"));
+    matches(new AttributeTextComparisonExpression("a", ComparisonOperator.lt, "aaa"));
 
-    // b.c lt c
-    matches(new AttributeTextComparisonExpression("b.c", ComparisonOperator.lt, "c"));
+    // b.b1 lt c
+    matches(new AttributeTextComparisonExpression("b.b1", ComparisonOperator.lt, "ccc"));
 
-    // b.c lt d|e
-    noMatch(new AttributeTextComparisonExpression("b.c", ComparisonOperator.lt, "d"));
-    noMatch(new AttributeTextComparisonExpression("b.c", ComparisonOperator.lt, "e"));
+    // b.b1 lt d|e
+    noMatch(new AttributeTextComparisonExpression("b.b1", ComparisonOperator.lt, "ddd"));
+    noMatch(new AttributeTextComparisonExpression("b.b1", ComparisonOperator.lt, "eee"));
 
     // -----------------------------------------------------------------------------------------------------------------------
     // Numbers
@@ -124,22 +140,22 @@ public class SCIMPatchFilterMatcherTest {
     // c lt 43
     matches(new AttributeNumberComparisonExpression("c", ComparisonOperator.lt, new BigDecimal(43)));
 
-    // d.e lt 43
-    matches(new AttributeNumberComparisonExpression("d.e", ComparisonOperator.lt, new BigDecimal(43)));
+    // d.d1 lt 43
+    matches(new AttributeNumberComparisonExpression("d.d1", ComparisonOperator.lt, new BigDecimal(43)));
 
-    // d.f lt 42.43
-    matches(new AttributeNumberComparisonExpression("d.f", ComparisonOperator.lt, new BigDecimal("42.43")));
+    // d.d2 lt 42.43
+    matches(new AttributeNumberComparisonExpression("d.d2", ComparisonOperator.lt, new BigDecimal("42.43")));
 
-    // d.i lt 1.0000000000001
-    matches(new AttributeNumberComparisonExpression("d.i", ComparisonOperator.lt, new BigDecimal("1.0000000000001")));
+    // d.d5 lt 1.0000000000001
+    matches(new AttributeNumberComparisonExpression("d.d5", ComparisonOperator.lt, new BigDecimal("1.0000000000001")));
 
-    // d.f lt 42.42|42.41
-    noMatch(new AttributeNumberComparisonExpression("d.f", ComparisonOperator.lt, new BigDecimal("42.42")));
-    noMatch(new AttributeNumberComparisonExpression("d.f", ComparisonOperator.lt, new BigDecimal("42.41")));
+    // d.d2 lt 42.42|42.41
+    noMatch(new AttributeNumberComparisonExpression("d.d2", ComparisonOperator.lt, new BigDecimal("42.42")));
+    noMatch(new AttributeNumberComparisonExpression("d.d2", ComparisonOperator.lt, new BigDecimal("42.41")));
 
-    // d.i lt 1.00000000000009|1.00000000000008
-    noMatch(new AttributeNumberComparisonExpression("d.i", ComparisonOperator.lt, new BigDecimal("1.00000000000009")));
-    noMatch(new AttributeNumberComparisonExpression("d.i", ComparisonOperator.lt, new BigDecimal("1.00000000000008")));
+    // d.d5 lt 1.00000000000009|1.00000000000008
+    noMatch(new AttributeNumberComparisonExpression("d.d5", ComparisonOperator.lt, new BigDecimal("1.00000000000009")));
+    noMatch(new AttributeNumberComparisonExpression("d.d5", ComparisonOperator.lt, new BigDecimal("1.00000000000008")));
   }
 
   @Test
@@ -150,17 +166,17 @@ public class SCIMPatchFilterMatcherTest {
     // b pr
     matches(new AttributePresentTestExpression("b"));
 
-    // b.c pr
-    matches(new AttributePresentTestExpression("b.c"));
+    // b.b1 pr
+    matches(new AttributePresentTestExpression("b.b1"));
 
     // z pr
     noMatch(new AttributePresentTestExpression("z"));
 
-    // b.d pr
-    noMatch(new AttributePresentTestExpression("b.d"));
+    // b.b2 pr
+    noMatch(new AttributePresentTestExpression("b.b2"));
   }
 
-  private void matches(AttributeExpression expression) {
+  private void matches(AttributeExpression<?> expression) {
     boolean result = SCIMPatchFilterMatcher.matches(expression, source);
 
     if (!result) {
@@ -168,11 +184,15 @@ public class SCIMPatchFilterMatcherTest {
     }
   }
 
-  private void noMatch(AttributeExpression expression) {
+  private void noMatch(AttributeExpression<?> expression) {
     boolean result = SCIMPatchFilterMatcher.matches(expression, source);
 
     if (result) {
       fail("Did not expected a match.");
     }
+  }
+
+  private ZonedDateTime scimDate(String s) {
+    return ZonedDateTime.ofInstant(Instant.parse(s), ZoneOffset.UTC);
   }
 }

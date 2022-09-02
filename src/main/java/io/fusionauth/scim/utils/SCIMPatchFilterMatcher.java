@@ -15,9 +15,9 @@
  */
 package io.fusionauth.scim.utils;
 
+import java.time.Instant;
+import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
-import java.time.temporal.TemporalAccessor;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import io.fusionauth.scim.parser.ComparisonOperator;
@@ -37,8 +37,6 @@ import io.fusionauth.scim.parser.expression.Expression;
  * @author Daniel DeGroff
  */
 public class SCIMPatchFilterMatcher {
-  public static final DateTimeFormatter SCIMDateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
-
   /**
    * Match a JsonNode against a Filter.
    *
@@ -120,8 +118,8 @@ public class SCIMPatchFilterMatcher {
       return bool.value() == attribute.asBoolean();
     } else if (valueType == ValueType.date) {
       AttributeDateComparisonExpression date = (AttributeDateComparisonExpression) expression;
-      String value = SCIMDateFormatter.format(date.value());
-      return value.equals(attribute.asText());
+      ZonedDateTime attAsZdt = ZonedDateTime.ofInstant(Instant.parse(attribute.asText()), ZoneOffset.UTC);
+      return date.value().equals(attAsZdt);
     }
 
     return false;
@@ -145,8 +143,7 @@ public class SCIMPatchFilterMatcher {
       throw new InvalidFilterExpressionException("The gt or ge operator cannot be used with a boolean type value.");
     } else if (valueType == ValueType.date) {
       AttributeDateComparisonExpression date = (AttributeDateComparisonExpression) expression;
-      TemporalAccessor result = SCIMDateFormatter.parse(attribute.asText());
-      ZonedDateTime actual = ZonedDateTime.from(result);
+      ZonedDateTime actual = ZonedDateTime.ofInstant(Instant.parse(attribute.asText()), ZoneOffset.UTC);
       return actual.isAfter(date.value());
     }
     return false;
@@ -170,8 +167,7 @@ public class SCIMPatchFilterMatcher {
       throw new InvalidFilterExpressionException("The lt or le operator cannot be used with a boolean type value.");
     } else if (valueType == ValueType.date) {
       AttributeDateComparisonExpression date = (AttributeDateComparisonExpression) expression;
-      TemporalAccessor result = SCIMDateFormatter.parse(attribute.asText());
-      ZonedDateTime actual = ZonedDateTime.from(result);
+      ZonedDateTime actual = ZonedDateTime.ofInstant(Instant.parse(attribute.asText()), ZoneOffset.UTC);
       return actual.isBefore(date.value());
     }
     return false;

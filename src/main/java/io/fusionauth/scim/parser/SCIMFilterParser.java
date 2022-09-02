@@ -16,9 +16,10 @@
 package io.fusionauth.scim.parser;
 
 import java.math.BigDecimal;
+import java.time.DateTimeException;
+import java.time.Instant;
+import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeParseException;
 import java.util.ArrayDeque;
 import java.util.Deque;
 
@@ -270,8 +271,8 @@ public class SCIMFilterParser {
           } else if (state == SCIMParserState.afterAttributeExpression) {
             try {
               // Try to parse as Date...
-              postfix.push(new AttributeDateComparisonExpression(attributePath, comparisonOperator, ZonedDateTime.from(DateTimeFormatter.ISO_DATE_TIME.parse(sb.toString()))));
-            } catch (DateTimeParseException e) {
+              postfix.push(new AttributeDateComparisonExpression(attributePath, comparisonOperator, ZonedDateTime.ofInstant(Instant.parse(sb.toString()), ZoneOffset.UTC)));
+            } catch (DateTimeException e) {
               // ...otherwise treat as text
               postfix.push(new AttributeTextComparisonExpression(attributePath, comparisonOperator, sb.toString()));
             }
