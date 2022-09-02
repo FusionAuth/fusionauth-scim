@@ -47,6 +47,10 @@ public class ElasticsearchTransformerTest {
             "!(A:12.5)"
         },
         {
+            "not (A eq 12.5)",
+            "!(A:12.5)"
+        },
+        {
             "A gt \"2011-05-13T04:42:34Z\"",
             "A:>2011-05-13T04:42:34Z"
         },
@@ -89,6 +93,10 @@ public class ElasticsearchTransformerTest {
         {
             "A pr and B pr and C pr or D pr and E pr or F pr",
             "(((_exists_:A AND (_exists_:B AND _exists_:C)) OR (_exists_:D AND _exists_:E)) OR _exists_:F)"
+        },
+        {
+            "emails[type eq \"work\"]",
+            "emails.type:\"work\""
         },
     };
   }

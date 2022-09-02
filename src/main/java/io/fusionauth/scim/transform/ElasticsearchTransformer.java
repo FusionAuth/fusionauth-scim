@@ -21,29 +21,50 @@ import io.fusionauth.scim.parser.LogicalOperator;
 import io.fusionauth.scim.parser.ValueType;
 import io.fusionauth.scim.parser.expression.AttributeComparisonExpression;
 import io.fusionauth.scim.parser.expression.AttributeExpression;
+import io.fusionauth.scim.parser.expression.AttributeFilterGroupingExpression;
 import io.fusionauth.scim.parser.expression.Expression;
 import io.fusionauth.scim.parser.expression.LogicalLinkExpression;
+import io.fusionauth.scim.parser.expression.LogicalNegationExpression;
 
 public class ElasticsearchTransformer {
   public static String transform(Expression exp) {
+    return transform(exp, "");
+  }
+
+  private static String appendToParentAttributePath(String currentParentPath, String newPathSegment) {
+    return currentParentPath.isEmpty() ? newPathSegment : currentParentPath + "." + newPathSegment;
+  }
+
+  private static String prependParentAttributePath(String currentParentPath, String attributePath) {
+    return currentParentPath.isEmpty() ? attributePath : currentParentPath + "." + attributePath;
+  }
+
+  private static String transform(Expression exp, String parentAttributePath) {
     return switch (exp.type()) {
-      case attribute -> transformAttributeExpression((AttributeExpression<?>) exp);
-      case logicalLink -> transformLogicalExpression((LogicalLinkExpression) exp);
-      case logicalNegation, grouping, attributeFilterGrouping -> "";
+      case attribute -> transformAttributeExpression((AttributeExpression<?>) exp, parentAttributePath);
+      case logicalLink -> transformLogicalExpression((LogicalLinkExpression) exp, parentAttributePath);
+      case logicalNegation -> transformNegationExpression((LogicalNegationExpression) exp, parentAttributePath);
+      case attributeFilterGrouping -> transformAttributeFilterGrouping((AttributeFilterGroupingExpression) exp, parentAttributePath);
+      // GroupingExpressions do not appear in the final parsed SCIM output
+      case grouping -> "";
     };
   }
 
-  private static String transformAttributeExpression(AttributeExpression<?> exp) {
+  private static String transformAttributeExpression(AttributeExpression<?> exp, String parentAttributePath) {
     if (exp.valueType() == ValueType.none) {
-      return "_exists_:" + exp.attributePath;
+      return "_exists_:" + prependParentAttributePath(parentAttributePath, exp.attributePath);
     } else if (exp.valueType() == ValueType.nul) {
-      return exp.attributePath + transformComparisonOperator(exp.operator) + "null";
+      return prependParentAttributePath(parentAttributePath, exp.attributePath) + transformComparisonOperator(exp.operator) + "null";
     } else {
-      return transformComparisonExpression((AttributeComparisonExpression<?, ?>) exp);
+      return transformComparisonExpression((AttributeComparisonExpression<?, ?>) exp, parentAttributePath);
     }
   }
 
-  private static String transformComparisonExpression(AttributeComparisonExpression<?, ?> exp) {
+  private static String transformAttributeFilterGrouping(AttributeFilterGroupingExpression exp, String parentAttributePath) {
+    return transform(exp.filterExpression, appendToParentAttributePath(parentAttributePath, exp.parentAttributePath));
+  }
+
+  private static String transformComparisonExpression(AttributeComparisonExpression<?, ?> exp, String parentAttributePath) {
     // TODO : Question: Is calling toString() safe enough? What if the value is a ZonedDateTime?
     //        - We may need to add a getStringValue() or something like that so the expression can return something
     //          equivalent to what we expect to serialize.
@@ -58,7 +79,7 @@ public class ElasticsearchTransformer {
     if (exp.valueType() == ValueType.text) {
       value = "\"" + value + "\"";
     }
-    String filter = exp.attributePath + transformComparisonOperator(exp.operator) + value;
+    String filter = prependParentAttributePath(parentAttributePath, exp.attributePath) + transformComparisonOperator(exp.operator) + value;
     if (exp.operator == ComparisonOperator.ne) {
       filter = "!(" + filter + ")";
     }
@@ -88,10 +109,14 @@ public class ElasticsearchTransformer {
     }
   }
 
-  private static String transformLogicalExpression(LogicalLinkExpression exp) {
-    String left = transform(exp.left);
-    String right = transform(exp.right);
+  private static String transformLogicalExpression(LogicalLinkExpression exp, String parentAttributePath) {
+    String left = transform(exp.left, parentAttributePath);
+    String right = transform(exp.right, parentAttributePath);
     String opString = exp.logicalOperator == LogicalOperator.and ? " AND " : " OR ";
     return "(" + left + opString + right + ")";
+  }
+
+  private static String transformNegationExpression(LogicalNegationExpression exp, String parentAttributePath) {
+    return "!(" + transform(exp.subExpression, parentAttributePath) + ")";
   }
 }
