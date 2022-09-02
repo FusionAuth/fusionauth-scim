@@ -135,6 +135,7 @@ public class SCIMFilterParser {
           state = state.next(c);
           if (state == SCIMParserState.booleanValue ||
               state == SCIMParserState.nullValue ||
+              state == SCIMParserState.leadingZero ||
               state == SCIMParserState.minus ||
               state == SCIMParserState.decimalValue ||
               state == SCIMParserState.numberValue
@@ -197,8 +198,32 @@ public class SCIMFilterParser {
           break;
         case minus:
           state = state.next(c);
-          if (state == SCIMParserState.numberValue) {
+          if (state == SCIMParserState.leadingZero ||
+              state == SCIMParserState.decimalValue ||
+              state == SCIMParserState.numberValue) {
             sb.append(c);
+          }
+          break;
+        case leadingZero:
+          state = state.next(c);
+          if (state == SCIMParserState.decimalValue || state == SCIMParserState.exponentSign) {
+            sb.append(c);
+          } else if (state == SCIMParserState.afterAttributeExpression || state == SCIMParserState.closeParen || state == SCIMParserState.closeBracket) {
+            try {
+              result.push(new AttributeNumberComparisonExpression(attrPath, attrOp, new BigDecimal(sb.toString())));
+              sb.setLength(0);
+            } catch (NumberFormatException e) {
+              throw new ComparisonValueException("[" + sb + "] is not a valid comparison value");
+            }
+            if (state == SCIMParserState.closeParen) {
+              if (!handleCloseParen(hold, result)) {
+                throw new GroupingException("Extra closed parenthesis at [" + filterAtParsedLocation(filter, i) + "]");
+              }
+            } else if (state == SCIMParserState.closeBracket) {
+              if (!handleCloseBracket(hold, result)) {
+                throw new GroupingException("Extra closed bracket at [" + filterAtParsedLocation(filter, i) + "]");
+              }
+            }
           }
           break;
         case numberValue:

@@ -62,8 +62,9 @@ public enum SCIMParserState {
         return booleanValue;
       } else if (c == 'n') {
         return nullValue;
-      } else if (Character.isDigit(c) && c != '0') {
-        // A leading zero is not allowed according to RFC 7159
+      } else if (c == '0') {
+        return leadingZero;
+      } else if (Character.isDigit(c)) {
         return numberValue;
       } else if (c == '-') {
         return minus;
@@ -180,6 +181,23 @@ public enum SCIMParserState {
       return invalidState;
     }
   },
+  leadingZero {
+    @Override
+    public SCIMParserState next(char c) {
+      if (c == '.') {
+        return decimalValue;
+      } else if (c == 'e' || c == 'E') {
+        return exponentSign;
+      } else if (c == ' ') {
+        return afterAttributeExpression;
+      } else if (c == ')') {
+        return closeParen;
+      } else if (c == ']') {
+        return closeBracket;
+      }
+      return invalidState;
+    }
+  },
   logicalOperator {
     @Override
     public SCIMParserState next(char c) {
@@ -194,8 +212,12 @@ public enum SCIMParserState {
   minus {
     @Override
     public SCIMParserState next(char c) {
-      if (Character.isDigit(c) && c != '0') {
+      if (c == '0') {
+        return leadingZero;
+      } else if (Character.isDigit(c)) {
         return numberValue;
+      } else if (c == '.') {
+        return decimalValue;
       }
       return invalidState;
     }

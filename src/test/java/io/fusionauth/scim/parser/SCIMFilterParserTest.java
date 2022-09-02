@@ -80,6 +80,34 @@ public class SCIMFilterParserTest {
             new AttributeNullTestExpression("A", ComparisonOperator.ne)
         },
         {
+            "A eq 0",
+            new AttributeNumberComparisonExpression("A", ComparisonOperator.eq, new BigDecimal("0"))
+        },
+        {
+            "A eq 0.5",
+            new AttributeNumberComparisonExpression("A", ComparisonOperator.eq, new BigDecimal("0.5"))
+        },
+        {
+            "A eq .5",
+            new AttributeNumberComparisonExpression("A", ComparisonOperator.eq, new BigDecimal("0.5"))
+        },
+        {
+            "A eq -.5",
+            new AttributeNumberComparisonExpression("A", ComparisonOperator.eq, new BigDecimal("-0.5"))
+        },
+        {
+            "A eq 0E10",
+            new AttributeNumberComparisonExpression("A", ComparisonOperator.eq, new BigDecimal("0E+10"))
+        },
+        {
+            "A eq -0.5",
+            new AttributeNumberComparisonExpression("A", ComparisonOperator.eq, new BigDecimal("-0.5"))
+        },
+        {
+            "A eq -0e10",
+            new AttributeNumberComparisonExpression("A", ComparisonOperator.eq, new BigDecimal("0E+10"))
+        },
+        {
             "A eq -121.45e+2",
             new AttributeNumberComparisonExpression("A", ComparisonOperator.eq, new BigDecimal(-12145))
         },
@@ -315,6 +343,14 @@ public class SCIMFilterParserTest {
             )
         },
         {
+            "(A eq 5 or B eq 0)",
+            new LogicalLinkExpression(
+                new AttributeNumberComparisonExpression("A", ComparisonOperator.eq, new BigDecimal(5)),
+                LogicalOperator.or,
+                new AttributeNumberComparisonExpression("B", ComparisonOperator.eq, new BigDecimal(0))
+            )
+        },
+        {
             "(A eq 5 or B eq 10)",
             new LogicalLinkExpression(
                 new AttributeNumberComparisonExpression("A", ComparisonOperator.eq, new BigDecimal(5)),
@@ -362,6 +398,17 @@ public class SCIMFilterParserTest {
                     new AttributePresentTestExpression("A"),
                     LogicalOperator.or,
                     new AttributePresentTestExpression("B")
+                )
+            )
+        },
+        {
+            "Z[A eq 5 or B eq 0]",
+            new AttributeFilterGroupingExpression(
+                "Z",
+                new LogicalLinkExpression(
+                    new AttributeNumberComparisonExpression("A", ComparisonOperator.eq, new BigDecimal(5)),
+                    LogicalOperator.or,
+                    new AttributeNumberComparisonExpression("B", ComparisonOperator.eq, new BigDecimal(0))
                 )
             )
         },
@@ -770,6 +817,11 @@ public class SCIMFilterParserTest {
             "Extra closed parenthesis at [(A pr or B pr) and C eq 50e-1)]"
         },
         {
+            // Extra closed parenthesis after zero
+            "(A pr or B pr) and C eq 0)",
+            "Extra closed parenthesis at [(A pr or B pr) and C eq 0)]"
+        },
+        {
             // Extra closed parenthesis after closed parenthesis
             "(A pr or B pr)) and C pr",
             "Extra closed parenthesis at [(A pr or B pr))]"
@@ -813,6 +865,11 @@ public class SCIMFilterParserTest {
             // Extra closed bracket after attribute
             "Z[A pr or B pr] and C eq 50e-1]",
             "Extra closed bracket at [Z[A pr or B pr] and C eq 50e-1]]"
+        },
+        {
+            // Extra closed bracket after zero
+            "Z[A pr or B pr] and C eq 0]",
+            "Extra closed bracket at [Z[A pr or B pr] and C eq 0]]"
         },
         {
             // Extra closed bracket after closed bracket
@@ -874,9 +931,9 @@ public class SCIMFilterParserTest {
             "Invalid state transition at [A eq ni]"
         },
         {
-            // Minus sign means a non-zero number should be next
+            // Leading zero must be followed by a decimal or exponent
             "A eq -01",
-            "Invalid state transition at [A eq -0]"
+            "Invalid state transition at [A eq -01]"
         },
         {
             // Minus sign means a number should be next
@@ -889,9 +946,9 @@ public class SCIMFilterParserTest {
             "Invalid state transition at [A eq 45B]"
         },
         {
-            // No leading zeroes on number
+            // Leading zero must be followed by decimal or exponent
             "A eq 001",
-            "Invalid state transition at [A eq 0]"
+            "Invalid state transition at [A eq 00]"
         },
         {
             // Only one decimal allowed
