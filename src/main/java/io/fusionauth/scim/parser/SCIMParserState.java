@@ -16,11 +16,10 @@
 package io.fusionauth.scim.parser;
 
 /**
- * SCIM Filter parser
- * <p>
- * <a href="https://www.rfc-editor.org/rfc/rfc7644#section-3.4.2.2">...</a>
+ * Represents the state of the SCIM filter string parser
  *
  * @author Spencer Witt
+ * @see <a href="https://www.rfc-editor.org/rfc/rfc7644#section-3.4.2.2">SCIM Filtering</a>
  */
 public enum SCIMParserState {
   afterAttributeExpression {
@@ -360,7 +359,7 @@ public enum SCIMParserState {
    * Return the next state of the parser based on the current state and next character
    *
    * @param c the next character in the SCIM filter string
-   * @return the token value and next state of the parser.
+   * @return the next state of the parser
    */
   public abstract SCIMParserState next(char c);
 }
