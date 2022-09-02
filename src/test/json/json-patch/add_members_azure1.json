@@ -1,0 +1,10 @@
+[
+  {
+    "op": "add",
+    "path": "/members/-",
+    "value":
+      {
+        "value": "992525bf-0ecc-4b13-a4cc-7df2afd492c2"
+      }
+  }
+]

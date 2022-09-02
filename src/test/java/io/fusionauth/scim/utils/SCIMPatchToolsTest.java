@@ -30,8 +30,6 @@ import io.fusionauth.scim.domain.SCIMPatchRequest;
 import org.testng.annotations.BeforeTest;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
-import static org.testng.Assert.assertEquals;
-import static org.testng.FileAssert.fail;
 
 /**
  * @author Daniel DeGroff
@@ -73,12 +71,14 @@ public class SCIMPatchToolsTest {
 
     Path target = jsonDir.resolve("json-patch/" + testName);
     if (!target.toFile().exists()) {
-      fail("You are missing the expected version of the [" + testName + "] in JSON patch version. Create the file json-patch/" + testName + ".");
+      throw new AssertionError("You are missing the expected version of the [" + testName + "] in JSON patch version. Create the file json-patch/" + testName + ".");
     }
 
     String jsonPatch = Files.readString(target);
     ArrayNode expected = (ArrayNode) objectMapper.readTree(jsonPatch);
 
-    assertEquals(actual, expected);
+    if (!actual.equals(expected)) {
+      throw new AssertionError("Expected:\n" + ToString.toString(expected) + "\nbut found\n" + ToString.toString(actual) + "\n");
+    }
   }
 }

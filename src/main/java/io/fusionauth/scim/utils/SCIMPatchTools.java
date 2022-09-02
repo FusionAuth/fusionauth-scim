@@ -63,18 +63,26 @@ public class SCIMPatchTools {
         continue;
       }
 
+      JsonNode opName = operation.at("/op");
+      boolean add = "add".equalsIgnoreCase(opName.asText());
+      boolean remove = "remove".equalsIgnoreCase(opName.asText());
+      boolean replace = "replace".equalsIgnoreCase(opName.asText());
+
       // Path is required, add if it is missing.
       JsonNode pathNode = operation.at("/path");
       if (pathNode.isMissingNode() || pathNode.isNull()) {
         // For each element in the value object, build an op
         JsonNode value = operation.at("/value");
-        if (value instanceof ObjectNode objectNode) {
+        if (!add && value instanceof ObjectNode objectNode) {
           objectNode.fieldNames().forEachRemaining(field -> {
             ObjectNode copy = operation.deepCopy();
             copy.set("path", TextNode.valueOf("/" + field));
             copy.set("value", objectNode.get(field));
             result.add(copy);
           });
+        } else {
+          operation.set("path", TextNode.valueOf("/"));
+          result.add(operation);
         }
       } else {
         // If we do have a path, and it contains a filter, replace it with an exact path.
@@ -108,8 +116,27 @@ public class SCIMPatchTools {
           }
 
           path = path.replace(".", "/");
-          operation.set("path", TextNode.valueOf(path));
-          result.add(operation);
+
+          // Ensure that if the target is an array we append to the end of the array.
+          if (source.at(path).isArray() && !path.endsWith("/")) {
+
+            if (add) {
+              path = path + "/-";
+            }
+
+            JsonNode value = operation.at("/value");
+            if (value instanceof ArrayNode arrayNode) {
+              for (JsonNode n : arrayNode) {
+                ObjectNode copy = operation.deepCopy();
+                copy.set("path", TextNode.valueOf(path));
+                copy.set("value", n);
+                result.add(copy);
+              }
+            }
+          } else {
+            operation.set("path", TextNode.valueOf(path));
+            result.add(operation);
+          }
         }
       }
     }

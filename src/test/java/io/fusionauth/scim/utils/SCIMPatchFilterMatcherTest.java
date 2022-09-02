@@ -41,7 +41,6 @@ import static io.fusionauth.scim.parser.ComparisonOperator.lt;
 import static io.fusionauth.scim.parser.ComparisonOperator.ne;
 import static io.fusionauth.scim.parser.ComparisonOperator.pr;
 import static io.fusionauth.scim.parser.ComparisonOperator.sw;
-import static org.testng.FileAssert.fail;
 
 /**
  * @author Daniel DeGroff
@@ -219,7 +218,7 @@ public class SCIMPatchFilterMatcherTest {
         noMatch(new AttributeTextComparisonExpression(path, eq, string));
       }
     } else {
-      fail("unexpected type [" + type + "]");
+      throw new AssertionError("unexpected type [" + type + "]");
     }
   }
 
@@ -227,7 +226,7 @@ public class SCIMPatchFilterMatcherTest {
     boolean result = SCIMPatchFilterMatcher.matches(expression, source);
 
     if (!result) {
-      fail("Expected a match.");
+      throw new AssertionError("Expected a match.");
     }
   }
 
@@ -235,7 +234,7 @@ public class SCIMPatchFilterMatcherTest {
     boolean result = SCIMPatchFilterMatcher.matches(expression, source);
 
     if (result) {
-      fail("Did not expected a match.");
+      throw new AssertionError("Did not expected a match.");
     }
   }
 }
