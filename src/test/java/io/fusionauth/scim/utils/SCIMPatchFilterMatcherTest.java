@@ -52,35 +52,37 @@ public class SCIMPatchFilterMatcherTest {
 
   @BeforeTest
   public void beforeTest() throws IOException {
+    // @formatter:off
     String json = """
-                {
-                  "a": "bbb",
-                  "b": {
-                    "b1": "ddd",
-                    "b2": "hello world"
-        },
-                  "c": 42,
-                  "d": {
-                    "d1": 42,
-                    "d2": 42.42,
-                    "d3": 42e13,
-                    "d4": 42e-1,
-                    "d5": 1.00000000000009
-        },
-                  "e": "2022-09-02T15:14:45.061Z",
-                  "f": {
-                    "f1": "2022-09-02T15:14:44Z",
-                    "f2": "2022-09-02T15:14:45Z",
-                    "f3": "2022-09-02T15:14:46Z"
-        },
-                  "g": true,
-                  "h": false,
-                  "i": {
-                    "i1": true,
-                    "i2": false
-                  }
-                }
-                """;
+        {
+          "a": "bbb",
+          "b": {
+            "b1": "ddd",
+            "b2": "hello world"
+          },
+          "c": 42,
+          "d": {
+            "d1": 42,
+            "d2": 42.42,
+            "d3": 42e13,
+            "d4": 42e-1,
+            "d5": 1.00000000000009
+          },
+          "e": "2022-09-02T15:14:45.061Z",
+          "f": {
+            "f1": "2022-09-02T15:14:44Z",
+            "f2": "2022-09-02T15:14:45Z",
+            "f3": "2022-09-02T15:14:46Z"
+          },
+          "g": true,
+          "h": false,
+          "i": {
+            "i1": true,
+            "i2": false
+          }
+        }
+        """;
+    // @formatter:on
     source = objectMapper.readTree(json);
   }
 
