@@ -80,6 +80,11 @@ public class AttributeBooleanComparisonExpression extends AttributeComparisonExp
   }
 
   @Override
+  public String valueAsString() {
+    return comparisonValue.toString();
+  }
+
+  @Override
   public ValueType valueType() {
     return ValueType.bool;
   }

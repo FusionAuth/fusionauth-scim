@@ -85,10 +85,7 @@ public class ElasticsearchTransformer {
   }
 
   private static String transformComparisonExpression(AttributeComparisonExpression<?, ?> exp, String parentAttributePath) {
-    // TODO : Question: Is calling toString() safe enough? What if the value is a ZonedDateTime?
-    //        - We may need to add a getStringValue() or something like that so the expression can return something
-    //          equivalent to what we expect to serialize.
-    String value = exp.value().toString();
+    String value = exp.valueAsString();
     if (exp.valueType() == ValueType.text) {
       if (exp.operator == ComparisonOperator.sw) {
         // Add wildcard to end of comparison for "starts with"

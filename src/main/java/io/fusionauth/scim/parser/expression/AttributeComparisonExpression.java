@@ -36,4 +36,11 @@ public abstract class AttributeComparisonExpression<T, V> extends AttributeExpre
    * @return The comparison value
    */
   public abstract V value();
+
+  /**
+   * Retrieve the value as a string that is ok to use in a literal filter query.
+   *
+   * @return a string form of the value returned by calling {@link #value()}.
+   */
+  public abstract String valueAsString();
 }

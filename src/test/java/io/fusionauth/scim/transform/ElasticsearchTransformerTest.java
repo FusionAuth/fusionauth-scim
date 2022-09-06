@@ -80,23 +80,23 @@ public class ElasticsearchTransformerTest {
         },
         {
             "meta.lastModified eq \"2011-05-13T04:42:34Z\"",
-            "meta.lastModified:[2011-05-13T04:42:34Z TO 2011-05-13T04:42:34Z]"
+            "meta.lastModified:[2011-05-13T04:42:34.000Z TO 2011-05-13T04:42:34.000Z]"
         },
         {
             "meta.lastModified ge \"2011-05-13T04:42:34Z\"",
-            "meta.lastModified:[2011-05-13T04:42:34Z TO *]"
+            "meta.lastModified:[2011-05-13T04:42:34.000Z TO *]"
         },
         {
             "meta.lastModified gt \"2011-05-13T04:42:34Z\"",
-            "meta.lastModified:{2011-05-13T04:42:34Z TO *]"
+            "meta.lastModified:{2011-05-13T04:42:34.000Z TO *]"
         },
         {
             "meta.lastModified le \"2011-05-13T04:42:34Z\"",
-            "meta.lastModified:[* TO 2011-05-13T04:42:34Z]"
+            "meta.lastModified:[* TO 2011-05-13T04:42:34.000Z]"
         },
         {
             "meta.lastModified lt \"2011-05-13T04:42:34Z\"",
-            "meta.lastModified:[* TO 2011-05-13T04:42:34Z}"
+            "meta.lastModified:[* TO 2011-05-13T04:42:34.000Z}"
         },
         {
             "meta.lastModified lt \"2011-05-13T04:42:34.061Z\"",

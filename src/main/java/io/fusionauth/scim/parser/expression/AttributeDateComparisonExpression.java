@@ -21,6 +21,7 @@ import java.util.Objects;
 
 import io.fusionauth.scim.parser.ComparisonOperator;
 import io.fusionauth.scim.parser.ValueType;
+import io.fusionauth.scim.utils.SCIMDateTools;
 import io.fusionauth.scim.utils.ToString;
 
 /**
@@ -82,6 +83,11 @@ public class AttributeDateComparisonExpression extends AttributeComparisonExpres
   @Override
   public ZonedDateTime value() {
     return comparisonValue;
+  }
+
+  @Override
+  public String valueAsString() {
+    return SCIMDateTools.format(comparisonValue);
   }
 
   @Override

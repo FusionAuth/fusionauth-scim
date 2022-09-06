@@ -79,6 +79,11 @@ public class AttributeTextComparisonExpression extends AttributeComparisonExpres
   }
 
   @Override
+  public String valueAsString() {
+    return comparisonValue;
+  }
+
+  @Override
   public ValueType valueType() {
     return ValueType.text;
   }

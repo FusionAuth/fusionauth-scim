@@ -80,6 +80,11 @@ public class AttributeNumberComparisonExpression extends AttributeComparisonExpr
   }
 
   @Override
+  public String valueAsString() {
+    return comparisonValue.toString();
+  }
+
+  @Override
   public ValueType valueType() {
     return ValueType.number;
   }
