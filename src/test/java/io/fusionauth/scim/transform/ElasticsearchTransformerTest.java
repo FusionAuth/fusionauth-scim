@@ -65,7 +65,7 @@ public class ElasticsearchTransformerTest {
         },
         {
             "A eq -.5",
-            "A:-0.5"
+            "A:\\-0.5"
         },
         {
             "A eq 0E10",
@@ -73,7 +73,7 @@ public class ElasticsearchTransformerTest {
         },
         {
             "A eq -121.45e+2",
-            "A:-12145"
+            "A:\\-12145"
         },
         {
             "A eq \") ((( ..eq pr 00.1.1.90)) (\"",
@@ -81,6 +81,7 @@ public class ElasticsearchTransformerTest {
         },
         {
             // Special characters are ignored in text values
+            // TODO : invalid query
             """
             A eq "\\'\\"\\"\\t\\b\\n\\r\\f\\\\" """,
             """
@@ -89,22 +90,27 @@ public class ElasticsearchTransformerTest {
         },
         {
             "meta.lastModified ge \"2011-05-13T04:42:34Z\"",
+            // TODO : invalid query
             "meta.lastModified:>=2011-05-13T04:42:34Z"
         },
         {
             "meta.lastModified gt \"2011-05-13T04:42:34Z\"",
+            // TODO : invalid query
             "meta.lastModified:>2011-05-13T04:42:34Z"
         },
         {
             "meta.lastModified le \"2011-05-13T04:42:34Z\"",
+            // TODO : invalid query
             "meta.lastModified:<=2011-05-13T04:42:34Z"
         },
         {
             "meta.lastModified lt \"2011-05-13T04:42:34Z\"",
+            // TODO : invalid query
             "meta.lastModified:<2011-05-13T04:42:34Z"
         },
         {
             "meta.lastModified lt \"2011-05-13T04:42:34.061Z\"",
+            // TODO : invalid query
             "meta.lastModified:<2011-05-13T04:42:34.061Z"
         },
         {
@@ -129,10 +135,12 @@ public class ElasticsearchTransformerTest {
         },
         {
             "urn:ietf:params:scim:schemas:core:2.0:User:userName sw \"J\"",
+            // TODO : invalid query
             "urn:ietf:params:scim:schemas:core:2.0:User:userName:\"J*\""
         },
         {
             "urn:ietf:params:scim:schemas:core:2.0:User:name.firstName sw \"J\"",
+            // TODO : invalid query
             "urn:ietf:params:scim:schemas:core:2.0:User:name.firstName:\"J*\""
         },
         {
@@ -289,7 +297,7 @@ public class ElasticsearchTransformerTest {
         },
         {
             "A[B eq 12 and ( C gt 5 or D[E ne -3 and F le 41])] and (G[(H eq null or H eq \"12\") and I co \"@foo.com\"] or J pr)",
-            "((A.B:12 AND (A.C:>5 OR (!(A.D.E:-3) AND A.D.F:<=41))) AND (((G.H:null OR G.H:\"12\") AND G.I:\"@foo.com\") OR _exists_:J))"
+            "((A.B:12 AND (A.C:>5 OR (!(A.D.E:\\-3) AND A.D.F:<=41))) AND (((G.H:null OR G.H:\"12\") AND G.I:\"@foo.com\") OR _exists_:J))"
         },
         {
             "A[B[C[(D eq \"text\" or E [F ne \"blob\"])]]]",

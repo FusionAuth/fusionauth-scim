@@ -82,6 +82,9 @@ public class ElasticsearchTransformer {
     }
     if (exp.valueType() == ValueType.text) {
       value = "\"" + value + "\"";
+    } else if (exp.valueType() == ValueType.number && value.startsWith("-")) {
+      // The negative sign has to be escaped
+      value = "\\" + value;
     }
     String filter = prependParentAttributePath(parentAttributePath, exp.attributePath) + transformComparisonOperator(exp.operator) + value;
     if (exp.operator == ComparisonOperator.ne) {
