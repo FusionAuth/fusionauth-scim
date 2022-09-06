@@ -27,6 +27,9 @@ import io.fusionauth.scim.parser.expression.Expression;
 import io.fusionauth.scim.parser.expression.LogicalLinkExpression;
 import io.fusionauth.scim.parser.expression.LogicalNegationExpression;
 
+/**
+ * @author Spencer Witt
+ */
 public class ElasticsearchTransformer {
   public static String transform(Expression exp) {
     return transform(exp, "");
