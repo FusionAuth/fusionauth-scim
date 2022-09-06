@@ -1135,7 +1135,7 @@ public class SCIMFilterParserTest {
   }
 
   @Test(dataProvider = "invalidAttributeFilterGrouping")
-  public void parseInvalidAttributeFilterGrouping(String filter, String expected) throws Exception {
+  public void parseInvalidAttributeFilterGrouping(String filter, String expected) {
     try {
       parser.parse(filter);
       fail("Expected exception for filter [" + filter + "]");
@@ -1145,7 +1145,7 @@ public class SCIMFilterParserTest {
   }
 
   @Test(dataProvider = "invalidAttributePath")
-  public void parseInvalidAttributePath(String filter, String expected) throws Exception {
+  public void parseInvalidAttributePath(String filter, String expected) {
     try {
       parser.parse(filter);
       fail("Expected exception for filter [" + filter + "]");
@@ -1155,7 +1155,7 @@ public class SCIMFilterParserTest {
   }
 
   @Test(dataProvider = "invalidComparisonOperator")
-  public void parseInvalidComparisonOperator(String filter, String expected) throws Exception {
+  public void parseInvalidComparisonOperator(String filter, String expected) {
     try {
       parser.parse(filter);
       fail("Expected exception for filter [" + filter + "]");
@@ -1165,7 +1165,7 @@ public class SCIMFilterParserTest {
   }
 
   @Test(dataProvider = "invalidComparisonValue")
-  public void parseInvalidComparisonValue(String filter, String expected) throws Exception {
+  public void parseInvalidComparisonValue(String filter, String expected) {
     try {
       parser.parse(filter);
       fail("Expected exception for filter [" + filter + "]");
@@ -1175,7 +1175,7 @@ public class SCIMFilterParserTest {
   }
 
   @Test(dataProvider = "invalidGrouping")
-  public void parseInvalidGrouping(String filter, String expected) throws Exception {
+  public void parseInvalidGrouping(String filter, String expected) {
     try {
       parser.parse(filter);
       fail("Expected exception for filter [" + filter + "]");
@@ -1185,7 +1185,7 @@ public class SCIMFilterParserTest {
   }
 
   @Test(dataProvider = "invalidLogicalOperator")
-  public void parseInvalidLogicalOperator(String filter, String expected) throws Exception {
+  public void parseInvalidLogicalOperator(String filter, String expected) {
     try {
       parser.parse(filter);
       fail("Expected exception for filter [" + filter + "]");
@@ -1195,10 +1195,10 @@ public class SCIMFilterParserTest {
   }
 
   @Test(dataProvider = "invalidState")
-  public void parseInvalidState(String filter, String expected) throws Exception {
+  public void parseInvalidState(String filter, String expected) {
     try {
       parser.parse(filter);
-      fail("Expected exception for filter [" + filter + "]");
+      throw new AssertionError("Expected exception for filter [" + filter + "]");
     } catch (InvalidStateException e) {
       assertEquals(expected, e.getMessage());
     }
@@ -1209,7 +1209,7 @@ public class SCIMFilterParserTest {
     long ms1 = z.toInstant().toEpochMilli();
     long ms2 = actual.toInstant().toEpochMilli();
     if (ms1 != ms2) {
-      fail("Expected [" + ms1 + "] but found [" + ms2 + "]");
+      throw new AssertionError("Expected [" + ms1 + "] but found [" + ms2 + "]");
     }
   }
 }

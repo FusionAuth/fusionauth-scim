@@ -27,7 +27,9 @@ import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.node.TextNode;
 import io.fusionauth.scim.domain.SCIMPatchOperation;
+import io.fusionauth.scim.parser.ComparisonOperator;
 import io.fusionauth.scim.parser.SCIMFilterParser;
+import io.fusionauth.scim.parser.expression.AttributeTextComparisonExpression;
 import io.fusionauth.scim.parser.expression.Expression;
 
 /**
@@ -68,13 +70,16 @@ public class SCIMPatchTools {
       if (pathNode.isMissingNode() || pathNode.isNull()) {
         // For each element in the value object, build an op
         JsonNode value = operation.at("/value");
-        if (value instanceof ObjectNode objectNode) {
+        if (!isAdd(operation) && value instanceof ObjectNode objectNode) {
           objectNode.fieldNames().forEachRemaining(field -> {
             ObjectNode copy = operation.deepCopy();
             copy.set("path", TextNode.valueOf("/" + field));
             copy.set("value", objectNode.get(field));
             result.add(copy);
           });
+        } else {
+          operation.set("path", TextNode.valueOf("/"));
+          result.add(operation);
         }
       } else {
         // If we do have a path, and it contains a filter, replace it with an exact path.
@@ -87,7 +92,6 @@ public class SCIMPatchTools {
 
           Expression expression = new SCIMFilterParser().parse(valFilter);
 
-          // emails[type eq work].value
           JsonNode attributeNode = source.at(attrPathPointer);
           if (attributeNode instanceof ArrayNode array) {
             for (int i = 0; i < array.size(); i++) {
@@ -108,12 +112,87 @@ public class SCIMPatchTools {
           }
 
           path = path.replace(".", "/");
-          operation.set("path", TextNode.valueOf(path));
-          result.add(operation);
+
+          // Ensure that if the target is an array we append to the end of the array.
+          if (source.at(path).isArray() && !path.endsWith("/")) {
+
+            if (isAdd(operation)) {
+              path = path + "/-";
+            }
+
+            JsonNode value = operation.at("/value");
+            if (value instanceof ArrayNode arrayNode) {
+              for (JsonNode n : arrayNode) {
+                ObjectNode copy = operation.deepCopy();
+                copy.set("path", TextNode.valueOf(path));
+                copy.set("value", n);
+                result.add(copy);
+              }
+            }
+          } else {
+            operation.set("path", TextNode.valueOf(path));
+            result.add(operation);
+          }
         }
       }
     }
 
-    return result;
+    // Take a second pass and check for remaining filter ops
+    ArrayNode result2 = JsonNodeFactory.instance.arrayNode();
+
+    for (JsonNode operation : result) {
+      JsonNode value = operation.at("/value");
+      if (isRemove(operation) && !value.isMissingNode()) {
+        // This is essentially a filter
+        JsonNode path = operation.at("/path");
+
+        JsonNode attributeNode = source.at(path.asText());
+        if (attributeNode instanceof ArrayNode array) {
+
+          // Assume we have just a single value in the "value" node, assuming it will have to be an object to haev a named key.
+          String attributePath = null;
+          if (value instanceof ObjectNode objectNode) {
+            attributePath = objectNode.fieldNames().next();
+          }
+
+          if (attributePath == null) {
+            continue;
+          }
+
+          String filterValue = value.get(attributePath).asText();
+
+          for (int i = 0; i < array.size(); i++) {
+            AttributeTextComparisonExpression expression = new AttributeTextComparisonExpression(attributePath, ComparisonOperator.eq, filterValue);
+            if (SCIMPatchFilterMatcher.matches(expression, array.get(i))) {
+              // Make a copy since we may create more than one of these from the initial SCIM op
+              // - Add a new op to the result for each matching node. It is plausible we'll match more than one node.
+              ObjectNode copy = operation.deepCopy();
+              copy.set("path", TextNode.valueOf(path.asText() + "/" + i));
+              copy.remove("value");
+              result2.add(copy);
+            }
+          }
+        }
+      } else {
+        result2.add(operation);
+      }
+    }
+
+    return result2;
+  }
+
+  private static boolean isAdd(JsonNode operation) {
+    JsonNode opName = operation.at("/op");
+    return "add".equalsIgnoreCase(opName.asText());
+  }
+
+  private static boolean isRemove(JsonNode operation) {
+    JsonNode opName = operation.at("/op");
+    return "remove".equalsIgnoreCase(opName.asText());
+  }
+
+  private static boolean isReplace(JsonNode operation) {
+    JsonNode opName = operation.at("/op");
+    return "replace".equalsIgnoreCase(opName.asText());
   }
 }

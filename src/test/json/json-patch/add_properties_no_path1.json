@@ -1,0 +1,10 @@
+[
+  {
+    "op": "add",
+    "value": {
+      "id": "9e0903e5-d377-4e84-beb9-88b5640bd466",
+      "displayName": "Bob"
+    },
+    "path": "/"
+  }
+]
