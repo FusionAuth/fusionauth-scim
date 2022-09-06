@@ -29,6 +29,7 @@ public class ElasticsearchTransformerTest {
 
   @DataProvider(name = "data")
   public Object[][] data() {
+    //noinspection TrailingWhitespacesInTextBlock
     return new Object[][]{
         {
             "A pr",
@@ -128,7 +129,7 @@ public class ElasticsearchTransformerTest {
         },
         {
             "urn:ietf:params:scim:schemas:core:2.0:User:userName sw \"J\"",
-            "urn:ietf:params:scim:schemas:core:2.0:User:userName:\"J*\"",
+            "urn:ietf:params:scim:schemas:core:2.0:User:userName:\"J*\""
         },
         {
             "urn:ietf:params:scim:schemas:core:2.0:User:name.firstName sw \"J\"",
@@ -166,430 +167,134 @@ public class ElasticsearchTransformerTest {
             "A pr or B pr and C pr or D pr",
             "((_exists_:A OR (_exists_:B AND _exists_:C)) OR _exists_:D)"
         },
-//        {
-//            "A pr and B pr or C pr and D pr or E pr or F pr",
-//            new LogicalLinkExpression(
-//                new LogicalLinkExpression(
-//                    new LogicalLinkExpression(
-//                        new AttributePresentTestExpression("A"),
-//                        LogicalOperator.and,
-//                        new AttributePresentTestExpression("B")
-//                    ),
-//                    LogicalOperator.or,
-//                    new LogicalLinkExpression(
-//                        new AttributePresentTestExpression("C"),
-//                        LogicalOperator.and,
-//                        new AttributePresentTestExpression("D")
-//                    )
-//                ),
-//                LogicalOperator.or,
-//                new LogicalLinkExpression(
-//                    new AttributePresentTestExpression("E"),
-//                    LogicalOperator.or,
-//                    new AttributePresentTestExpression("F")
-//                )
-//            )
-//        },
-//        {
-//            "A pr and B pr and C pr or D pr and E pr or F pr",
-//            new LogicalLinkExpression(
-//                new LogicalLinkExpression(
-//                    new LogicalLinkExpression(
-//                        new AttributePresentTestExpression("A"),
-//                        LogicalOperator.and,
-//                        new LogicalLinkExpression(
-//                            new AttributePresentTestExpression("B"),
-//                            LogicalOperator.and,
-//                            new AttributePresentTestExpression("C")
-//                        )
-//                    ),
-//                    LogicalOperator.or,
-//                    new LogicalLinkExpression(
-//                        new AttributePresentTestExpression("D"),
-//                        LogicalOperator.and,
-//                        new AttributePresentTestExpression("E")
-//                    )
-//                ),
-//                LogicalOperator.or,
-//                new AttributePresentTestExpression("F")
-//            )
-//        },
-//        {
-//            "((((((A pr))))))",
-//            new AttributePresentTestExpression("A")
-//        },
-//        {
-//            "userType eq \"Employee\" and (emails co \"example.com\" or emails.value co \"example.org\")",
-//            new LogicalLinkExpression(
-//                new AttributeTextComparisonExpression("userType", ComparisonOperator.eq, "Employee"),
-//                LogicalOperator.and,
-//                new LogicalLinkExpression(
-//                    new AttributeTextComparisonExpression("emails", ComparisonOperator.co, "example.com"),
-//                    LogicalOperator.or,
-//                    new AttributeTextComparisonExpression("emails.value", ComparisonOperator.co, "example.org")
-//                )
-//            )
-//        },
-//        {
-//            "userType eq \"Employee\" and (emails.type eq \"work\")",
-//            new LogicalLinkExpression(
-//                new AttributeTextComparisonExpression("userType", ComparisonOperator.eq, "Employee"),
-//                LogicalOperator.and,
-//                new AttributeTextComparisonExpression("emails.type", ComparisonOperator.eq, "work")
-//            )
-//        },
-//        {
-//            "(A pr or B pr)",
-//            new LogicalLinkExpression(
-//                new AttributePresentTestExpression("A"),
-//                LogicalOperator.or,
-//                new AttributePresentTestExpression("B")
-//            )
-//        },
-//        {
-//            "(A eq 5 or B eq 0)",
-//            new LogicalLinkExpression(
-//                new AttributeNumberComparisonExpression("A", ComparisonOperator.eq, new BigDecimal(5)),
-//                LogicalOperator.or,
-//                new AttributeNumberComparisonExpression("B", ComparisonOperator.eq, new BigDecimal(0))
-//            )
-//        },
-//        {
-//            "(A eq 5 or B eq 10)",
-//            new LogicalLinkExpression(
-//                new AttributeNumberComparisonExpression("A", ComparisonOperator.eq, new BigDecimal(5)),
-//                LogicalOperator.or,
-//                new AttributeNumberComparisonExpression("B", ComparisonOperator.eq, new BigDecimal(10))
-//            )
-//        },
-//        {
-//            "(A eq 5.0 or B eq 10.0)",
-//            new LogicalLinkExpression(
-//                new AttributeNumberComparisonExpression("A", ComparisonOperator.eq, new BigDecimal("5.0")),
-//                LogicalOperator.or,
-//                new AttributeNumberComparisonExpression("B", ComparisonOperator.eq, new BigDecimal("10.0"))
-//            )
-//        },
-//        {
-//            "(A eq 50e-1 or B eq 100e-1)",
-//            new LogicalLinkExpression(
-//                new AttributeNumberComparisonExpression("A", ComparisonOperator.eq, new BigDecimal("5.0")),
-//                LogicalOperator.or,
-//                new AttributeNumberComparisonExpression("B", ComparisonOperator.eq, new BigDecimal("10.0"))
-//            )
-//        },
-//        {
-//            "(A eq true or B eq true)",
-//            new LogicalLinkExpression(
-//                new AttributeBooleanComparisonExpression("A", ComparisonOperator.eq, true),
-//                LogicalOperator.or,
-//                new AttributeBooleanComparisonExpression("B", ComparisonOperator.eq, true)
-//            )
-//        },
-//        {
-//            "(A eq null or B eq null)",
-//            new LogicalLinkExpression(
-//                new AttributeNullTestExpression("A", ComparisonOperator.eq),
-//                LogicalOperator.or,
-//                new AttributeNullTestExpression("B", ComparisonOperator.eq)
-//            )
-//        },
-//        {
-//            "Z[A pr or B pr]",
-//            new AttributeFilterGroupingExpression(
-//                "Z",
-//                new LogicalLinkExpression(
-//                    new AttributePresentTestExpression("A"),
-//                    LogicalOperator.or,
-//                    new AttributePresentTestExpression("B")
-//                )
-//            )
-//        },
-//        {
-//            "Z[A eq 5 or B eq 0]",
-//            new AttributeFilterGroupingExpression(
-//                "Z",
-//                new LogicalLinkExpression(
-//                    new AttributeNumberComparisonExpression("A", ComparisonOperator.eq, new BigDecimal(5)),
-//                    LogicalOperator.or,
-//                    new AttributeNumberComparisonExpression("B", ComparisonOperator.eq, new BigDecimal(0))
-//                )
-//            )
-//        },
-//        {
-//            "Z[A eq 5 or B eq 10]",
-//            new AttributeFilterGroupingExpression(
-//                "Z",
-//                new LogicalLinkExpression(
-//                    new AttributeNumberComparisonExpression("A", ComparisonOperator.eq, new BigDecimal(5)),
-//                    LogicalOperator.or,
-//                    new AttributeNumberComparisonExpression("B", ComparisonOperator.eq, new BigDecimal(10))
-//                )
-//            )
-//        },
-//        {
-//            "Z[A eq 5.0 or B eq 10.0]",
-//            new AttributeFilterGroupingExpression(
-//                "Z",
-//                new LogicalLinkExpression(
-//                    new AttributeNumberComparisonExpression("A", ComparisonOperator.eq, new BigDecimal("5.0")),
-//                    LogicalOperator.or,
-//                    new AttributeNumberComparisonExpression("B", ComparisonOperator.eq, new BigDecimal("10.0"))
-//                )
-//            )
-//        },
-//        {
-//            "Z[A eq 50e-1 or B eq 100e-1]",
-//            new AttributeFilterGroupingExpression(
-//                "Z",
-//                new LogicalLinkExpression(
-//                    new AttributeNumberComparisonExpression("A", ComparisonOperator.eq, new BigDecimal("5.0")),
-//                    LogicalOperator.or,
-//                    new AttributeNumberComparisonExpression("B", ComparisonOperator.eq, new BigDecimal("10.0"))
-//                )
-//            )
-//        },
-//        {
-//            "Z[A eq true or B eq true]",
-//            new AttributeFilterGroupingExpression(
-//                "Z",
-//                new LogicalLinkExpression(
-//                    new AttributeBooleanComparisonExpression("A", ComparisonOperator.eq, true),
-//                    LogicalOperator.or,
-//                    new AttributeBooleanComparisonExpression("B", ComparisonOperator.eq, true)
-//                )
-//            )
-//        },
-//        {
-//            "Z[A eq null or B eq null]",
-//            new AttributeFilterGroupingExpression(
-//                "Z",
-//                new LogicalLinkExpression(
-//                    new AttributeNullTestExpression("A", ComparisonOperator.eq),
-//                    LogicalOperator.or,
-//                    new AttributeNullTestExpression("B", ComparisonOperator.eq)
-//                )
-//            )
-//        },
-//        {
-//            "Z[A pr and B pr or C pr]",
-//            new AttributeFilterGroupingExpression(
-//                "Z",
-//                new LogicalLinkExpression(
-//                    new LogicalLinkExpression(
-//                        new AttributePresentTestExpression("A"),
-//                        LogicalOperator.and,
-//                        new AttributePresentTestExpression("B")
-//                    ),
-//                    LogicalOperator.or,
-//                    new AttributePresentTestExpression("C")
-//                )
-//            )
-//        },
-//        {
-//            "Z[A pr or B pr and C pr]",
-//            new AttributeFilterGroupingExpression(
-//                "Z",
-//                new LogicalLinkExpression(
-//                    new AttributePresentTestExpression("A"),
-//                    LogicalOperator.or,
-//                    new LogicalLinkExpression(
-//                        new AttributePresentTestExpression("B"),
-//                        LogicalOperator.and,
-//                        new AttributePresentTestExpression("C")
-//                    )
-//                )
-//            )
-//        },
-//        {
-//            " (  ( A pr or B pr ) and   ( C pr and ( D   pr   ) )    ) ",
-//            new LogicalLinkExpression(
-//                new LogicalLinkExpression(
-//                    new AttributePresentTestExpression("A"),
-//                    LogicalOperator.or,
-//                    new AttributePresentTestExpression("B")
-//                ),
-//                LogicalOperator.and,
-//                new LogicalLinkExpression(
-//                    new AttributePresentTestExpression("C"),
-//                    LogicalOperator.and,
-//                    new AttributePresentTestExpression("D")
-//                )
-//            )
-//        },
-//        {
-//            "not (A pr and B pr)",
-//            new LogicalNegationExpression(
-//                new LogicalLinkExpression(
-//                    new AttributePresentTestExpression("A"),
-//                    LogicalOperator.and,
-//                    new AttributePresentTestExpression("B")
-//                )
-//            )
-//        },
-//        {
-//            " (  ( not (A pr) or B pr ) and  not   ( C pr and not ( D   pr   ) )    ) ",
-//            new LogicalLinkExpression(
-//                new LogicalLinkExpression(
-//                    new LogicalNegationExpression(
-//                        new AttributePresentTestExpression("A")
-//                    ),
-//                    LogicalOperator.or,
-//                    new AttributePresentTestExpression("B")
-//                ),
-//                LogicalOperator.and,
-//                new LogicalNegationExpression(
-//                    new LogicalLinkExpression(
-//                        new AttributePresentTestExpression("C"),
-//                        LogicalOperator.and,
-//                        new LogicalNegationExpression(
-//                            new AttributePresentTestExpression("D")
-//                        )
-//                    )
-//                )
-//            )
-//        },
-//        {
-//            "userType ne \"Employee\" and not (emails co \"example.com\" or emails.value co \"example.org\")",
-//            new LogicalLinkExpression(
-//                new AttributeTextComparisonExpression("userType", ComparisonOperator.ne, "Employee"),
-//                LogicalOperator.and,
-//                new LogicalNegationExpression(
-//                    new LogicalLinkExpression(
-//                        new AttributeTextComparisonExpression("emails", ComparisonOperator.co, "example.com"),
-//                        LogicalOperator.or,
-//                        new AttributeTextComparisonExpression("emails.value", ComparisonOperator.co, "example.org")
-//                    )
-//                )
-//            )
-//        },
-//        {
-//            "emails[type eq \"work\"]",
-//            new AttributeFilterGroupingExpression(
-//                "emails",
-//                new AttributeTextComparisonExpression("type", ComparisonOperator.eq, "work")
-//            )
-//        },
-//        {
-//            "userType eq \"Employee\" and emails[type eq \"work\" and value co \"@example.com\"]",
-//            new LogicalLinkExpression(
-//                new AttributeTextComparisonExpression("userType", ComparisonOperator.eq, "Employee"),
-//                LogicalOperator.and,
-//                new AttributeFilterGroupingExpression(
-//                    "emails",
-//                    new LogicalLinkExpression(
-//                        new AttributeTextComparisonExpression("type", ComparisonOperator.eq, "work"),
-//                        LogicalOperator.and,
-//                        new AttributeTextComparisonExpression("value", ComparisonOperator.co, "@example.com")
-//                    )
-//                )
-//            )
-//        },
-//        {
-//            "emails[type eq \"work\" and value co \"@example.com\"] or ims[type eq \"xmpp\" and value co \"@foo.com\"]",
-//            new LogicalLinkExpression(
-//                new AttributeFilterGroupingExpression(
-//                    "emails",
-//                    new LogicalLinkExpression(
-//                        new AttributeTextComparisonExpression("type", ComparisonOperator.eq, "work"),
-//                        LogicalOperator.and,
-//                        new AttributeTextComparisonExpression("value", ComparisonOperator.co, "@example.com")
-//                    )
-//                ),
-//                LogicalOperator.or,
-//                new AttributeFilterGroupingExpression(
-//                    "ims",
-//                    new LogicalLinkExpression(
-//                        new AttributeTextComparisonExpression("type", ComparisonOperator.eq, "xmpp"),
-//                        LogicalOperator.and,
-//                        new AttributeTextComparisonExpression("value", ComparisonOperator.co, "@foo.com")
-//                    )
-//                )
-//            )
-//        },
-//        {
-//            "emails  [   type  eq      \"work\" and value co \"@example.com\"   ]     or ims [type eq \"xmpp\"    and    value co   \"@foo.com\" ]  ",
-//            new LogicalLinkExpression(
-//                new AttributeFilterGroupingExpression(
-//                    "emails",
-//                    new LogicalLinkExpression(
-//                        new AttributeTextComparisonExpression("type", ComparisonOperator.eq, "work"),
-//                        LogicalOperator.and,
-//                        new AttributeTextComparisonExpression("value", ComparisonOperator.co, "@example.com")
-//                    )
-//                ),
-//                LogicalOperator.or,
-//                new AttributeFilterGroupingExpression(
-//                    "ims",
-//                    new LogicalLinkExpression(
-//                        new AttributeTextComparisonExpression("type", ComparisonOperator.eq, "xmpp"),
-//                        LogicalOperator.and,
-//                        new AttributeTextComparisonExpression("value", ComparisonOperator.co, "@foo.com")
-//                    )
-//                )
-//            )
-//        },
-//        {
-//            "A[B eq 12 and ( C gt 5 or D[E ne -3 and F le 41])] and (G[(H eq null or H eq \"12\") and I co \"@foo.com\"] or J pr)",
-//            new LogicalLinkExpression(
-//                new AttributeFilterGroupingExpression(
-//                    "A",
-//                    new LogicalLinkExpression(
-//                        new AttributeNumberComparisonExpression("B", ComparisonOperator.eq, new BigDecimal(12)),
-//                        LogicalOperator.and,
-//                        new LogicalLinkExpression(
-//                            new AttributeNumberComparisonExpression("C", ComparisonOperator.gt, new BigDecimal(5)),
-//                            LogicalOperator.or,
-//                            new AttributeFilterGroupingExpression(
-//                                "D",
-//                                new LogicalLinkExpression(
-//                                    new AttributeNumberComparisonExpression("E", ComparisonOperator.ne, new BigDecimal(-3)),
-//                                    LogicalOperator.and,
-//                                    new AttributeNumberComparisonExpression("F", ComparisonOperator.le, new BigDecimal(41))
-//                                )
-//                            )
-//                        )
-//                    )
-//                ),
-//                LogicalOperator.and,
-//                new LogicalLinkExpression(
-//                    new AttributeFilterGroupingExpression(
-//                        "G",
-//                        new LogicalLinkExpression(
-//                            new LogicalLinkExpression(
-//                                new AttributeNullTestExpression("H", ComparisonOperator.eq),
-//                                LogicalOperator.or,
-//                                new AttributeTextComparisonExpression("H", ComparisonOperator.eq, "12")
-//                            ),
-//                            LogicalOperator.and,
-//                            new AttributeTextComparisonExpression("I", ComparisonOperator.co, "@foo.com")
-//                        )
-//                    ),
-//                    LogicalOperator.or,
-//                    new AttributePresentTestExpression("J")
-//                )
-//            )
-//        },
-//        {
-//            "A[B[C[(D eq \"text\" or E [F ne \"blob\"])]]]",
-//            new AttributeFilterGroupingExpression(
-//                "A",
-//                new AttributeFilterGroupingExpression(
-//                    "B",
-//                    new AttributeFilterGroupingExpression(
-//                        "C",
-//                        new LogicalLinkExpression(
-//                            new AttributeTextComparisonExpression("D", ComparisonOperator.eq, "text"),
-//                            LogicalOperator.or,
-//                            new AttributeFilterGroupingExpression(
-//                                "E",
-//                                new AttributeTextComparisonExpression("F", ComparisonOperator.ne, "blob")
-//                            )
-//                        )
-//                    )
-//                )
-//            )
-//        }
+        {
+            "A pr and B pr or C pr and D pr or E pr or F pr",
+            "(((_exists_:A AND _exists_:B) OR (_exists_:C AND _exists_:D)) OR (_exists_:E OR _exists_:F))"
+        },
+        {
+            "A pr and B pr and C pr or D pr and E pr or F pr",
+            "(((_exists_:A AND (_exists_:B AND _exists_:C)) OR (_exists_:D AND _exists_:E)) OR _exists_:F)"
+        },
+        {
+            "((((((A pr))))))",
+            "_exists_:A"
+        },
+        {
+            "userType eq \"Employee\" and (emails co \"example.com\" or emails.value co \"example.org\")",
+            "(userType:\"Employee\" AND (emails:\"example.com\" OR emails.value:\"example.org\"))"
+        },
+        {
+            "userType eq \"Employee\" and (emails.type eq \"work\")",
+            "(userType:\"Employee\" AND emails.type:\"work\")"
+        },
+        {
+            "(A pr or B pr)",
+            "(_exists_:A OR _exists_:B)"
+        },
+        {
+            "(A eq 5 or B eq 0)",
+            "(A:5 OR B:0)"
+        },
+        {
+            "(A eq 5 or B eq 10)",
+            "(A:5 OR B:10)"
+        },
+        {
+            "(A eq 5.0 or B eq 10.0)",
+            "(A:5.0 OR B:10.0)"
+        },
+        {
+            "(A eq 50e-1 or B eq 100e-1)",
+            "(A:5.0 OR B:10.0)"
+        },
+        {
+            "(A eq true or B eq true)",
+            "(A:true OR B:true)"
+        },
+        {
+            "(A eq null or B eq null)",
+            "(A:null OR B:null)"
+        },
+        {
+            "Z[A pr or B pr]",
+            "(_exists_:Z.A OR _exists_:Z.B)"
+        },
+        {
+            "Z[A eq 5 or B eq 0]",
+            "(Z.A:5 OR Z.B:0)"
+        },
+        {
+            "Z[A eq 5 or B eq 10]",
+            "(Z.A:5 OR Z.B:10)"
+        },
+        {
+            "Z[A eq 5.0 or B eq 10.0]",
+            "(Z.A:5.0 OR Z.B:10.0)"
+        },
+        {
+            "Z[A eq 50e-1 or B eq 100e-1]",
+            "(Z.A:5.0 OR Z.B:10.0)"
+        },
+        {
+            "Z[A eq true or B eq true]",
+            "(Z.A:true OR Z.B:true)"
+        },
+        {
+            "Z[A eq null or B eq null]",
+            "(Z.A:null OR Z.B:null)"
+        },
+        {
+            "Z[A pr and B pr or C pr]",
+            "((_exists_:Z.A AND _exists_:Z.B) OR _exists_:Z.C)"
+        },
+        {
+            "Z[A pr or B pr and C pr]",
+            "(_exists_:Z.A OR (_exists_:Z.B AND _exists_:Z.C))"
+        },
+        {
+            " (  ( A pr or B pr ) and   ( C pr and ( D   pr   ) )    ) ",
+            "((_exists_:A OR _exists_:B) AND (_exists_:C AND _exists_:D))"
+        },
+        {
+            "not (A pr)",
+            "!(_exists_:A)"
+        },
+        {
+            "not (A pr and B pr)",
+            "!((_exists_:A AND _exists_:B))"
+        },
+        {
+            " (  ( not (A pr) or B pr ) and  not   ( C pr and not ( D   pr   ) )    ) ",
+            "((!(_exists_:A) OR _exists_:B) AND !((_exists_:C AND !(_exists_:D))))"
+        },
+        {
+            "userType ne \"Employee\" and not (emails co \"example.com\" or emails.value co \"example.org\")",
+            "(!(userType:\"Employee\") AND !((emails:\"example.com\" OR emails.value:\"example.org\")))"
+        },
+        {
+            "emails[type eq \"work\"]",
+            "emails.type:\"work\""
+        },
+        {
+            "userType eq \"Employee\" and emails[type eq \"work\" and value co \"@example.com\"]",
+            "(userType:\"Employee\" AND (emails.type:\"work\" AND emails.value:\"@example.com\"))"
+        },
+        {
+            "emails[type eq \"work\" and value co \"@example.com\"] or ims[type eq \"xmpp\" and value co \"@foo.com\"]",
+            "((emails.type:\"work\" AND emails.value:\"@example.com\") OR (ims.type:\"xmpp\" AND ims.value:\"@foo.com\"))"
+        },
+        {
+            "emails  [   type  eq      \"work\" and value co \"@example.com\"   ]     or ims [type eq \"xmpp\"    and    value co   \"@foo.com\" ]  ",
+            "((emails.type:\"work\" AND emails.value:\"@example.com\") OR (ims.type:\"xmpp\" AND ims.value:\"@foo.com\"))"
+        },
+        {
+            "A[B eq 12 and ( C gt 5 or D[E ne -3 and F le 41])] and (G[(H eq null or H eq \"12\") and I co \"@foo.com\"] or J pr)",
+            "((A.B:12 AND (A.C:>5 OR (!(A.D.E:-3) AND A.D.F:<=41))) AND (((G.H:null OR G.H:\"12\") AND G.I:\"@foo.com\") OR _exists_:J))"
+        },
+        {
+            "A[B[C[(D eq \"text\" or E [F ne \"blob\"])]]]",
+            "(A.B.C.D:\"text\" OR !(A.B.C.E.F:\"blob\"))"
+        }
     };
   }
 
