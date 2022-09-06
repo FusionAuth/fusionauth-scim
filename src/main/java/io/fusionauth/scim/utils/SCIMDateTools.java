@@ -28,7 +28,6 @@ public class SCIMDateTools {
   public static final DateTimeFormatter SCIMDateTimeParser = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss[.SSS][XXX][XX]['Z']");
 
   private SCIMDateTools() {
-
   }
 
   /**
