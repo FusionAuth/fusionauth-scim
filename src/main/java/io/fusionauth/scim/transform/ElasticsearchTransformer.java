@@ -19,6 +19,7 @@ package io.fusionauth.scim.transform;
 import io.fusionauth.scim.parser.ComparisonOperator;
 import io.fusionauth.scim.parser.LogicalOperator;
 import io.fusionauth.scim.parser.ValueType;
+import io.fusionauth.scim.parser.exception.ComparisonOperatorException;
 import io.fusionauth.scim.parser.expression.AttributeComparisonExpression;
 import io.fusionauth.scim.parser.expression.AttributeExpression;
 import io.fusionauth.scim.parser.expression.AttributeFilterGroupingExpression;
@@ -33,6 +34,18 @@ public class ElasticsearchTransformer {
 
   private static String appendToParentAttributePath(String currentParentPath, String newPathSegment) {
     return currentParentPath.isEmpty() ? newPathSegment : currentParentPath + "." + newPathSegment;
+  }
+
+  private static String createRangeForDateComparison(String value, ComparisonOperator operator) {
+    return switch (operator) {
+      // The negation for `ne` operator happens
+      case eq, ne -> "[" + value + " TO " + value + "]";
+      case gt -> "{" + value + " TO *]";
+      case ge -> "[" + value + " TO *]";
+      case lt -> "[* TO " + value + "}";
+      case le -> "[* TO " + value + "]";
+      default -> throw new ComparisonOperatorException("[" + operator + "] is not a valid operator for a date comparison");
+    };
   }
 
   private static String prependParentAttributePath(String currentParentPath, String attributePath) {
@@ -73,20 +86,25 @@ public class ElasticsearchTransformer {
     //        - We may need to add a getStringValue() or something like that so the expression can return something
     //          equivalent to what we expect to serialize.
     String value = exp.value().toString();
-    if (exp.operator == ComparisonOperator.sw) {
-      // Add wildcard to end of comparison for "starts with"
-      value += "*";
-    } else if (exp.operator == ComparisonOperator.ew) {
-      // Add wildcard to start of comparison for "ends with"
-      value = "*" + value;
-    }
     if (exp.valueType() == ValueType.text) {
+      if (exp.operator == ComparisonOperator.sw) {
+        // Add wildcard to end of comparison for "starts with"
+        value += "*";
+      } else if (exp.operator == ComparisonOperator.ew) {
+        // Add wildcard to start of comparison for "ends with"
+        value = "*" + value;
+      }
       value = "\"" + value + "\"";
     } else if (exp.valueType() == ValueType.number && value.startsWith("-")) {
       // The negative sign has to be escaped
       value = "\\" + value;
+    } else if (exp.valueType() == ValueType.date) {
+      value = createRangeForDateComparison(value, exp.operator);
     }
-    String filter = prependParentAttributePath(parentAttributePath, exp.attributePath) + transformComparisonOperator(exp.operator) + value;
+    String filter =
+        prependParentAttributePath(parentAttributePath, exp.attributePath) +
+        (exp.valueType() == ValueType.date ? ":" : transformComparisonOperator(exp.operator)) +
+        value;
     if (exp.operator == ComparisonOperator.ne) {
       filter = "!(" + filter + ")";
     }

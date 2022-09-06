@@ -29,7 +29,6 @@ public class ElasticsearchTransformerTest {
 
   @DataProvider(name = "data")
   public Object[][] data() {
-    //noinspection TrailingWhitespacesInTextBlock
     return new Object[][]{
         {
             "A pr",
@@ -80,38 +79,28 @@ public class ElasticsearchTransformerTest {
             "A:\") ((( ..eq pr 00.1.1.90)) (\""
         },
         {
-            // Special characters are ignored in text values
-            // TODO : invalid query
-            """
-            A eq "\\'\\"\\"\\t\\b\\n\\r\\f\\\\" """,
-            """
-                A:"'""\t\b
-                \r\f\\" """
+            "meta.lastModified eq \"2011-05-13T04:42:34Z\"",
+            "meta.lastModified:[2011-05-13T04:42:34Z TO 2011-05-13T04:42:34Z]"
         },
         {
             "meta.lastModified ge \"2011-05-13T04:42:34Z\"",
-            // TODO : invalid query
-            "meta.lastModified:>=2011-05-13T04:42:34Z"
+            "meta.lastModified:[2011-05-13T04:42:34Z TO *]"
         },
         {
             "meta.lastModified gt \"2011-05-13T04:42:34Z\"",
-            // TODO : invalid query
-            "meta.lastModified:>2011-05-13T04:42:34Z"
+            "meta.lastModified:{2011-05-13T04:42:34Z TO *]"
         },
         {
             "meta.lastModified le \"2011-05-13T04:42:34Z\"",
-            // TODO : invalid query
-            "meta.lastModified:<=2011-05-13T04:42:34Z"
+            "meta.lastModified:[* TO 2011-05-13T04:42:34Z]"
         },
         {
             "meta.lastModified lt \"2011-05-13T04:42:34Z\"",
-            // TODO : invalid query
-            "meta.lastModified:<2011-05-13T04:42:34Z"
+            "meta.lastModified:[* TO 2011-05-13T04:42:34Z}"
         },
         {
             "meta.lastModified lt \"2011-05-13T04:42:34.061Z\"",
-            // TODO : invalid query
-            "meta.lastModified:<2011-05-13T04:42:34.061Z"
+            "meta.lastModified:[* TO 2011-05-13T04:42:34.061Z}"
         },
         {
             "userName eq \"bjensen\"",
@@ -132,16 +121,6 @@ public class ElasticsearchTransformerTest {
         {
             "userName ew \"J\"",
             "userName:\"*J\""
-        },
-        {
-            "urn:ietf:params:scim:schemas:core:2.0:User:userName sw \"J\"",
-            // TODO : invalid query
-            "urn:ietf:params:scim:schemas:core:2.0:User:userName:\"J*\""
-        },
-        {
-            "urn:ietf:params:scim:schemas:core:2.0:User:name.firstName sw \"J\"",
-            // TODO : invalid query
-            "urn:ietf:params:scim:schemas:core:2.0:User:name.firstName:\"J*\""
         },
         {
             "schemas eq \"urn:ietf:params:scim:schemas:extension:enterprise:2.0:User\"",
