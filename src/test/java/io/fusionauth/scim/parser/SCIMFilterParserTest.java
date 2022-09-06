@@ -1053,13 +1053,6 @@ public class SCIMFilterParserTest {
             "A eq 12e1.2",
             "Invalid state transition at [A eq 12e1.]"
         },
-//        {
-//            // Need exponent or at least one digit after decimal
-//            // TODO : according to RFC7159 this should fail, but it would require an extra state
-//            //  not sure whether it's worth added complexity, or just allow this one through> it parses fine
-//            "A eq 12.",
-//            "Invalid state transition at [A eq 12.]"
-//        },
         {
             // Exponent sign must be first
             "A eq 12.4e1-2",

@@ -531,7 +531,6 @@ public class SCIMFilterParser {
    * @param attributePath The attribute path to validate
    */
   private void validateAttributePath(String attributePath) {
-    // TODO : Does this need more URI validation for schema URIs?
     int lastColon = attributePath.lastIndexOf(':');
     String lastSegment = lastColon != -1 ? attributePath.substring(lastColon) : attributePath;
     if (lastSegment.chars().filter(c -> c == '.').count() > 1) {
