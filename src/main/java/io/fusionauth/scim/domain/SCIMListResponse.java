@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021, FusionAuth, All Rights Reserved
+ * Copyright (c) 2021-2022, FusionAuth, All Rights Reserved
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,7 +32,7 @@ public class SCIMListResponse implements SCIMResponse, Buildable<SCIMListRespons
 
   public String schema;
 
-  public List<String> schemas = Arrays.asList(SCIMSchemas.ListResponse);
+  public List<String> schemas = new ArrayList<>(Arrays.asList(SCIMSchemas.ListResponse));
 
   public int startIndex;
 

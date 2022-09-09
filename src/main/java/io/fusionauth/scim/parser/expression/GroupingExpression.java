@@ -13,17 +13,19 @@
  * either express or implied. See the License for the specific
  * language governing permissions and limitations under the License.
  */
-package io.fusionauth.scim.domain;
 
-import com.fasterxml.jackson.databind.JsonNode;
+package io.fusionauth.scim.parser.expression;
+
+import io.fusionauth.scim.parser.ExpressionType;
 
 /**
- * @author Daniel DeGroff
+ * An expression used during parsing to indicate the beginning of logical grouping using parentheses
+ *
+ * @author Spencer Witt
  */
-public class SCIMPatchOperation implements Buildable<SCIMPatchOperation> {
-  public SCIMPatchOperationName op;
-
-  public String path;
-
-  public JsonNode value;
+public class GroupingExpression extends Expression {
+  @Override
+  public ExpressionType type() {
+    return ExpressionType.grouping;
+  }
 }

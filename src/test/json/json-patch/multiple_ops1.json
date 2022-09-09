@@ -1,0 +1,10 @@
+[
+  {
+    "op": "remove",
+    "path": "/userName"
+  },
+  {
+    "op": "remove",
+    "path": "/user/middleName"
+  }
+]

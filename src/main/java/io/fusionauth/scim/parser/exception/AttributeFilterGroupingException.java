@@ -13,17 +13,16 @@
  * either express or implied. See the License for the specific
  * language governing permissions and limitations under the License.
  */
-package io.fusionauth.scim.domain;
 
-import com.fasterxml.jackson.databind.JsonNode;
+package io.fusionauth.scim.parser.exception;
 
 /**
- * @author Daniel DeGroff
+ * An exception thrown when the string preceding an open square bracket is not a valid attribute path
+ *
+ * @author Spencer Witt
  */
-public class SCIMPatchOperation implements Buildable<SCIMPatchOperation> {
-  public SCIMPatchOperationName op;
-
-  public String path;
-
-  public JsonNode value;
+public class AttributeFilterGroupingException extends SCIMParserException {
+  public AttributeFilterGroupingException(String message) {
+    super(message);
+  }
 }

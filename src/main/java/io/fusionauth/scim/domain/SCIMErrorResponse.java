@@ -15,7 +15,8 @@
  */
 package io.fusionauth.scim.domain;
 
-import java.util.Collections;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -31,7 +32,7 @@ import io.fusionauth.scim.utils.ToString;
 public class SCIMErrorResponse implements SCIMResponse, Buildable<SCIMErrorResponse> {
   public String detail;
 
-  public List<String> schemas = Collections.singletonList(SCIMSchemas.Error);
+  public List<String> schemas = new ArrayList<>(Arrays.asList(SCIMSchemas.Error));
 
   public String scimType;
 

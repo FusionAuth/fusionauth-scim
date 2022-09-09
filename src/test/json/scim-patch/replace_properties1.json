@@ -1,0 +1,14 @@
+{
+  "schemas": [
+    "urn:ietf:params:scim:api:messages:2.0:PatchOp"
+  ],
+  "Operations": [
+    {
+      "op": "replace",
+      "value": {
+        "id": "839abed4-c97b-41fb-a9a9-e1aba5e4970c",
+        "displayName": "Changed Group Name"
+      }
+    }
+  ]
+}

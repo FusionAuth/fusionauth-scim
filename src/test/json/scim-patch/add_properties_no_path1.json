@@ -1,0 +1,14 @@
+{
+  "schemas": [
+    "urn:ietf:params:scim:api:messages:2.0:PatchOp"
+  ],
+  "Operations": [
+    {
+      "op": "add",
+      "value": {
+        "id": "9e0903e5-d377-4e84-beb9-88b5640bd466",
+        "displayName": "Bob"
+      }
+    }
+  ]
+}

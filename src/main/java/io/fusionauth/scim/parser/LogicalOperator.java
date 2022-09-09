@@ -13,17 +13,24 @@
  * either express or implied. See the License for the specific
  * language governing permissions and limitations under the License.
  */
-package io.fusionauth.scim.domain;
-
-import com.fasterxml.jackson.databind.JsonNode;
+package io.fusionauth.scim.parser;
 
 /**
- * @author Daniel DeGroff
+ * Logical operators for attribute filter expressions
+ *
+ * @author Spencer Witt
  */
-public class SCIMPatchOperation implements Buildable<SCIMPatchOperation> {
-  public SCIMPatchOperationName op;
-
-  public String path;
-
-  public JsonNode value;
+public enum LogicalOperator {
+  /**
+   * Logical {@code AND}
+   */
+  and,
+  /**
+   * Logical {@code OR}
+   */
+  or,
+  /**
+   * Logical negation
+   */
+  not
 }

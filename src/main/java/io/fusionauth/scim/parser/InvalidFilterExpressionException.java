@@ -13,17 +13,13 @@
  * either express or implied. See the License for the specific
  * language governing permissions and limitations under the License.
  */
-package io.fusionauth.scim.domain;
-
-import com.fasterxml.jackson.databind.JsonNode;
+package io.fusionauth.scim.parser;
 
 /**
  * @author Daniel DeGroff
  */
-public class SCIMPatchOperation implements Buildable<SCIMPatchOperation> {
-  public SCIMPatchOperationName op;
-
-  public String path;
-
-  public JsonNode value;
+public class InvalidFilterExpressionException extends RuntimeException {
+  public InvalidFilterExpressionException(String message) {
+    super(message);
+  }
 }

@@ -13,17 +13,36 @@
  * either express or implied. See the License for the specific
  * language governing permissions and limitations under the License.
  */
-package io.fusionauth.scim.domain;
-
-import com.fasterxml.jackson.databind.JsonNode;
+package io.fusionauth.scim.parser;
 
 /**
- * @author Daniel DeGroff
+ * A type indicator for attribute expression comparison values
+ *
+ * @author Spencer Witt
  */
-public class SCIMPatchOperation implements Buildable<SCIMPatchOperation> {
-  public SCIMPatchOperationName op;
-
-  public String path;
-
-  public JsonNode value;
+public enum ValueType {
+  /**
+   * The attribute expression does not contain a comparison value. Used with {@link ComparisonOperator#pr}
+   */
+  none,
+  /**
+   * A numeric comparison value
+   */
+  number,
+  /**
+   * A text comparison value
+   */
+  text,
+  /**
+   * A date comparison value
+   */
+  date,
+  /**
+   * A boolean comparison value
+   */
+  bool,
+  /**
+   * A {@code null} comparison value
+   */
+  nul
 }

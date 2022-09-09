@@ -1,5 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
+  <component name="CopyrightManager">
+    <copyright>
+      <option name="notice" value="Copyright (c) &amp;#36;originalComment.match(&quot;Copyright \(c\) (\d+)&quot;, 1, &quot;-&quot;)&amp;#36;today.year, FusionAuth, All Rights Reserved&#10;&#10;Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);&#10;you may not use this file except in compliance with the License.&#10;You may obtain a copy of the License at&#10;&#10;  http://www.apache.org/licenses/LICENSE-2.0&#10;&#10;Unless required by applicable law or agreed to in writing,&#10;software distributed under the License is distributed on an&#10;&quot;AS IS&quot; BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,&#10;either express or implied. See the License for the specific&#10;language governing permissions and limitations under the License." />
+      <option name="myName" value="Apache 2.0" />
+    </copyright>
+    <copyright>
+      <option name="notice" value="Copyright (c) &amp;#36;originalComment.match(&quot;Copyright \(c\) (\d+)&quot;, 1, &quot;-&quot;)&amp;#36;today.year, FusionAuth, All Rights Reserved" />
+      <option name="myName" value="FusionAuth" />
+    </copyright>
+    <copyright>
+      <option name="notice" />
+      <option name="myName" value="None" />
+    </copyright>
+    <module2copyright>
+      <element module="All" copyright="Apache 2.0" />
+    </module2copyright>
+  </component>
   <component name="InspectionProjectProfileManager">
     <profile version="1.0">
       <option name="myName" value="Project Default" />
@@ -211,7 +228,7 @@
       <option name="WRAP_COMMENTS" value="true" />
       <option name="DO_NOT_FORMAT">
         <list>
-          <fileSet type="globPattern" pattern="*.ftl, .xml, .sql" />
+          <fileSet type="globPattern" pattern="*.{ftl,xml,md,js}" />
           <fileSet type="namedScope" name="Generated Sources" pattern="file[fusionauth-client-builder]:src/main/client//*||file[fusionauth-client-builder]:src/main/domain//*||file[fusionauth-client-builder]:src/main/api//*||file[fusionauth-java-client]:src/main/java/io/fusionauth/client/FusionAuthClient.java||file[fusionauth-javascript-client]:lib/FusionAuthClient.js||file[fusionauth-node-client]:lib/FusionAuthClient.js||file[fusionauth-php-client]:src/FusionAuth/FusionAuthClient.php||file[fusionauth-python-client]:src/main/python/fusionauth/fusionauth_client.py||file[fusionauth-ruby-client]:lib/fusionauth/fusionauth_client.rb||file[fusionauth-typescript-client]:src/FusionAuthClient.ts" />
         </list>
       </option>
@@ -440,6 +457,7 @@
             <package name="" withSubpackages="true" static="true" />
           </value>
         </option>
+        <option name="JD_PRESERVE_LINE_FEEDS" value="true" />
       </JavaCodeStyleSettings>
       <MSSQLCodeStyleSettings version="6">
         <option name="KEYWORD_CASE" value="2" />
@@ -789,8 +807,7 @@
         <option name="ALIGN_MULTILINE_CHAINED_METHODS" value="true" />
         <option name="ALIGN_MULTILINE_PARAMETERS_IN_CALLS" value="true" />
         <option name="CALL_PARAMETERS_WRAP" value="1" />
-        <option name="METHOD_PARAMETERS_WRAP" value="1" />
-        <option name="METHOD_CALL_CHAIN_WRAP" value="1" />
+        <option name="THROWS_KEYWORD_WRAP" value="1" />
         <option name="IF_BRACE_FORCE" value="3" />
         <option name="WHILE_BRACE_FORCE" value="3" />
         <option name="FOR_BRACE_FORCE" value="3" />
@@ -832,23 +849,17 @@
         <option name="BLANK_LINES_AROUND_FIELD" value="1" />
         <option name="BLANK_LINES_AROUND_FIELD_IN_INTERFACE" value="1" />
         <option name="ALIGN_MULTILINE_CHAINED_METHODS" value="true" />
-        <option name="ALIGN_MULTILINE_PARAMETERS" value="false" />
+        <option name="ALIGN_MULTILINE_PARAMETERS_IN_CALLS" value="true" />
         <option name="ALIGN_MULTILINE_BINARY_OPERATION" value="true" />
         <option name="METHOD_PARAMETERS_WRAP" value="1" />
         <option name="THROWS_KEYWORD_WRAP" value="1" />
-        <option name="WRAP_FIRST_METHOD_IN_CALL_CHAIN" value="true" />
-        <option name="KEEP_SIMPLE_BLOCKS_IN_ONE_LINE" value="true" />
-        <option name="KEEP_SIMPLE_METHODS_IN_ONE_LINE" value="true" />
         <option name="KEEP_SIMPLE_LAMBDAS_IN_ONE_LINE" value="true" />
-        <option name="KEEP_SIMPLE_CLASSES_IN_ONE_LINE" value="true" />
-        <option name="KEEP_MULTIPLE_EXPRESSIONS_IN_ONE_LINE" value="true" />
+        <option name="WRAP_COMMENTS" value="true" />
         <option name="IF_BRACE_FORCE" value="3" />
         <option name="DOWHILE_BRACE_FORCE" value="3" />
         <option name="WHILE_BRACE_FORCE" value="3" />
         <option name="FOR_BRACE_FORCE" value="3" />
-        <option name="WRAP_LONG_LINES" value="true" />
         <option name="ENUM_CONSTANTS_WRAP" value="2" />
-        <option name="KEEP_BUILDER_METHODS_INDENTS" value="true" />
         <indentOptions>
           <option name="INDENT_SIZE" value="2" />
           <option name="CONTINUATION_INDENT_SIZE" value="4" />
