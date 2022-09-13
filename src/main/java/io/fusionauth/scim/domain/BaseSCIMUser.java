@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021, FusionAuth, All Rights Reserved
+ * Copyright (c) 2021-2022, FusionAuth, All Rights Reserved
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,7 +34,7 @@ import io.fusionauth.scim.utils.ToString;
  * @author Brett Pontarelli
  */
 public class BaseSCIMUser<T extends BaseSCIMUser<T>> extends BaseSCIMResource<T> {
-  public boolean active;
+  public Boolean active;
 
   public List<SCIMUserAddress> addresses;
 

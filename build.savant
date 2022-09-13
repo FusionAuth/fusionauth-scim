@@ -17,7 +17,7 @@
 jacksonVersion = "2.13.3"
 testngVersion = "7.3.0"
 
-project(group: "io.fusionauth", name: "fusionauth-scim", version: "2.0.0", licenses: ["ApacheV2_0"]) {
+project(group: "io.fusionauth", name: "fusionauth-scim", version: "2.1.0", licenses: ["ApacheV2_0"]) {
   workflow {
     fetch {
       cache()
