@@ -122,11 +122,17 @@ public class SCIMPatchTools {
 
             JsonNode value = operation.at("/value");
             if (value instanceof ArrayNode arrayNode) {
-              for (JsonNode n : arrayNode) {
-                ObjectNode copy = operation.deepCopy();
-                copy.set("path", TextNode.valueOf(path));
-                copy.set("value", n);
-                result.add(copy);
+              if (isReplace(operation)) {
+                operation.set("path", TextNode.valueOf(path));
+                result.add(operation);
+              } else {
+                for (JsonNode n : arrayNode) {
+                  ObjectNode copy = operation.deepCopy();
+                  copy.set("path", TextNode.valueOf(path));
+                  copy.set("value", n);
+
+                  result.add(copy);
+                }
               }
             }
           } else {

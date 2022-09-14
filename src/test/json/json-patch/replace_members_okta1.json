@@ -1,0 +1,10 @@
+[
+  {
+    "op": "replace",
+    "path": "/members",
+    "value": [{
+      "value": "cbdf95c8-b3aa-42a4-8e29-09db32099b0a",
+      "display": "erlich@bachmanity.com"
+    }]
+  }
+]

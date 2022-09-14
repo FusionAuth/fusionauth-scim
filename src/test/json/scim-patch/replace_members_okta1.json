@@ -4,11 +4,11 @@
   ],
   "Operations": [
     {
-      "op": "Add",
+      "op": "replace",
       "path": "members",
       "value": [
         {
-          "value": "992525bf-0ecc-4b13-a4cc-7df2afd492c2",
+          "value": "cbdf95c8-b3aa-42a4-8e29-09db32099b0a",
           "display": "erlich@bachmanity.com"
         }
       ]
