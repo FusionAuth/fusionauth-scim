@@ -69,11 +69,11 @@ public class BaseSCIMUser<T extends BaseSCIMUser<T>> extends BaseSCIMResource<T>
 
   public ZoneId timezone;
 
-  public URI title;
+  public String title;
 
   public String userName;
 
-  public URI userType;
+  public String userType;
 
   public List<X509Certificate> x509Certificates;
 
@@ -96,12 +96,12 @@ public class BaseSCIMUser<T extends BaseSCIMUser<T>> extends BaseSCIMResource<T>
       return false;
     }
     BaseSCIMUser<?> that = (BaseSCIMUser<?>) o;
-    return active == that.active && Objects.equals(displayName, that.displayName) && Objects.equals(emails, that.emails) && Objects.equals(groups, that.groups) && Objects.equals(name, that.name) && Objects.equals(phoneNumbers, that.phoneNumbers) && Objects.equals(photos, that.photos) && Objects.equals(preferredLanguage, that.preferredLanguage) && Objects.equals(timezone, that.timezone) && Objects.equals(userName, that.userName);
+    return Objects.equals(active, that.active) && Objects.equals(addresses, that.addresses) && Objects.equals(displayName, that.displayName) && Objects.equals(emails, that.emails) && Objects.equals(entitlements, that.entitlements) && Objects.equals(groups, that.groups) && Objects.equals(ims, that.ims) && Objects.equals(locale, that.locale) && Objects.equals(name, that.name) && Objects.equals(nickName, that.nickName) && Objects.equals(password, that.password) && Objects.equals(phoneNumbers, that.phoneNumbers) && Objects.equals(photos, that.photos) && Objects.equals(preferredLanguage, that.preferredLanguage) && Objects.equals(profileURL, that.profileURL) && Objects.equals(roles, that.roles) && Objects.equals(timezone, that.timezone) && Objects.equals(title, that.title) && Objects.equals(userName, that.userName) && Objects.equals(userType, that.userType) && Objects.equals(x509Certificates, that.x509Certificates) && Objects.equals(extensions, that.extensions);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(super.hashCode(), active, displayName, emails, groups, name, phoneNumbers, photos, preferredLanguage, timezone, userName);
+    return Objects.hash(super.hashCode(), active, addresses, displayName, emails, entitlements, groups, ims, locale, name, nickName, password, phoneNumbers, photos, preferredLanguage, profileURL, roles, timezone, title, userName, userType, x509Certificates, extensions);
   }
 
   @JsonAnySetter

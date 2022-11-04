@@ -14,10 +14,11 @@
  * language governing permissions and limitations under the License.
  */
 
-jacksonVersion = "2.13.3"
+jacksonVersion = "2.13.4"
+jacksonDatabindVersion = "2.13.4+2"
 testngVersion = "7.3.0"
 
-project(group: "io.fusionauth", name: "fusionauth-scim", version: "2.1.1", licenses: ["ApacheV2_0"]) {
+project(group: "io.fusionauth", name: "fusionauth-scim", version: "2.2.0", licenses: ["ApacheV2_0"]) {
   workflow {
     fetch {
       cache()
@@ -36,7 +37,7 @@ project(group: "io.fusionauth", name: "fusionauth-scim", version: "2.1.1", licen
     group(name: "compile") {
       dependency(id: "com.fasterxml.jackson.core:jackson-annotations:${jacksonVersion}")
       dependency(id: "com.fasterxml.jackson.core:jackson-core:${jacksonVersion}")
-      dependency(id: "com.fasterxml.jackson.core:jackson-databind:${jacksonVersion}")
+      dependency(id: "com.fasterxml.jackson.core:jackson-databind:${jacksonDatabindVersion}")
     }
     group(name: "test-compile", export: false) {
       dependency(id: "org.testng:testng:${testngVersion}")
@@ -51,11 +52,11 @@ project(group: "io.fusionauth", name: "fusionauth-scim", version: "2.1.1", licen
 /*
  * Define Plugins
  */
-dependency = loadPlugin(id: "org.savantbuild.plugin:dependency:1.0.2")
-java = loadPlugin(id: "org.savantbuild.plugin:java:1.2.0")
-javaTestNG = loadPlugin(id: "org.savantbuild.plugin:java-testng:1.0.12")
-idea = loadPlugin(id: "org.savantbuild.plugin:idea:1.0.1")
-release = loadPlugin(id: "org.savantbuild.plugin:release-git:1.0.0")
+dependency = loadPlugin(id: "org.savantbuild.plugin:dependency:2.0.0-RC.2")
+java = loadPlugin(id: "org.savantbuild.plugin:java:2.0.0-RC.2")
+javaTestNG = loadPlugin(id: "org.savantbuild.plugin:java-testng:2.0.0-RC.2")
+idea = loadPlugin(id: "org.savantbuild.plugin:idea:2.0.0-RC.2")
+release = loadPlugin(id: "org.savantbuild.plugin:release-git:2.0.0-RC.2")
 
 java.settings.javaVersion = "17"
 javaTestNG.settings.javaVersion = "17"
