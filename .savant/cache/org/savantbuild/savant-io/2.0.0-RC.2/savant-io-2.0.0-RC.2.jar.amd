@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<artifact-meta-data>
+  <license type="ApacheV2_0"/>
+  <dependencies>
+    <dependency-group name="compile">
+      <dependency group="org.apache.ant" project="ant" name="ant" version="1.9.4" type="jar"/>
+      <dependency group="org.apache.commons" project="commons-compress" name="commons-compress" version="1.7.0" type="jar"/>
+    </dependency-group>
+  </dependencies>
+</artifact-meta-data>

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<artifact-meta-data>
+  <license type="ApacheV2_0"/>
+  <dependencies>
+    <dependency-group name="compile">
+      <dependency group="com.beust" project="jcommander" name="jcommander" version="1.78.0" type="jar"/>
+      <dependency group="com.google.inject" project="guice" name="guice-no_aop" version="4.2.2" type="jar"/>
+      <dependency group="org.yaml" project="snakeyaml" name="snakeyaml" version="1.21.0" type="jar"/>
+      <dependency group="org.junit" project="junit" name="junit" version="4.12.0" type="jar"/>
+      <dependency group="org.apache.ant" project="ant" name="ant" version="1.10.3" type="jar"/>
+    </dependency-group>
+  </dependencies>
+</artifact-meta-data>

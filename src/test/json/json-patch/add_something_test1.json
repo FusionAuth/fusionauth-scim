@@ -1,0 +1,13 @@
+[ {
+  "op" : "add",
+  "path" : "/displayName",
+  "value" : "Joshua OBannon"
+}, {
+  "op" : "add",
+  "path" : "/preferredLanguage",
+  "value" : "en-US"
+}, {
+  "op" : "add",
+  "path" : "/urn:ietf:params:scim:schemas:extension:enterprise:2.0:User/department",
+  "value" : "adsfasdfa"
+} ]

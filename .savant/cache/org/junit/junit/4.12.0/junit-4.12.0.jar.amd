@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<artifact-meta-data>
+  <license type="EclipseV1_0"/>
+  <dependencies>
+    <dependency-group name="compile">
+      <dependency group="org.hamcrest" project="hamcrest-core" name="hamcrest-core" version="1.3.0" type="jar"/>
+    </dependency-group>
+  </dependencies>
+</artifact-meta-data>

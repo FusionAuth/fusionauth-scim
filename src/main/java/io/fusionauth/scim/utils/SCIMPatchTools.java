@@ -107,11 +107,26 @@ public class SCIMPatchTools {
         } else {
           // Path must begin with a slash.
           String path = pathNode.asText();
+
+
           if (!path.startsWith("/")) {
             path = "/" + path;
           }
 
-          path = path.replace(".", "/");
+
+          // Does this path contain a schema? If so, Josh is to blame.
+          int index = 0;
+          String partPath = "";
+
+          if (path.startsWith("/urn:")) {
+            index = path.lastIndexOf(":");
+            partPath = path.substring(index + 1);
+            path = path.substring(0, index);
+            partPath = "/" + partPath.replace(".", "/");
+          } else {
+            path = path.replace(".", "/");
+          }
+          path = path + partPath;
 
           // Ensure that if the target is an array we append to the end of the array.
           if (source.at(path).isArray() && !path.endsWith("/")) {

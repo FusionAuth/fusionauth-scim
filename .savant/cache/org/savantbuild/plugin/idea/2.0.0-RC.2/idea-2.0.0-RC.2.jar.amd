@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<artifact-meta-data>
+  <license type="ApacheV2_0"/>
+  <dependencies>
+    <dependency-group name="provided">
+      <dependency group="org.savantbuild" project="savant-core" name="savant-core" version="2.0.0-RC.2" type="jar"/>
+      <dependency group="org.savantbuild" project="savant-dependency-management" name="savant-dependency-management" version="2.0.0-RC.2" type="jar"/>
+      <dependency group="org.savantbuild" project="savant-io" name="savant-io" version="2.0.0-RC.2" type="jar"/>
+      <dependency group="org.savantbuild" project="savant-utils" name="savant-utils" version="2.0.0-RC.2" type="jar"/>
+      <dependency group="org.savantbuild" project="savant-version" name="savant-version" version="2.0.0-RC.2" type="jar"/>
+    </dependency-group>
+    <dependency-group name="compile">
+      <dependency group="org.savantbuild.plugin" project="dependency" name="dependency" version="2.0.0-RC.2" type="jar"/>
+    </dependency-group>
+  </dependencies>
+</artifact-meta-data>

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<artifact-meta-data>
+  <license type="ApacheV2_0"/>
+  <dependencies>
+    <dependency-group name="compile">
+      <dependency group="com.fasterxml.jackson.core" project="jackson-annotations" name="jackson-annotations" version="2.13.4" type="jar"/>
+      <dependency group="com.fasterxml.jackson.core" project="jackson-core" name="jackson-core" version="2.13.4" type="jar"/>
+    </dependency-group>
+  </dependencies>
+</artifact-meta-data>
