@@ -38,6 +38,8 @@ import io.fusionauth.scim.parser.expression.Expression;
 public class SCIMPatchTools {
   private final static Pattern JSONPointerFilter = Pattern.compile("(.*)\\[(.*)](.*)");
 
+  private final static Pattern SCIMPathPattern = Pattern.compile("^[/]?(.+:)?([^:]*)");
+
   private SCIMPatchTools() {
   }
 
@@ -105,28 +107,28 @@ public class SCIMPatchTools {
             }
           }
         } else {
-          // Path must begin with a slash.
           String path = pathNode.asText();
 
+          matcher = SCIMPathPattern.matcher(path);
 
-          if (!path.startsWith("/")) {
-            path = "/" + path;
+          if (!matcher.matches()) {
+            // This is a malformed path
+            throw new IOException("Unable to parse op path: " + path);
           }
 
+          String schema = matcher.group(1);
+          String valueAndSubattrString = matcher.group(2);
 
-          // Does this path contain a schema? If so, Josh is to blame.
-          int index = 0;
-          String partPath = "";
+          // Start the JSON path with a slash
+          path = "/";
 
-          if (path.startsWith("/urn:")) {
-            index = path.lastIndexOf(":");
-            partPath = path.substring(index + 1);
-            path = path.substring(0, index);
-            partPath = "/" + partPath.replace(".", "/");
-          } else {
-            path = path.replace(".", "/");
+          // append the schema if present
+          if (schema != null) {
+            path += schema.substring(0, schema.length() - 1) + "/";
           }
-          path = path + partPath;
+
+          // add the attribute, replacing dots (which separate subattributes) with slashes (for nesting in a JSON object)
+          path += valueAndSubattrString.replace(".", "/");
 
           // Ensure that if the target is an array we append to the end of the array.
           if (source.at(path).isArray() && !path.endsWith("/")) {
