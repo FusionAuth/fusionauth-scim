@@ -14,15 +14,16 @@
  * language governing permissions and limitations under the License.
  */
 
-jacksonVersion = "2.13.4"
+jacksonVersion = "2.15.3"
 jacksonDatabindVersion = "2.13.4+2"
 testngVersion = "7.3.0"
 
-project(group: "io.fusionauth", name: "fusionauth-scim", version: "2.2.0", licenses: ["ApacheV2_0"]) {
+project(group: "io.fusionauth", name: "fusionauth-scim", version: "2.2.1", licenses: ["ApacheV2_0"]) {
   workflow {
     fetch {
       cache()
       url(url: "https://repository.savantbuild.org")
+      maven()
     }
     publish {
       cache()
@@ -52,11 +53,11 @@ project(group: "io.fusionauth", name: "fusionauth-scim", version: "2.2.0", licen
 /*
  * Define Plugins
  */
-dependency = loadPlugin(id: "org.savantbuild.plugin:dependency:2.0.0-RC.2")
-java = loadPlugin(id: "org.savantbuild.plugin:java:2.0.0-RC.2")
+dependency = loadPlugin(id: "org.savantbuild.plugin:dependency:2.0.0-RC.6")
+java = loadPlugin(id: "org.savantbuild.plugin:java:2.0.0-RC.6")
 javaTestNG = loadPlugin(id: "org.savantbuild.plugin:java-testng:2.0.0-RC.2")
-idea = loadPlugin(id: "org.savantbuild.plugin:idea:2.0.0-RC.2")
-release = loadPlugin(id: "org.savantbuild.plugin:release-git:2.0.0-RC.2")
+idea = loadPlugin(id: "org.savantbuild.plugin:idea:2.0.0-RC.7")
+release = loadPlugin(id: "org.savantbuild.plugin:release-git:2.0.0-RC.6")
 
 java.settings.javaVersion = "17"
 javaTestNG.settings.javaVersion = "17"
