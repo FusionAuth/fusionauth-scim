@@ -78,7 +78,7 @@ public class SCIMPatchToolsTest {
     ArrayNode expected = (ArrayNode) objectMapper.readTree(jsonPatch);
 
     if (!actual.equals(expected)) {
-      throw new AssertionError("Expected:\n" + ToString.toString(expected) + "\nbut found" + ToString.toString(actual) + "\n");
+      throw new AssertionError("Expected:\n" + ToString.toString(expected) + "\nbut found\n" + ToString.toString(actual) + "\n");
     }
   }
 }

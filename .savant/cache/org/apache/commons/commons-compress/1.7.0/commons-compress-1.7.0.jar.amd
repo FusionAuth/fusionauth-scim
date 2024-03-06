@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<artifact-meta-data>
-  <license type="ApacheV2_0"/>
-  <dependencies>
-    <dependency-group name="compile">
-      <dependency group="org.tukaani" project="xz" name="xz" version="1.4.0" type="jar"/>
-    </dependency-group>
-  </dependencies>
-</artifact-meta-data>

@@ -1,0 +1,17 @@
+[
+  {
+    "op": "add",
+    "path": "/preferredLanguage",
+    "value": "en-US"
+  },
+  {
+    "op": "add",
+    "path": "/urn:ietf:params:scim:schemas:extension:enterprise:2.0:User/department",
+    "value": "Operations"
+  },
+  {
+    "op": "add",
+    "path": "/urn:ietf:params:scim:schemas:extension:enterprise:2.0:User/manager/id",
+    "value": "d4445c5d-551e-4af7-8da2-49ac48561d7f"
+  }
+]
