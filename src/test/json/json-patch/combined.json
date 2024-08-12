@@ -1,5 +1,9 @@
 [
   {
+    "op": "remove",
+    "path": "/emails/1/type"
+  },
+  {
     "op": "add",
     "path": "/members/-",
     "value": {
@@ -10,10 +14,6 @@
     "op": "replace",
     "path": "/displayName",
     "value": "Update the name"
-  },
-  {
-    "op": "remove",
-    "path": "/emails/1"
   },
   {
     "op": "remove",

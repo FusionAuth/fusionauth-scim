@@ -5,6 +5,10 @@
   "Operations": [
     {
       "op": "Remove",
+      "path": "/emails/1/type"
+    },
+    {
+      "op": "Remove",
       "path": "members",
       "value": [
         {
@@ -42,9 +46,6 @@
       "value": [
         {
           "value": "erlich@bachmanity.com"
-        },
-        {
-          "value": "erlich@piedpiper.com"
         }
       ]
     },
