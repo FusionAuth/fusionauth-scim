@@ -210,8 +210,8 @@ public class SCIMPatchTools {
       arrayRemoveOps.sort(
           (o1, o2) -> {
             // Sort by path and then descending index
-            Integer path1 = o1.at("/value").get(0).asInt();
-            Integer path2 = o2.at("/value").get(0).asInt();
+            String path1 = o1.at("/value").get(0).asText();
+            String path2 = o2.at("/value").get(0).asText();
             int pathComparison = path1.compareTo(path2);
             if (pathComparison != 0) {
               return pathComparison;
