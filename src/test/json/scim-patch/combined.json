@@ -1,0 +1,58 @@
+{
+  "schemas": [
+    "urn:ietf:params:scim:api:messages:2.0:PatchOp"
+  ],
+  "Operations": [
+    {
+      "op": "Remove",
+      "path": "members",
+      "value": [
+        {
+          "value": "cbdf95c8-b3aa-42a4-8e29-09db32099b0a"
+        },
+        {
+          "value": "d80fe1f8-660d-4a6f-ae60-ace057ad3c23"
+        },
+        {
+          "value": "17dcd397-1684-494a-bda6-32c26ea6aebf"
+        }
+      ]
+    },
+    {
+      "op": "Remove",
+      "path": "members",
+      "value": [
+        {
+          "value": "c4a4dcc6-fdfc-406e-9ddd-0946ac7dc1fe"
+        }
+      ]
+    },
+    {
+      "op": "Add",
+      "path": "members",
+      "value": [
+        {
+          "value": "13ec78d9-59e5-4c91-a2b6-be79fa2e2695"
+        }
+      ]
+    },
+    {
+      "op": "Remove",
+      "path": "emails",
+      "value": [
+        {
+          "value": "erlich@bachmanity.com"
+        },
+        {
+          "value": "erlich@piedpiper.com"
+        }
+      ]
+    },
+    {
+      "op": "replace",
+      "value": {
+        "displayName": "Update the name"
+      }
+    }
+  ]
+}

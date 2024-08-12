@@ -1,0 +1,38 @@
+[
+  {
+    "op": "add",
+    "path": "/members/-",
+    "value": {
+      "value": "13ec78d9-59e5-4c91-a2b6-be79fa2e2695"
+    }
+  },
+  {
+    "op": "replace",
+    "path": "/displayName",
+    "value": "Update the name"
+  },
+  {
+    "op": "remove",
+    "path": "/emails/1"
+  },
+  {
+    "op": "remove",
+    "path": "/emails/0"
+  },
+  {
+    "op": "remove",
+    "path": "/members/8"
+  },
+  {
+    "op": "remove",
+    "path": "/members/4"
+  },
+  {
+    "op": "remove",
+    "path": "/members/3"
+  },
+  {
+    "op": "remove",
+    "path": "/members/0"
+  }
+]
