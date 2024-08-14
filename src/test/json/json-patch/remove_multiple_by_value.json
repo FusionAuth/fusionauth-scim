@@ -1,0 +1,26 @@
+[
+  {
+    "op": "remove",
+    "path": "/emails/1"
+  },
+  {
+    "op": "remove",
+    "path": "/emails/0"
+  },
+  {
+    "op": "remove",
+    "path": "/members/8"
+  },
+  {
+    "op": "remove",
+    "path": "/members/4"
+  },
+  {
+    "op": "remove",
+    "path": "/members/3"
+  },
+  {
+    "op": "remove",
+    "path": "/members/0"
+  }
+]

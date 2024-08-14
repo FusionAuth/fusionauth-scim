@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022, FusionAuth, All Rights Reserved
+ * Copyright (c) 2022-2024, FusionAuth, All Rights Reserved
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 package io.fusionauth.scim.utils;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -23,6 +24,7 @@ import java.util.regex.Pattern;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.IntNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.node.TextNode;
@@ -162,6 +164,7 @@ public class SCIMPatchTools {
 
     // Take a second pass and check for remaining filter ops
     ArrayNode result2 = JsonNodeFactory.instance.arrayNode();
+    List<ObjectNode> arrayRemoveOps = new ArrayList<>();
 
     for (JsonNode operation : result) {
       JsonNode value = operation.at("/value");
@@ -172,7 +175,7 @@ public class SCIMPatchTools {
         JsonNode attributeNode = source.at(path.asText());
         if (attributeNode instanceof ArrayNode array) {
 
-          // Assume we have just a single value in the "value" node, assuming it will have to be an object to haev a named key.
+          // Assume we have just a single value in the "value" node, assuming it will have to be an object to have a named key.
           String attributePath = null;
           if (value instanceof ObjectNode objectNode) {
             attributePath = objectNode.fieldNames().next();
@@ -191,8 +194,9 @@ public class SCIMPatchTools {
               // - Add a new op to the result for each matching node. It is plausible we'll match more than one node.
               ObjectNode copy = operation.deepCopy();
               copy.set("path", TextNode.valueOf(path.asText() + "/" + i));
-              copy.remove("value");
-              result2.add(copy);
+              // Temporarily set the value for later sorting and add to list
+              copy.set("value", objectMapper.createArrayNode().add(TextNode.valueOf(path.asText())).add(IntNode.valueOf(i)));
+              arrayRemoveOps.add(copy);
             }
           }
         }
@@ -200,6 +204,29 @@ public class SCIMPatchTools {
         result2.add(operation);
       }
     }
+
+    // Sort array removal operations and add to the result
+    if (!arrayRemoveOps.isEmpty()) {
+      arrayRemoveOps.sort(
+          (o1, o2) -> {
+            // Sort by path and then descending index
+            String path1 = o1.at("/value").get(0).asText();
+            String path2 = o2.at("/value").get(0).asText();
+            int pathComparison = path1.compareTo(path2);
+            if (pathComparison != 0) {
+              return pathComparison;
+            }
+
+            Integer index1 = o1.at("/value").get(1).asInt();
+            Integer index2 = o2.at("/value").get(1).asInt();
+            return index1.compareTo(index2) * -1;
+          }
+      );
+      // Clear the value node after sorting
+      arrayRemoveOps.forEach(o -> o.remove("value"));
+    }
+
+    result2.addAll(arrayRemoveOps);
 
     return result2;
   }
