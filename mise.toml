@@ -1,0 +1,6 @@
+[tools]
+gradle = "9.9"
+# Specifying full version here because:
+# 1) We have to anyways for Docker
+# 2) Mise seems to have problems with specifiers when not using full temurin version
+java = "temurin-25.0.5+8.0.LTS"

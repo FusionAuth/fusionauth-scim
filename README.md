@@ -4,24 +4,22 @@ Support for SCIM implementations
 
 ## Building
 
-### Building with Savant
-
-If you do not have the Savant build too installed, see below.
+The build uses Gradle and Java 25 from [mise](https://mise.jdx.dev/).
 
 ```bash
-sb int
+mise install
+gradle build
 ```
 
-### Install Savant Build 
+To install the jar into your local Maven repository (`~/.m2`):
 
 ```bash
-mkdir ~/savant
-cd ~/savant
-wget http://savant.inversoft.org/org/savantbuild/savant-core/1.0.0/savant-1.0.0.tar.gz
-tar xvfz savant-1.0.0.tar.gz
-ln -s ./savant-1.0.0 current
-export PATH=$PATH:~/savant/current/bin/
+gradle publishToMavenLocal
 ```
+
+Dependencies come from Maven Central. To use a private repository instead (CodeArtifact), set the `codeArtifactUrl`
+Gradle property (for example in `~/.gradle/gradle.properties`) or the `CODEARTIFACT_URL` environment variable; the auth
+token is fetched automatically (see `gradle/codeArtifactTokenFetcher.groovy`).
 
 ## License
 

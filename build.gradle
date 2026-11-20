@@ -1,0 +1,101 @@
+/*
+ * Copyright (c) 2021-2026, FusionAuth, All Rights Reserved
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
+ * either express or implied. See the License for the specific
+ * language governing permissions and limitations under the License.
+ */
+plugins {
+  id "java-library"
+  id "maven-publish"
+  id "signing"
+  alias(libs.plugins.gitversion)
+}
+
+group = "io.fusionauth"
+
+gitVersion {
+  tagPrefix = ""
+}
+
+java {
+  sourceCompatibility = JavaVersion.VERSION_25
+  withSourcesJar()
+}
+
+dependencies {
+  api libs.jackson.annotations
+  api libs.jackson.core
+  api libs.jackson.databind
+
+  testImplementation libs.testng
+
+  // Only published to CodeArtifact, so public builds (no CodeArtifact URL) run without the markdown report
+  if (gradle.codeArtifactUrl) {
+    testRuntimeOnly libs.testng.markdown.formatter
+  }
+}
+
+tasks.named("test") {
+  useTestNG {
+    if (gradle.codeArtifactUrl) {
+      // Writes test_report.md to build/reports/tests/test for the GitHub Actions job summary
+      listeners << "io.fusionauth.util.testng.reporters.JavaTestNGMarkdownReporter"
+    }
+  }
+  // The markdown reporter appends to an existing report, so start each run with a clean one
+  doFirst {
+    delete layout.buildDirectory.file("reports/tests/test/test_report.md")
+  }
+  // Savant's TestNG plugin only ran classes ending in Test
+  filter {
+    includeTestsMatching "*Test"
+  }
+}
+
+publishing {
+  publications {
+    mavenJava(MavenPublication) {
+      from components.java
+      pom {
+        licenses {
+          license {
+            name = "The Apache License, Version 2.0"
+            url = "https://www.apache.org/licenses/LICENSE-2.0.txt"
+          }
+        }
+      }
+    }
+  }
+  // Without a CodeArtifact URL (public builds) there is no remote repository; publishToMavenLocal still works
+  if (gradle.codeArtifactUrl) {
+    repositories {
+      maven {
+        url = gradle.codeArtifactUrl
+        credentials {
+          username = "aws"
+          password = gradle.codeArtifactToken.get()
+        }
+      }
+    }
+  }
+}
+
+// Published artifacts must be signed with a local gpg key. The key name is personal config: set
+// signing.gnupg.keyName=<fingerprint> in ~/.gradle/gradle.properties (never in this repo) and unlock the key in gpg-agent first.
+// Signing is only required for a remote publish; build, test and publishToMavenLocal work without a key configured.
+signing {
+  setRequired { gradle.taskGraph.allTasks.any { it instanceof PublishToMavenRepository } }
+  if (project.hasProperty("signing.gnupg.keyName")) {
+    useGpgCmd()
+  }
+  sign publishing.publications.mavenJava
+}

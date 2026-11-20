@@ -1,0 +1,36 @@
+pluginManagement {
+  // pluginManagement is evaluated before the rest of this file, so the token script is applied here
+  apply from: "gradle/codeArtifactTokenFetcher.groovy"
+  repositories {
+    if (gradle.codeArtifactUrl) {
+      maven {
+        url = gradle.codeArtifactUrl
+        credentials {
+          username = "aws"
+          password = gradle.codeArtifactToken.get()
+        }
+      }
+    } else {
+      gradlePluginPortal()
+    }
+  }
+}
+
+dependencyResolutionManagement {
+  repositoriesMode = RepositoriesMode.FAIL_ON_PROJECT_REPOS
+  repositories {
+    if (gradle.codeArtifactUrl) {
+      maven {
+        url = gradle.codeArtifactUrl
+        credentials {
+          username = "aws"
+          password = gradle.codeArtifactToken.get()
+        }
+      }
+    } else {
+      mavenCentral()
+    }
+  }
+}
+
+rootProject.name = "fusionauth-scim"
